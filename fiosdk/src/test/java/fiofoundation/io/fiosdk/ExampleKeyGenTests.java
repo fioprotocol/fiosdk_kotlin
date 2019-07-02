@@ -104,17 +104,16 @@ public class ExampleKeyGenTests {
     @Test
     public void generatePEMFromMn()
     {
-        //DeterministicSeed(MnemonicCode.INSTANCE.toEntropy(wordList), wordList, MnemonicCode.BIP39_STANDARDISATION_TIME_SECS)
-
-        String mn = "ability sport fly alarm pool spin cupboard quarter laptop write comic torch";
-
-        String privateKey = PrivateKeyUtils.Static.createPEMFormattedPrivateKey(mn);
-        String publicKey = PrivateKeyUtils.Static.extractPEMFormattedPublicKey(privateKey);
+        String mn = "valley alien library bread worry brother bundle hammer loyal barely dune brave";//"ability sport fly alarm pool spin cupboard quarter laptop write comic torch";
 
         try
         {
-            System.out.println(privateKey);
-            System.out.println(publicKey);
+            String privateKey = FIOSDK.INSTANCE.createPrivateKey(mn);
+            String publicKey = FIOSDK.INSTANCE.derivePublicKey(privateKey);
+
+            System.out.println("FIO Private: " + privateKey);
+            System.out.println("FIO Public: " + publicKey);
+
         }
         catch(Exception e)
         {
@@ -128,6 +127,7 @@ public class ExampleKeyGenTests {
         List<String> seedWords;
         try {
             final MnemonicCode mnemonicCode = new MnemonicCode();
+
             seedWords = mnemonicCode.toMnemonic(new SecureRandom().generateSeed(16));
         } catch (IOException | MnemonicException.MnemonicLengthException e) {
             throw new RuntimeException(e);

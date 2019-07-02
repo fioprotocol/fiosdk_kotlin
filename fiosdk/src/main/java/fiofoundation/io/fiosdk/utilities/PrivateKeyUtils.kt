@@ -10,48 +10,47 @@ import org.bitcoinj.crypto.MnemonicCode
 import org.bitcoinj.crypto.DeterministicHierarchy
 import org.bitcoinj.crypto.HDKeyDerivation
 
-class PrivateKeyUtils {
-    companion object Static {
-        private const val BIP44_PURPOSE = 44
-        private const val BIP44_COIN_TYPE = 235
-        private const val BIP44_ACCOUNT = 0
-        private const val BIP44_CHANGE = 0
-        private const val BIP44_INDEX = 0
+object PrivateKeyUtils {
+    private const val BIP44_PURPOSE = 44
+    private const val BIP44_COIN_TYPE = 235
+    private const val BIP44_ACCOUNT = 0
+    private const val BIP44_CHANGE = 0
+    private const val BIP44_INDEX = 0
 
-        fun createPEMFormattedPrivateKey(mnemonic: String): String {
+    fun createPEMFormattedPrivateKey(mnemonic: String): String {
 
-            val wordList: List<String> = mnemonic.split(" ")
+        val wordList: List<String> = mnemonic.split(" ")
 
-            val seed = MnemonicCode.INSTANCE.toEntropy(wordList)
+        val seed = MnemonicCode.toSeed(wordList,"")
 
-            val pathList:ArrayList<ChildNumber> = ArrayList()
-            pathList.add(ChildNumber(BIP44_PURPOSE, true))
-            pathList.add(ChildNumber(BIP44_COIN_TYPE, true))
-            pathList.add(ChildNumber(BIP44_ACCOUNT, true))
-            pathList.add(ChildNumber(BIP44_CHANGE, false))
+        val pathList:ArrayList<ChildNumber> = ArrayList()
+        pathList.add(ChildNumber(BIP44_PURPOSE, true))
+        pathList.add(ChildNumber(BIP44_COIN_TYPE, true))
+        pathList.add(ChildNumber(BIP44_ACCOUNT, true))
+        pathList.add(ChildNumber(BIP44_CHANGE, false))
 
-            val masterPrivateKey = HDKeyDerivation.createMasterPrivateKey(seed)
-            val rootHierarchy = DeterministicHierarchy(masterPrivateKey)
+        val masterPrivateKey = HDKeyDerivation.createMasterPrivateKey(seed)
+        val rootHierarchy = DeterministicHierarchy(masterPrivateKey)
 
-            val fioKey = rootHierarchy.deriveChild(pathList, false, true, ChildNumber(BIP44_INDEX, false))
+        val fioKey = rootHierarchy.deriveChild(pathList, false, true, ChildNumber(BIP44_INDEX, false))
 
-            val privateKeyBytes = fioKey.privKeyBytes
-            val wifBytes = ByteArray(37)
-            wifBytes[0] = 0x80.toByte()
+        val privateKeyBytes = fioKey.privKeyBytes
 
-            privateKeyBytes.copyInto(wifBytes,1,if (privateKeyBytes.size > 32) 1 else 0,32)
+        val wifBytes = ByteArray(37)
+        wifBytes[0] = 0x80.toByte()
 
-            val hash = Sha256Hash.hashTwice(wifBytes, 0, 33)
-            hash.copyInto(wifBytes,33,0,4)
+        privateKeyBytes.copyInto(wifBytes,1,if (privateKeyBytes.size > 32) 1 else 0,32)
 
-            return FIOFormatter.convertFIOPrivateKeyToPEMFormat(Base58.encode(wifBytes))
-        }
+        val hash = Sha256Hash.hashTwice(wifBytes, 0, 33)
+        hash.copyInto(wifBytes,33,0,4)
 
-        fun extractPEMFormattedPublicKey(pemPrivateKey: String): String
-        {
-            val pemProcessor = PEMProcessor(pemPrivateKey)
+        return FIOFormatter.convertFIOPrivateKeyToPEMFormat(Base58.encode(wifBytes))
+    }
 
-            return pemProcessor.extractPEMPublicKeyFromPrivateKey(true)
-        }
+    fun extractPEMFormattedPublicKey(pemPrivateKey: String): String
+    {
+        val pemProcessor = PEMProcessor(pemPrivateKey)
+
+        return pemProcessor.extractPEMPublicKeyFromPrivateKey(true)
     }
 }
