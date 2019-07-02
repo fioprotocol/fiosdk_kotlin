@@ -1,0 +1,16 @@
+{
+  "buildFiles": [
+    "/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/src/main/cpp/CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "/Users/shawnmullen/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/.externalNativeBuild/cmake/release/arm64-v8a --target clean"
+  ],
+  "libraries": {
+    "abieos-lib-Release-arm64-v8a": {
+      "artifactName": "abieos-lib",
+      "buildCommand": "/Users/shawnmullen/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/.externalNativeBuild/cmake/release/arm64-v8a --target abieos-lib",
+      "abi": "arm64-v8a",
+      "output": "/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/build/intermediates/cmake/release/obj/arm64-v8a/libabieos-lib.so"
+    }
+  }
+}

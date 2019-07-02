@@ -1,0 +1,47 @@
+
+{
+	"buildFiles" : 
+	[
+		"/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/src/main/cpp/CMakeLists.txt"
+	],
+	"cleanCommands" : 
+	[
+		"/Users/shawnmullen/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/.externalNativeBuild/cmake/release/arm64-v8a --target clean"
+	],
+	"cppFileExtensions" : [ "cpp" ],
+	"libraries" : 
+	{
+		"abieos-lib-Release-arm64-v8a" : 
+		{
+			"abi" : "arm64-v8a",
+			"artifactName" : "abieos-lib",
+			"buildCommand" : "/Users/shawnmullen/Library/Android/sdk/cmake/3.6.4111459/bin/cmake --build /Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/.externalNativeBuild/cmake/release/arm64-v8a --target abieos-lib",
+			"buildType" : "release",
+			"files" : 
+			[
+				
+				{
+					"flags" : "  --target=aarch64-none-linux-android21 --gcc-toolchain=/Users/shawnmullen/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/shawnmullen/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/sysroot  -Dabieos_lib_EXPORTS -I/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/src/main/cpp/rapidjson/include -I/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/src/main/cpp/date/include  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -Wa,--noexecstack -Wformat -Werror=format-security   -std=c++17 -O2 -DNDEBUG  -fPIC    -c ",
+					"src" : "/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/src/main/cpp/abieos-lib.cpp",
+					"workingDirectory" : "/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/.externalNativeBuild/cmake/release/arm64-v8a"
+				},
+				
+				{
+					"flags" : "  --target=aarch64-none-linux-android21 --gcc-toolchain=/Users/shawnmullen/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64 --sysroot=/Users/shawnmullen/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/sysroot  -Dabieos_lib_EXPORTS -I/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/src/main/cpp/rapidjson/include -I/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/src/main/cpp/date/include  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -Wa,--noexecstack -Wformat -Werror=format-security   -std=c++17 -O2 -DNDEBUG  -fPIC    -c ",
+					"src" : "/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/src/main/cpp/abieos.cpp",
+					"workingDirectory" : "/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/.externalNativeBuild/cmake/release/arm64-v8a"
+				}
+			],
+			"output" : "/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/build/intermediates/cmake/release/obj/arm64-v8a/libabieos-lib.so",
+			"toolchain" : "8875090922436672917"
+		}
+	},
+	"toolchains" : 
+	{
+		"8875090922436672917" : 
+		{
+			"cCompilerExecutable" : "/Users/shawnmullen/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+			"cppCompilerExecutable" : "/Users/shawnmullen/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++"
+		}
+	}
+}
