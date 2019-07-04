@@ -75,7 +75,7 @@ build CMakeFiles/abieos-lib.dir/abieos.cpp.o: CXX_COMPILER__abieos-lib /Users/sh
 #############################################
 # Link the shared library /Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/build/intermediates/cmake/debug/obj/x86/libabieos-lib.so
 
-build /Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/build/intermediates/cmake/debug/obj/x86/libabieos-lib.so: CXX_SHARED_LIBRARY_LINKER__abieos-lib CMakeFiles/abieos-lib.dir/abieos-lib.cpp.o CMakeFiles/abieos-lib.dir/abieos.cpp.o | /Users/shawnmullen/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/i686-linux-android/19/liblog.so
+build /Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/build/intermediates/cmake/debug/obj/x86/libabieos-lib.so: CXX_SHARED_LIBRARY_LINKER__abieos-lib CMakeFiles/abieos-lib.dir/abieos-lib.cpp.o CMakeFiles/abieos-lib.dir/abieos.cpp.o | /Users/shawnmullen/Library/Android/sdk/ndk-bundle/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/i686-linux-android/21/liblog.so
   LANGUAGE_COMPILE_FLAGS = -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -mstackrealign -fno-addrsig -Wa,--noexecstack -Wformat -Werror=format-security   -std=c++17 -O0 -fno-limit-debug-info
   LINK_FLAGS = -Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libatomic.a -static-libstdc++ -Wl,--build-id -Wl,--warn-shared-textrel -Wl,--fatal-warnings -Wl,--no-undefined -Qunused-arguments -Wl,-z,noexecstack
   LINK_LIBRARIES = -llog -latomic -lm

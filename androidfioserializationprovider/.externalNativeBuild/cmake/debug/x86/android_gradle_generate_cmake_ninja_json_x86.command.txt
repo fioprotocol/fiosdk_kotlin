@@ -3,7 +3,7 @@ arguments :
 -H/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/src/main/cpp
 -B/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/.externalNativeBuild/cmake/debug/x86
 -DANDROID_ABI=x86
--DANDROID_PLATFORM=android-19
+-DANDROID_PLATFORM=android-21
 -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/build/intermediates/cmake/debug/obj/x86
 -DCMAKE_BUILD_TYPE=Debug
 -DANDROID_NDK=/Users/shawnmullen/Library/Android/sdk/ndk-bundle
