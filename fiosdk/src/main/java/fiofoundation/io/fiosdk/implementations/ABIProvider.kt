@@ -6,7 +6,6 @@ import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetFeeError
 import fiofoundation.io.fiosdk.formatters.ByteFormatter
 import fiofoundation.io.fiosdk.interfaces.IABIProvider
 import fiofoundation.io.fiosdk.interfaces.IFIONetworkProvider
-import fiofoundation.io.fiosdk.models.fionetworkprovider.response.GetRawAbiResponse
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.GetRawAbiRequest
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.models.FIOName
@@ -27,7 +26,7 @@ class ABIProvider(private val fioNetworkProvider:IFIONetworkProvider,private val
 
         for (account in uniqAccounts) {
             val abiJsonString = getAbi(chainId, account)
-            returnAbis.put(account.accountName, abiJsonString!!)
+            returnAbis.put(account.accountName, abiJsonString)
         }
 
         return returnAbis
