@@ -8,7 +8,7 @@ import android.util.Log
 import java.nio.ByteBuffer
 import fiofoundation.io.fiosdk.errors.serializationprovider.*
 
-class AbiFIOSerializationProvider(): ISerializationProvider {
+class AbiFIOSerializationProvider: ISerializationProvider {
 
     private var context: ByteBuffer? = null
     private val TAG = "SerializationProvider"
@@ -27,6 +27,9 @@ class AbiFIOSerializationProvider(): ISerializationProvider {
         private val CANNOT_CREATE_CONTEXT_ERR_MSG = "Could not create abieos context."
 
         init {
+            val libPath = System.getProperty("java.library.path")
+            println("java.library.path=" + libPath!!)
+
             System.loadLibrary("abieos-lib")
         }
     }
