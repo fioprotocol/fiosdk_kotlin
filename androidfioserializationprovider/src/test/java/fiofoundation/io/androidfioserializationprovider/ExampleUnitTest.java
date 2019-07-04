@@ -22,4 +22,11 @@ public class ExampleUnitTest {
         System.out.println(map.toString());
               //System.out.println(map.get("test"));
     }
+
+    @Test
+    public void testAbiSerializer()
+    {
+        AbiFIOSerializationProvider provider = new AbiFIOSerializationProvider();
+
+    }
 }

@@ -1,8 +1,5 @@
 package fiofoundation.io.androidfioserializationprovider
 
-import java.util.Collections
-
-
 object AbiFIOJson {
     val abiFioJsonMap = initAbiFioJsonMap()
 
@@ -517,6 +514,6 @@ object AbiFIOJson {
                 "    ]\n" +
                 "}"
 
-        return Collections.unmodifiableMap(jsonMap)
+        return jsonMap
     }
 }

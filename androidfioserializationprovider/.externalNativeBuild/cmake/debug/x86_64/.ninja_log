@@ -1,4 +1,0 @@
-# ninja log v5
-1	777	0	CMakeFiles/abieos-lib.dir/abieos-lib.cpp.o	758ad93341f3a063
-1	4877	0	CMakeFiles/abieos-lib.dir/abieos.cpp.o	8c1cd3738aad2395
-4877	5172	0	/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/build/intermediates/cmake/debug/obj/x86_64/libabieos-lib.so	6c3cb2d1e006fd74
