@@ -1,7 +1,7 @@
 package fiofoundation.io.fiosdk.enums
 
 
-enum class AlgorithmEmployed(private val string: String)
+enum class AlgorithmEmployed(val string: String)
 {
     SECP256R1("secp256r1"),
     SECP256K1("secp256k1"),

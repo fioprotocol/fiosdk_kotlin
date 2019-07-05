@@ -47,7 +47,7 @@ class PEMProcessor(var pemObjectString: String) {
         }
     }
 
-    private companion object {
+    companion object {
 
         private val PRIVATE_KEY_TYPE = "EC PRIVATE KEY"
 
@@ -83,6 +83,9 @@ class PEMProcessor(var pemObjectString: String) {
             }
         }
     }
+
+
+
 
     fun getType(): String {
         return pemObject!!.type
