@@ -70,16 +70,16 @@ class SoftKeySignatureProvider: ISignatureProvider
     @Throws(SignTransactionError::class)
     override fun signTransaction(fioTransactionSignatureRequest: FIOTransactionSignatureRequest): FIOTransactionSignatureResponse {
 
-        if (fioTransactionSignatureRequest.signingPublicKeys.isEmpty()) {
+        if (fioTransactionSignatureRequest.signingPublicKeys!!.isEmpty()) {
             throw SignTransactionError(SoftKeySignatureErrorConstants.SIGN_TRANS_EMPTY_KEY_LIST)
 
         }
 
-        if (fioTransactionSignatureRequest.chainId.isEmpty()) {
+        if (fioTransactionSignatureRequest.chainId!!.isEmpty()) {
             throw SignTransactionError(SoftKeySignatureErrorConstants.SIGN_TRANS_EMPTY_CHAIN_ID)
         }
 
-        if (fioTransactionSignatureRequest.serializedTransaction.isEmpty()) {
+        if (fioTransactionSignatureRequest.serializedTransaction!!.isEmpty()) {
             throw SignTransactionError(SoftKeySignatureErrorConstants.SIGN_TRANS_EMPTY_TRANSACTION)
         }
 
@@ -94,10 +94,8 @@ class SoftKeySignatureProvider: ISignatureProvider
         try
         {
             message = Hex.decode(FIOFormatter.prepareSerializedTransactionForSigning(
-                serializedTransaction,
-                fioTransactionSignatureRequest.chainId
-                ).toUpperCase()
-            )
+                serializedTransaction!!,
+                fioTransactionSignatureRequest.chainId!!).toUpperCase())
 
             hashedMessage = Sha256Hash.hash(message)
         }
@@ -115,7 +113,7 @@ class SoftKeySignatureProvider: ISignatureProvider
         val signatures = ArrayList<String>()
 
         // Getting public key and search for the corresponding private key
-        for (inputPublicKey in fioTransactionSignatureRequest.signingPublicKeys) {
+        for (inputPublicKey in fioTransactionSignatureRequest.signingPublicKeys!!) {
 
             var privateKeyBI = BigInteger.ZERO
             var curve: AlgorithmEmployed? = null
@@ -149,7 +147,7 @@ class SoftKeySignatureProvider: ISignatureProvider
 
             // Throw error if found no private key with input public key
 
-            if (privateKeyBI.equals(BigInteger.ZERO) || curve == null) {
+            if (privateKeyBI == BigInteger.ZERO || curve == null) {
                 throw SignTransactionError(
                     String.format(SoftKeySignatureErrorConstants.SIGN_TRANS_KEY_NOT_FOUND,
                         inputPublicKey

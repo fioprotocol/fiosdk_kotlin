@@ -3,6 +3,13 @@ package fiofoundation.io.fiosdk.interfaces
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.*
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.*
 
+import fiofoundation.io.fiosdk.models.fionetworkprovider.request.GetRequiredKeysRequest
+import fiofoundation.io.fiosdk.models.fionetworkprovider.response.GetRequiredKeysResponse
+
+
+
+
+
 interface IFIONetworkProvider {
 
     fun getPublicAddress(getPublicAddressRequest: GetPublicAddressRequest): GetPublicAddressResponse
@@ -13,4 +20,6 @@ interface IFIONetworkProvider {
     fun getInfo(): GetInfoResponse
     fun getBlock(getBlockRequest: GetBlockRequest): GetBlockResponse
     fun getRawAbi(getRawAbiRequest: GetRawAbiRequest): GetRawAbiResponse
+    fun pushTransaction(pushTransaction: PushTransactionRequest): PushTransactionResponse
+    fun getRequiredKeys(getRequiredKeysRequest: GetRequiredKeysRequest): GetRequiredKeysResponse
 }

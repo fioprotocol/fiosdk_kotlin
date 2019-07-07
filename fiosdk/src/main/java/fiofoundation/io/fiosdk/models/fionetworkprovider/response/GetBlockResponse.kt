@@ -1,36 +1,41 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider.response
 
-class GetBlockResponse(val id: String,val producer: String,val confirmed: Long,val previous: String,val transactions: List<String>,val timestamp: String): FIOResponse(){
-    private val block_num: Long = 0
-    private val ref_block_prefix: Long = 0
-    private val transaction_mroot: String = ""
-    private val schedule_version: Long = 0
-    private val new_producers: String = ""
-    private val header_extensions: List<String>? = null
-    private val producer_signature: String = ""
-    private val block_extensions: List<String>? = null
+import com.google.gson.annotations.SerializedName
+import java.math.BigInteger
 
-    val blockNumber: Long
-        get(){return this.block_num}
+class GetBlockResponse: FIOResponse(){
 
-    val refBlockPrefix: Long
-        get(){return this.ref_block_prefix}
+    val id: String? = null
+    val producer: String? = null
+    val confirmed: BigInteger? = null
+    val previous: String? = null
+    val transactions: List<String>? = null
+    val timestamp: String? = null
 
-    val scheduleVersion: Long
-        get(){return this.schedule_version}
+    @SerializedName("action_mroot")
+    val actionMroot: String? = null
 
-    val transactionMRoot: String
-        get(){return this.transaction_mroot}
+    @SerializedName("block_num")
+    val blockNumber: BigInteger? = null
 
-    val newProducers: String
-        get(){return this.new_producers}
+    @SerializedName("ref_block_prefix")
+    val refBlockPrefix: BigInteger? = null
 
-    val producerSignature: String
-        get(){return this.producer_signature}
+    @SerializedName("schedule_version")
+    val scheduleVersion: BigInteger? = null
 
-    val headerExtensions: List<String>?
-        get(){return this.header_extensions}
+    @SerializedName("transaction_mroot")
+    val transactionMRoot: String? = null
 
-    val blockExtensions: List<String>?
-        get(){return this.block_extensions}
+    @SerializedName("new_producers")
+    val newProducers: String? = null
+
+    @SerializedName("producer_signature")
+    val producerSignature: String? = null
+
+    @SerializedName("header_extensions")
+    val headerExtensions: List<String>? = null
+
+    @SerializedName("block_extensions")
+    val blockExtensions: List<String>? = null
 }

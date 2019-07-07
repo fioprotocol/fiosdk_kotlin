@@ -8,6 +8,9 @@ import retrofit2.Call
 import retrofit2.http.POST
 import retrofit2.http.Body
 
+import fiofoundation.io.fiosdk.models.fionetworkprovider.request.PushTransactionRequest
+import fiofoundation.io.fiosdk.models.fionetworkprovider.response.PushTransactionResponse
+
 interface IFIONetworkProviderApi {
 
     @POST(FIOApiEndPoints.get_public_address)
@@ -33,4 +36,10 @@ interface IFIONetworkProviderApi {
 
     @POST(FIOApiEndPoints.get_raw_abi)
     fun getRawAbi(@Body getRawAbiRequest: GetRawAbiRequest): Call<GetRawAbiResponse>
+
+    @POST(FIOApiEndPoints.push_transaction)
+    fun pushTransaction(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
+
+    @POST(FIOApiEndPoints.get_required_keys)
+    fun getRequiredKeys(@Body getRequiredKeysRequest: GetRequiredKeysRequest): Call<GetRequiredKeysResponse>
 }

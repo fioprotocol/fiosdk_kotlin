@@ -148,4 +148,30 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider {
             throw GetFeeError("",e,e.responseError)
         }
     }
+
+    @Throws(PushTransactionError::class)
+    override fun pushTransaction(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.pushTransaction(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
+    @Throws(GetRequiredKeysError::class)
+    override fun getRequiredKeys(getRequiredKeysRequest: GetRequiredKeysRequest): GetRequiredKeysResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.getRequiredKeys(getRequiredKeysRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw GetRequiredKeysError("",e,e.responseError)
+        }
+    }
 }

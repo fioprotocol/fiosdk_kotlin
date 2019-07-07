@@ -1,44 +1,45 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider.response
 
+import com.google.gson.annotations.SerializedName
+import java.math.BigInteger
+
 class GetInfoResponse: FIOResponse() {
-    private val head_block_num: Long = 0
-    private val last_irreversible_block_num: Long = 0
-    private val server_version: String = ""
-    private val chain_id: String = ""
-    private val head_block_id: String = ""
-    private val head_block_time: String = ""
-    private val head_block_producer: String = ""
-    private val virtual_block_cpu_limit: String = ""
-    private val virtual_block_net_limit: Long = 0
+
+    @SerializedName("head_block_num")
+    val headBlockNumber: BigInteger? = null
+
+    @SerializedName("last_irreversible_block_num")
+    val lastIrreversibleBlockNumber: Long = 0
+
+    @SerializedName("server_version")
+    val serverVersion: String = ""
+
+    @SerializedName("chain_id")
+    val chainId: String? = null
+
+    @SerializedName("head_block_id")
+    val headBlockId: String = ""
+
+    @SerializedName("head_block_time")
+    val headBlockTime: String = ""
+
+    @SerializedName("head_block_producer")
+    val headBlockProducer: String = ""
+
+    @SerializedName("virtual_block_cpu_limit")
+    val virtualBlockCpuLimit: BigInteger? = null
+
+    @SerializedName("virtual_block_net_limit")
+    val virtualBlockNetLimit: BigInteger? = null
+
+    @SerializedName("block_cpu_limit")
+    private val blockCpuLimit: BigInteger? = null
+
+    @SerializedName("block_net_limit")
+    private val blockNetLimit: BigInteger? = null
+
     private val server_version_string: String = ""
 
-    val headBlockNumber: Long
-        get(){return this.head_block_num}
-
-    val lastIrreversibleBlockNumber: Long
-        get(){return this.last_irreversible_block_num}
-
-    val virtualBlockNetLimit: Long
-        get(){return this.virtual_block_net_limit}
-
-    val serverVersion: String
-        get(){return this.server_version}
-
-    val chainId: String
-        get(){return this.chain_id}
-
-    val headBlockId: String
-        get(){return this.head_block_id}
-
-    val headBlockTime: String
-        get(){return this.head_block_time}
-
-    val headBlockProducer: String
-        get(){return this.head_block_producer}
-
-    val virtualBlockCpuLimit: String
-        get(){return this.virtual_block_cpu_limit}
-
-    val serverVersionString: String
-        get(){return this.server_version_string}
+    @SerializedName("server_version_string")
+    val serverVersionString: String = ""
 }

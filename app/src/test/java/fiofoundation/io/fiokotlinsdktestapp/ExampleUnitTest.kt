@@ -1,5 +1,6 @@
 package fiofoundation.io.fiokotlinsdktestapp
 
+import fiofoundation.io.fiosdk.FIOSDK
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -11,7 +12,11 @@ import org.junit.Assert.*
  */
 class ExampleUnitTest {
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun initializeSDK()
+    {
+        val fio_sdk = FIOSDK.fiosdk
+
     }
+
+
 }
