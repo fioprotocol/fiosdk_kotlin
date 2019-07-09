@@ -44,6 +44,21 @@ import fiofoundation.io.fiosdk.errors.session.TransactionCreateSignatureRequestE
 import fiofoundation.io.fiosdk.errors.session.TransactionCreateSignatureRequestKeyError
 import fiofoundation.io.fiosdk.errors.signatureprovider.GetAvailableKeysError
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.GetRequiredKeysRequest
+import fiofoundation.io.fiosdk.errors.session.TransactionBroadCastError
+import fiofoundation.io.fiosdk.errors.session.TransactionBroadCastEmptySignatureError
+import fiofoundation.io.fiosdk.errors.session.TransactionSignAndBroadCastError
+
+import fiofoundation.io.fiosdk.errors.session.TransactionSerializeError
+
+import fiofoundation.io.fiosdk.errors.session.TransactionCreateSignatureRequestSerializationError
+import fiofoundation.io.fiosdk.errors.serializationprovider.SerializeTransactionError
+
+import fiofoundation.io.fiosdk.errors.serializationprovider.SerializeError
+import fiofoundation.io.fiosdk.errors.session.TransactionCreateSignatureRequestAbiError
+import fiofoundation.io.fiosdk.errors.abiprovider.GetAbiError
+
+import fiofoundation.io.fiosdk.models.FIOName
+import fiofoundation.io.fiosdk.models.serializationprovider.AbiFIOSerializationObject
 
 
 class TransactionProcessor(private val serializationProvider: ISerializationProvider,
@@ -177,19 +192,22 @@ class TransactionProcessor(private val serializationProvider: ISerializationProv
 
     @Throws(TransactionPushTransactionError::class)
     private fun pushTransaction(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse {
-        try {
+        try
+        {
             return this.fioNetworkProvider.pushTransaction(pushTransactionRequest)
-        } catch (pushTransactionRpcError: PushTransactionError) {
+        }
+        catch (pushTransactionError: PushTransactionError)
+        {
             throw TransactionPushTransactionError(
                 ErrorConstants.TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION,
-                pushTransactionRpcError
-            )
+                pushTransactionError)
         }
 
     }
 
     @Throws(TransactionCreateSignatureRequestError::class)
-    private fun createSignatureRequest(): FIOTransactionSignatureRequest {
+    private fun createSignatureRequest(): FIOTransactionSignatureRequest
+    {
         if (this.transaction == null)
         {
             throw TransactionCreateSignatureRequestError(
@@ -265,6 +283,148 @@ class TransactionProcessor(private val serializationProvider: ISerializationProv
         fioTransactionSignatureRequest.signingPublicKeys = this.requiredKeys
 
         return fioTransactionSignatureRequest
+    }
+
+    @Throws(TransactionCreateSignatureRequestError::class)
+    private fun serializeAction(action: Action,
+                                chainId: String,
+                                abiProvider: IABIProvider): AbiFIOSerializationObject
+    {
+        val actionAbiJSON: String
+
+        try
+        {
+            actionAbiJSON = abiProvider.getAbi(chainId, FIOName(action.account))
+        }
+        catch (getAbiError: GetAbiError)
+        {
+            throw TransactionCreateSignatureRequestAbiError(
+                String.format(
+                    ErrorConstants.TRANSACTION_PROCESSOR_GET_ABI_ERROR, action.account),
+                getAbiError)
+        }
+
+        val actionAbifioSerializationObject = AbiFIOSerializationObject(action.account,
+            action.name, null, actionAbiJSON)
+
+        actionAbifioSerializationObject.hex = ""
+
+        actionAbifioSerializationObject.json = action.data
+
+        try {
+            this.serializationProvider.serialize(actionAbifioSerializationObject)
+            if (actionAbifioSerializationObject.hex.isEmpty())
+            {
+                throw TransactionCreateSignatureRequestSerializationError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_WORKED_BUT_EMPTY_RESULT
+                )
+            }
+        }
+        catch (serializeError: SerializeError)
+        {
+            throw TransactionCreateSignatureRequestSerializationError(
+                String.format(
+                    ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_ERROR,
+                    action.account), serializeError)
+        }
+        catch (serializeError: TransactionCreateSignatureRequestSerializationError)
+        {
+            throw TransactionCreateSignatureRequestSerializationError(
+                String.format(
+                    ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_ERROR,
+                    action.account), serializeError)
+        }
+
+        return actionAbifioSerializationObject
+    }
+
+    @Throws(TransactionCreateSignatureRequestError::class)
+    private fun serializeTransaction(): String
+    {
+        val clonedTransaction: Transaction?
+
+        try
+        {
+            clonedTransaction = this.getDeepClone()
+        }
+        catch (e: IOException)
+        {
+            throw TransactionCreateSignatureRequestError(
+                ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_ERROR, e)
+        }
+        catch (e: ClassNotFoundException)
+        {
+            throw TransactionCreateSignatureRequestError(
+                ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_CLASS_NOT_FOUND, e)
+        }
+
+        if (clonedTransaction == null)
+        {
+            throw TransactionCreateSignatureRequestError(
+                ErrorConstants.TRANSACTION_PROCESSOR_PREPARE_CLONE_ERROR)
+        }
+
+
+        if (this.chainId == null || this.chainId!!.isEmpty())
+        {
+            try
+            {
+                val getInfoResponse = this.fioNetworkProvider.getInfo()
+                this.chainId = getInfoResponse.chainId
+            }
+            catch (getInfoError: GetInfoError)
+            {
+                throw TransactionCreateSignatureRequestRpcError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_RPC_GET_INFO, getInfoError)
+            }
+        }
+
+        // Serialize each action of Transaction's actions
+        for (action in clonedTransaction.actions) {
+            val actionAbiFioSerializationObject = this.serializeAction(action,
+                this.chainId!!, this.abiProvider)
+
+            action.data = actionAbiFioSerializationObject.hex
+        }
+
+        if (clonedTransaction.contextFreeActions!!.isNotEmpty()) {
+            for (contextFreeAction in clonedTransaction.contextFreeActions!!)
+            {
+                val actionAbiEosSerializationObject = this.serializeAction(contextFreeAction,
+                        this.chainId!!, this.abiProvider)
+
+                contextFreeAction.data = actionAbiEosSerializationObject.hex
+            }
+        }
+
+        this.transaction = clonedTransaction
+
+        // Serialize transaction
+        val _serializedTransaction: String?
+
+        try
+        {
+            val clonedTransactionToJSON = Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).toJson(clonedTransaction)
+
+            _serializedTransaction = this.serializationProvider
+                .serializeTransaction(clonedTransactionToJSON)
+
+            if (_serializedTransaction == null || _serializedTransaction.isEmpty())
+            {
+                throw TransactionCreateSignatureRequestSerializationError(
+                    ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_TRANSACTION_WORKED_BUT_EMPTY_RESULT
+                )
+            }
+
+        }
+        catch (serializeTransactionError: SerializeTransactionError)
+        {
+            throw TransactionCreateSignatureRequestSerializationError(
+                ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_TRANSACTION_ERROR,
+                serializeTransactionError)
+        }
+
+        return _serializedTransaction
     }
 
     //public methods
@@ -410,5 +570,116 @@ class TransactionProcessor(private val serializationProvider: ISerializationProv
         }
 
         return true
+    }
+
+    @Throws(TransactionBroadCastError::class)
+    fun broadcast(): PushTransactionResponse
+    {
+        if (this.serializedTransaction == null || this.serializedTransaction!!.isEmpty())
+        {
+            throw TransactionBroadCastError(
+                ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_SERIALIZED_TRANSACTION_EMPTY)
+        }
+
+        if (this.signatures.isEmpty())
+        {
+            throw TransactionBroadCastEmptySignatureError(
+                ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_SIGN_EMPTY)
+        }
+
+        val pushTransactionRequest = PushTransactionRequest(
+            this.signatures, 0, "",
+            this.serializedTransaction!!)
+
+        try
+        {
+            return this.pushTransaction(pushTransactionRequest)
+        }
+        catch (transactionPushTransactionError: TransactionPushTransactionError)
+        {
+            throw TransactionBroadCastError(
+                ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR,
+                transactionPushTransactionError)
+        }
+
+    }
+
+    @Throws(TransactionSignAndBroadCastError::class)
+    fun signAndBroadcast(): PushTransactionResponse
+    {
+        val fioTransactionSignatureRequest: FIOTransactionSignatureRequest
+
+        try
+        {
+            fioTransactionSignatureRequest = this.createSignatureRequest()
+        }
+        catch (transactionCreateSignatureRequestError: TransactionCreateSignatureRequestError)
+        {
+            throw TransactionSignAndBroadCastError(transactionCreateSignatureRequestError)
+        }
+
+        try
+        {
+            this.getSignature(fioTransactionSignatureRequest)
+        }
+        catch (transactionGetSignatureError: TransactionGetSignatureError)
+        {
+            throw TransactionSignAndBroadCastError(transactionGetSignatureError)
+        }
+
+        if (this.serializedTransaction == null || this.serializedTransaction!!.isEmpty())
+        {
+            throw TransactionSignAndBroadCastError(
+                ErrorConstants.TRANSACTION_PROCESSOR_SIGN_BROADCAST_SERIALIZED_TRANSACTION_EMPTY
+            )
+        }
+
+        if (this.signatures.isEmpty())
+        {
+            throw TransactionSignAndBroadCastError(
+                ErrorConstants.TRANSACTION_PROCESSOR_SIGN_BROADCAST_SIGN_EMPTY)
+        }
+
+        val pushTransactionRequest = PushTransactionRequest(
+            this.signatures, 0, "",
+            this.serializedTransaction!!)
+
+        try
+        {
+            return this.pushTransaction(pushTransactionRequest)
+        }
+        catch (transactionPushTransactionError: TransactionPushTransactionError)
+        {
+            throw TransactionSignAndBroadCastError(transactionPushTransactionError)
+        }
+
+    }
+
+    fun toJSON(): String
+    {
+        return Utils.getGson(DateFormatter.BACKEND_DATE_PATTERN).toJson(this.transaction)
+    }
+
+    @Throws(TransactionSerializeError::class)
+    fun serialize(): String?
+    {
+
+        if (this.serializedTransaction != null && this.serializedTransaction!!.isNotEmpty())
+        {
+            return this.serializedTransaction!!
+        }
+
+        try
+        {
+            return this.serializedTransaction
+        }
+        catch (transactionCreateSignatureRequestError: TransactionCreateSignatureRequestError)
+        {
+            throw TransactionSerializeError(
+                ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ERROR,
+                transactionCreateSignatureRequestError
+            )
+        }
+
     }
 }
