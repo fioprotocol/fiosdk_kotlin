@@ -2,6 +2,7 @@ package fiofoundation.io.fiosdk;
 
 import fiofoundation.io.fiosdk.errors.fionetworkprovider.*;
 
+import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization;
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.FIONameAvailabilityCheckRequest;
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.FIONameAvailabilityCheckResponse;
 
@@ -493,6 +494,14 @@ public class ExampleUnitTest {
         } catch (PEMProcessorError e) {
             fail("Not expecting an PEMProcessorError to be thrown!");
         }
+
+    }
+
+    @Test
+    public void testGenerateActor()
+    {
+        String p_key = "FIO6D6gSipBmP1KW9SMB5r4ELjooaogFt77gEs25V9TU9FrxKVeFb";
+        System.out.println(Authorization.Static.generateActor(p_key));
 
     }
 }

@@ -38,7 +38,7 @@ import org.bouncycastle.util.io.pem.PemReader
 class FIOFormatter {
 
     companion object Static {
-        private val PATTERN_STRING_FIO_PREFIX_EOS = "FIO"
+        val PATTERN_STRING_FIO_PREFIX_EOS = "FIO"
         private val PATTERN_STRING_FIO_PREFIX_PUB_R1 = "PUB_R1_"
         private val PATTERN_STRING_FIO_PREFIX_PUB_K1 = "PUB_K1_"
         private val PATTERN_STRING_FIO_PREFIX_PVT_R1 = "PVT_R1_"

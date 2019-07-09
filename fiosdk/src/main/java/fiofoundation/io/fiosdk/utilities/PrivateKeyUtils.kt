@@ -53,4 +53,9 @@ object PrivateKeyUtils {
 
         return pemProcessor.extractPEMPublicKeyFromPrivateKey(true)
     }
+
+    fun base58Decode(encodedString: String): ByteArray
+    {
+        return Base58.decode(encodedString)
+    }
 }
