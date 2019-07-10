@@ -430,7 +430,7 @@ class TransactionProcessor(private val serializationProvider: ISerializationProv
     //public methods
 
     @Throws(TransactionPrepareError::class)
-    fun prepare(actions: List<Action>, contextFreeActions: List<Action>)
+    fun prepare(actions: ArrayList<Action>, contextFreeActions: ArrayList<Action>)
     {
         if (actions.isEmpty()) {
             throw TransactionPrepareInputError(ErrorConstants.TRANSACTION_PROCESSOR_ACTIONS_EMPTY_ERROR_MSG)
@@ -475,6 +475,7 @@ class TransactionProcessor(private val serializationProvider: ISerializationProv
             )
         }
 
+        //TODO: Set expiration to 3 minutes from request time
         if (preparingTransaction.expiration.isEmpty())
         {
             val strHeadBlockTime = getInfoResponse.headBlockTime
@@ -533,7 +534,7 @@ class TransactionProcessor(private val serializationProvider: ISerializationProv
     }
 
     @Throws(TransactionPrepareError::class)
-    fun prepare(actions: List<Action>) {
+    fun prepare(actions: ArrayList<Action>) {
         this.prepare(actions, ArrayList())
     }
 

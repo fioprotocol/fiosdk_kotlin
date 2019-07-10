@@ -174,4 +174,17 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider {
             throw GetRequiredKeysError("",e,e.responseError)
         }
     }
+
+    @Throws(PushTransactionError::class)
+    override fun registerFioAddress(registerFIOAddressRequest: RegisterFIOAddressRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.registerFioAddress(registerFIOAddressRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
 }

@@ -6,10 +6,6 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.request.*
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.GetRequiredKeysRequest
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.GetRequiredKeysResponse
 
-
-
-
-
 interface IFIONetworkProvider {
 
     fun getPublicAddress(getPublicAddressRequest: GetPublicAddressRequest): GetPublicAddressResponse
@@ -22,4 +18,5 @@ interface IFIONetworkProvider {
     fun getRawAbi(getRawAbiRequest: GetRawAbiRequest): GetRawAbiResponse
     fun pushTransaction(pushTransaction: PushTransactionRequest): PushTransactionResponse
     fun getRequiredKeys(getRequiredKeysRequest: GetRequiredKeysRequest): GetRequiredKeysResponse
+    fun registerFioAddress(registerFIOAddressRequest: RegisterFIOAddressRequest): PushTransactionResponse
 }

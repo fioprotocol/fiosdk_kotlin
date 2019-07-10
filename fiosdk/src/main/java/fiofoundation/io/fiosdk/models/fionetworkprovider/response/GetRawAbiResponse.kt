@@ -1,18 +1,8 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider.response
 
-class GetRawAbiResponse: FIOResponse() {
-    private val account_name: String = ""
-    private val abi_hash: String = ""
-    private val code_hash: String = ""
+import com.google.gson.annotations.SerializedName
 
-    val abi: String = ""
-
-    val accountName: String
-        get(){return this.account_name}
-
-    val abiHash: String
-        get(){return this.abi_hash}
-
-    val codeHash: String
-        get(){return this.code_hash}
-}
+class GetRawAbiResponse(@field:SerializedName("account_name") val accountName:String,
+                        @field:SerializedName("abi_hash") val abiHash: String,
+                        @field:SerializedName("code_hash") val codeHash:String,
+                        val abi: String): FIOResponse()

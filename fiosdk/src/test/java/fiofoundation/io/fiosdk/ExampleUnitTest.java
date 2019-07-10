@@ -6,6 +6,7 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization;
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.FIONameAvailabilityCheckRequest;
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.FIONameAvailabilityCheckResponse;
 
+import fiofoundation.io.fiosdk.utilities.Utils;
 import org.junit.Test;
 
 import fiofoundation.io.fiosdk.implementations.FIONetworkProvider;
@@ -24,6 +25,7 @@ import fiofoundation.io.fiosdk.models.PEMProcessor;
 import org.bouncycastle.util.encoders.Hex;
 
 import static org.junit.Assert.*;
+
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -501,7 +503,26 @@ public class ExampleUnitTest {
     public void testGenerateActor()
     {
         String p_key = "FIO6D6gSipBmP1KW9SMB5r4ELjooaogFt77gEs25V9TU9FrxKVeFb";
-        System.out.println(Authorization.Static.generateActor(p_key));
+        System.out.println(new Authorization(p_key,"action").getActor());
 
     }
+
+    @Test
+    public void testRegisterFioAddress()
+    {
+
+        String fio_address = "shawnmullen123.brd";
+        String fio_public_key = "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o";
+        String wallet_fio_address = "rewards:wallet";
+        int max_fee = 300000000;
+        String actor = Utils.Static.generateActor(fio_public_key);
+
+        FIONetworkProvider provider = new FIONetworkProvider("http://54.184.39.43:8889");
+        RegisterFIOAddressRequest request = new RegisterFIOAddressRequest(fio_address,"",wallet_fio_address,max_fee,actor);
+
+        System.out.println("Actor Public Key: " + request.getActorPublicKey());
+        System.out.println("FIO Address: " + request.getFioAddress());
+        System.out.println("FIO Private: " + request.getOwnerPublicKey());
+    }
+
 }
