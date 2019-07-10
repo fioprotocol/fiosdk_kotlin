@@ -1,5 +1,11 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider
 
 
-open class Action(var account: String,var name: String,
-             var authorization: List<Authorization>,var data: String)
+open class Action(account: String,name: String,
+             authorization: ArrayList<Authorization>,data: String): IAction
+{
+    override var account = account
+    override var name = name
+    override var authorization = authorization
+    override var data = data
+}

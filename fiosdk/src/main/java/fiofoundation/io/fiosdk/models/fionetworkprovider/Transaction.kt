@@ -11,6 +11,6 @@ open class Transaction(
     @SerializedName("max_net_usage_words") var maxNetUsageWords: BigInteger?,
     @SerializedName("max_cpu_usage_ms") var maxCpuUsageMs: BigInteger?,
     @SerializedName("delay_sec") var delaySec: BigInteger?,
-    @SerializedName("context_free_actions") var contextFreeActions: ArrayList<Action>?,
-    var actions: ArrayList<Action>,
+    @SerializedName("context_free_actions") var contextFreeActions: ArrayList<IAction>?,
+    var actions: ArrayList<IAction>,
     @SerializedName("transaction_extensions") var transactionExtensions: ArrayList<String>?):Serializable

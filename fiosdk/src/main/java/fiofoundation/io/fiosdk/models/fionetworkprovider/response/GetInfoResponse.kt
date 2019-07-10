@@ -38,8 +38,6 @@ class GetInfoResponse: FIOResponse() {
     @SerializedName("block_net_limit")
     private val blockNetLimit: BigInteger? = null
 
-    private val server_version_string: String = ""
-
     @SerializedName("server_version_string")
     val serverVersionString: String = ""
 }

@@ -6,11 +6,10 @@ import fiofoundation.io.fiosdk.implementations.ABIProvider
 import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
+import fiofoundation.io.fiosdk.models.fionetworkprovider.IAction
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RegisterFIOAddressAction
-import fiofoundation.io.fiosdk.models.fionetworkprovider.request.RegisterFIOAddressRequest
 import fiofoundation.io.fiosdk.session.TransactionSession
 import fiofoundation.io.fiosdk.utilities.PrivateKeyUtils
-import kotlin.math.sign
 
 class FIOSDK(val privateKey: String, val publicKey: String,
              val serializationProvider: ISerializationProvider,
@@ -54,21 +53,28 @@ class FIOSDK(val privateKey: String, val publicKey: String,
     }
 
     init {
-        networkProvider = FIONetworkProvider("http://54.184.39.43:8889")
+        networkProvider = FIONetworkProvider("http://54.245.52.195:8889")
         abiProvider = ABIProvider(networkProvider,this.serializationProvider)
     }
 
     fun registerFioAddress(fioAddress:String,ownerPublicKey:String,
-                           maxFee:Int,walletFioAddress:String): RegisterFIOAddressRequest
+                           maxFee:Int,walletFioAddress:String)
     {
         var registerFioAddressAction = RegisterFIOAddressAction(fioAddress,ownerPublicKey,walletFioAddress,maxFee,this.publicKey)
 
         var transactionSession = TransactionSession(this.serializationProvider,this.networkProvider,this.abiProvider,this.signatureProvider)
         var transactionProcessor = transactionSession.getTransactionProcessor()
 
-        transactionProcessor.prepare(listOf(registerFioAddressAction))
+        var actionList = ArrayList<RegisterFIOAddressAction>()
+        actionList.add(registerFioAddressAction)
 
-        return transactionRequest
+        transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+        transactionProcessor.sign()
+
+        transactionProcessor.broadcast()
+
+
     }
 
 }

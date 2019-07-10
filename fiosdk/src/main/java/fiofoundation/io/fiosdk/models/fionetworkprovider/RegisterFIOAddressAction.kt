@@ -8,21 +8,25 @@ class RegisterFIOAddressAction(@Expose(serialize = false, deserialize = false) v
                                @Expose(serialize = false, deserialize = false) var ownerPublicKey: String,
                                @Expose(serialize = false, deserialize = false) var walletFioAddress: String,
                                @Expose(serialize = false, deserialize = false) var maxFee: Int,
-                               @Expose(serialize = false, deserialize = false) var actorPublicKey: String) : Action("fio.system","regaddress",
-    ArrayList(),"")
+                               @Expose(serialize = false, deserialize = false) var actorPublicKey: String) : IAction
 {
+    override var account = "fio.system"
+    override var name = "regaddress"
+    override var authorization = ArrayList<Authorization>()
+    override var data = ""
+
     init
     {
-        val authorization = Authorization(actorPublicKey,"active")
+        val auth = Authorization(actorPublicKey,"active")
         var requestData = FIOAddressRequestData(
             fioAddress,
             ownerPublicKey,
             maxFee,
             walletFioAddress,
-            authorization.actor
+            auth.actor
         )
 
-        this.authorization = listOf(authorization)
+        this.authorization.add(auth)
         this.data = requestData.toJson()
     }
 

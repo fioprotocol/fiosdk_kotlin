@@ -58,6 +58,7 @@ import fiofoundation.io.fiosdk.errors.session.TransactionCreateSignatureRequestA
 import fiofoundation.io.fiosdk.errors.abiprovider.GetAbiError
 
 import fiofoundation.io.fiosdk.models.FIOName
+import fiofoundation.io.fiosdk.models.fionetworkprovider.IAction
 import fiofoundation.io.fiosdk.models.serializationprovider.AbiFIOSerializationObject
 
 
@@ -101,9 +102,9 @@ class TransactionProcessor(private val serializationProvider: ISerializationProv
 
     private fun finishPreparing(preparingTransaction: Transaction)
     {
-        transaction = preparingTransaction
+        this.transaction = preparingTransaction
 
-        if (!this.serializedTransaction.isNullOrEmpty()) {
+        if (this.serializedTransaction.isNullOrEmpty()) {
             this.serializedTransaction = ""
         }
     }
@@ -221,7 +222,7 @@ class TransactionProcessor(private val serializationProvider: ISerializationProv
         }
 
         // Cache the serialized version of transaction in the TransactionProcessor
-        this.serializedTransaction = this.serializedTransaction
+        this.serializedTransaction =  this.serializeTransaction()
 
         val fioTransactionSignatureRequest = FIOTransactionSignatureRequest(
             this.serializedTransaction, null,
@@ -254,39 +255,39 @@ class TransactionProcessor(private val serializationProvider: ISerializationProv
             }
         }
 
-        try
-        {
-            val getRequiredKeysResponse = this.fioNetworkProvider.getRequiredKeys(
-                    GetRequiredKeysRequest(this.availableKeys, this.transaction))
+//        try
+//        {
+//            val getRequiredKeysResponse = this.fioNetworkProvider.getRequiredKeys(
+//                    GetRequiredKeysRequest(this.availableKeys, this.transaction))
+//
+//            if (getRequiredKeysResponse.requiredKeys == null || getRequiredKeysResponse.requiredKeys.isEmpty()) {
+//                throw TransactionCreateSignatureRequestRequiredKeysEmptyError(
+//                    ErrorConstants.GET_REQUIRED_KEY_RPC_EMPTY_RESULT)
+//            }
+//
+//            val backendRequiredKeys = getRequiredKeysResponse.requiredKeys
+//
+//            if (!this.availableKeys?.containsAll(backendRequiredKeys)!!) {
+//                throw TransactionCreateSignatureRequestRequiredKeysEmptyError(
+//                    ErrorConstants.TRANSACTION_PROCESSOR_REQUIRED_KEY_NOT_SUBSET)
+//            }
+//
+//            this.requiredKeys = backendRequiredKeys
+//        }
+//        catch (getRequiredKeysRpcError: GetRequiredKeysError)
+//        {
+//            throw TransactionCreateSignatureRequestRpcError(
+//                ErrorConstants.TRANSACTION_PROCESSOR_RPC_GET_REQUIRED_KEYS,
+//                getRequiredKeysRpcError)
+//        }
 
-            if (getRequiredKeysResponse.requiredKeys == null || getRequiredKeysResponse.requiredKeys.isEmpty()) {
-                throw TransactionCreateSignatureRequestRequiredKeysEmptyError(
-                    ErrorConstants.GET_REQUIRED_KEY_RPC_EMPTY_RESULT)
-            }
-
-            val backendRequiredKeys = getRequiredKeysResponse.requiredKeys
-
-            if (!this.availableKeys?.containsAll(backendRequiredKeys)!!) {
-                throw TransactionCreateSignatureRequestRequiredKeysEmptyError(
-                    ErrorConstants.TRANSACTION_PROCESSOR_REQUIRED_KEY_NOT_SUBSET)
-            }
-
-            this.requiredKeys = backendRequiredKeys
-        }
-        catch (getRequiredKeysRpcError: GetRequiredKeysError)
-        {
-            throw TransactionCreateSignatureRequestRpcError(
-                ErrorConstants.TRANSACTION_PROCESSOR_RPC_GET_REQUIRED_KEYS,
-                getRequiredKeysRpcError)
-        }
-
-        fioTransactionSignatureRequest.signingPublicKeys = this.requiredKeys
+        fioTransactionSignatureRequest.signingPublicKeys = this.availableKeys//this.requiredKeys
 
         return fioTransactionSignatureRequest
     }
 
     @Throws(TransactionCreateSignatureRequestError::class)
-    private fun serializeAction(action: Action,
+    private fun serializeAction(action: IAction,
                                 chainId: String,
                                 abiProvider: IABIProvider): AbiFIOSerializationObject
     {
@@ -430,7 +431,7 @@ class TransactionProcessor(private val serializationProvider: ISerializationProv
     //public methods
 
     @Throws(TransactionPrepareError::class)
-    fun prepare(actions: ArrayList<Action>, contextFreeActions: ArrayList<Action>)
+    fun prepare(actions: ArrayList<IAction>, contextFreeActions: ArrayList<IAction>)
     {
         if (actions.isEmpty()) {
             throw TransactionPrepareInputError(ErrorConstants.TRANSACTION_PROCESSOR_ACTIONS_EMPTY_ERROR_MSG)
@@ -534,7 +535,7 @@ class TransactionProcessor(private val serializationProvider: ISerializationProv
     }
 
     @Throws(TransactionPrepareError::class)
-    fun prepare(actions: ArrayList<Action>) {
+    fun prepare(actions: ArrayList<IAction>) {
         this.prepare(actions, ArrayList())
     }
 
@@ -542,6 +543,7 @@ class TransactionProcessor(private val serializationProvider: ISerializationProv
     fun sign(): Boolean
     {
         val fioTransactionSignatureRequest: FIOTransactionSignatureRequest
+
         try
         {
             fioTransactionSignatureRequest = this.createSignatureRequest()
@@ -672,7 +674,7 @@ class TransactionProcessor(private val serializationProvider: ISerializationProv
 
         try
         {
-            return this.serializedTransaction
+            return this.serializeTransaction()
         }
         catch (transactionCreateSignatureRequestError: TransactionCreateSignatureRequestError)
         {

@@ -36,9 +36,9 @@ public class ExampleUnitTest {
     @Test
     public void testFIONames() {
         try
-        {
+        {//shawnmullen123.brd
             FIONetworkProvider provider = new FIONetworkProvider("http://54.184.39.43:8889");
-            GetFIONamesRequest request = new GetFIONamesRequest("FIO8PRe4WRZJj5mkem6qVGKyvNFgPsNnjNN6kPhh6EaCpzCVin5Jj");
+            GetFIONamesRequest request = new GetFIONamesRequest("FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
             GetFIONamesResponse response = provider.getFIONames(request);
 
             System.out.println(response.getFioDomains());
@@ -517,12 +517,12 @@ public class ExampleUnitTest {
         int max_fee = 300000000;
         String actor = Utils.Static.generateActor(fio_public_key);
 
-        FIONetworkProvider provider = new FIONetworkProvider("http://54.184.39.43:8889");
-        RegisterFIOAddressRequest request = new RegisterFIOAddressRequest(fio_address,"",wallet_fio_address,max_fee,actor);
-
-        System.out.println("Actor Public Key: " + request.getActorPublicKey());
-        System.out.println("FIO Address: " + request.getFioAddress());
-        System.out.println("FIO Private: " + request.getOwnerPublicKey());
+//        FIONetworkProvider provider = new FIONetworkProvider("http://54.184.39.43:8889");
+//        RegisterFIOAddressRequest request = new RegisterFIOAddressRequest(fio_address,"",wallet_fio_address,max_fee,actor);
+//
+//        System.out.println("Actor Public Key: " + request.getActorPublicKey());
+//        System.out.println("FIO Address: " + request.getFioAddress());
+//        System.out.println("FIO Private: " + request.getOwnerPublicKey());
     }
 
 }

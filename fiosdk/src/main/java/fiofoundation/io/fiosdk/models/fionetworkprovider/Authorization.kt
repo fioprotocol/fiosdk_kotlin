@@ -1,8 +1,9 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider
 
 import fiofoundation.io.fiosdk.utilities.Utils
+import java.io.Serializable
 
-class Authorization(actorPublicAddress: String, var permission: String)
+class Authorization(actorPublicAddress: String, var permission: String): Serializable
 {
     val actor: String
 

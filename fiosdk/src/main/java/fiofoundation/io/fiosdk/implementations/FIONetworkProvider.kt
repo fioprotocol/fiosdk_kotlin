@@ -16,6 +16,7 @@ import retrofit2.Response
 import okhttp3.OkHttpClient
 import com.google.gson.Gson
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.FIONameAvailabilityCheckRequest
+import java.util.concurrent.TimeUnit
 
 
 class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider {
@@ -26,6 +27,7 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider {
 
     init{
         val httpClient = OkHttpClient.Builder()
+            .connectTimeout(2, TimeUnit.MINUTES)
 
         this.retrofit = Retrofit.Builder()
             .baseUrl(this.baseURL)
@@ -175,16 +177,4 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider {
         }
     }
 
-    @Throws(PushTransactionError::class)
-    override fun registerFioAddress(registerFIOAddressRequest: RegisterFIOAddressRequest): PushTransactionResponse
-    {
-        try
-        {
-            val syncCall = this.networkProviderApi.registerFioAddress(registerFIOAddressRequest)
-            return processCall(syncCall)
-        }
-        catch(e: FIONetworkProviderCallError){
-            throw PushTransactionError("",e,e.responseError)
-        }
-    }
 }
