@@ -18,4 +18,5 @@ interface IFIONetworkProvider {
     fun getRawAbi(getRawAbiRequest: GetRawAbiRequest): GetRawAbiResponse
     fun pushTransaction(pushTransaction: PushTransactionRequest): PushTransactionResponse
     fun getRequiredKeys(getRequiredKeysRequest: GetRequiredKeysRequest): GetRequiredKeysResponse
+    fun registerFioAddress(pushTransaction: PushTransactionRequest): PushTransactionResponse
 }

@@ -43,4 +43,7 @@ interface IFIONetworkProviderApi {
     @POST(FIOApiEndPoints.get_required_keys)
     fun getRequiredKeys(@Body getRequiredKeysRequest: GetRequiredKeysRequest): Call<GetRequiredKeysResponse>
 
+    @POST(FIOApiEndPoints.register_fio_address)
+    fun registerFioAddress(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
+
 }

@@ -4,11 +4,11 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.FIOResponse
 
-class RegisterFIOAddressAction(@Expose(serialize = false, deserialize = false) var fioAddress: String,
-                               @Expose(serialize = false, deserialize = false) var ownerPublicKey: String,
-                               @Expose(serialize = false, deserialize = false) var walletFioAddress: String,
-                               @Expose(serialize = false, deserialize = false) var maxFee: Int,
-                               @Expose(serialize = false, deserialize = false) var actorPublicKey: String) : IAction
+class RegisterFIOAddressAction(fioAddress: String,
+                               ownerPublicKey: String,
+                               walletFioAddress: String,
+                               maxFee: Int,
+                               actorPublicKey: String) : IAction
 {
     override var account = "fio.system"
     override var name = "regaddress"

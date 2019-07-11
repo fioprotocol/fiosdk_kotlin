@@ -1,7 +1,5 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider.request
 
-data class GetRawAbiRequest(var accountName: String) {
+import com.google.gson.annotations.SerializedName
 
-    var account_name: String = accountName
-
-}
+data class GetRawAbiRequest(@field:SerializedName("account_name") var accountName: String)

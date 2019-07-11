@@ -62,10 +62,10 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.IAction
 import fiofoundation.io.fiosdk.models.serializationprovider.AbiFIOSerializationObject
 
 
-class TransactionProcessor(private val serializationProvider: ISerializationProvider,
-                           private val fioNetworkProvider: IFIONetworkProvider,
+open class TransactionProcessor(val serializationProvider: ISerializationProvider,
+                                val fioNetworkProvider: IFIONetworkProvider,
                            val abiProvider: IABIProvider,
-                           private val signatureProvider: ISignatureProvider)
+                                val signatureProvider: ISignatureProvider)
 {
 
     @Throws(TransactionProcessorConstructorInputError::class)
@@ -104,7 +104,7 @@ class TransactionProcessor(private val serializationProvider: ISerializationProv
     {
         this.transaction = preparingTransaction
 
-        if (this.serializedTransaction.isNullOrEmpty()) {
+        if (!this.serializedTransaction.isNullOrEmpty()) {
             this.serializedTransaction = ""
         }
     }
@@ -192,7 +192,7 @@ class TransactionProcessor(private val serializationProvider: ISerializationProv
     }
 
     @Throws(TransactionPushTransactionError::class)
-    private fun pushTransaction(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse {
+    open fun pushTransaction(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse {
         try
         {
             return this.fioNetworkProvider.pushTransaction(pushTransactionRequest)
@@ -500,23 +500,23 @@ class TransactionProcessor(private val serializationProvider: ISerializationProv
             preparingTransaction.expiration = DateFormatter.convertMilliSecondToBackendTimeString(expirationTimeInMilliseconds)
         }
 
-        val headBlockNum: BigInteger
-
-        val blockBehindConfig = this.transactionConfig.blocksBehind
-
-        if (getInfoResponse.headBlockNumber?.compareTo(BigInteger.valueOf(blockBehindConfig.toLong()))!! > 0) {
-            headBlockNum = getInfoResponse.headBlockNumber.subtract(BigInteger.valueOf(blockBehindConfig.toLong()))
-        }
-        else
-        {
-            headBlockNum = BigInteger.valueOf(blockBehindConfig.toLong())
-        }
+//        val headBlockNum: BigInteger
+//
+//        val blockBehindConfig = this.transactionConfig.blocksBehind
+//
+//        if (getInfoResponse.headBlockNumber?.compareTo(BigInteger.valueOf(blockBehindConfig.toLong()))!! > 0) {
+//            headBlockNum = getInfoResponse.headBlockNumber.subtract(BigInteger.valueOf(blockBehindConfig.toLong()))
+//        }
+//        else
+//        {
+//            headBlockNum = BigInteger.valueOf(blockBehindConfig.toLong())
+//        }
 
         val getBlockResponse: GetBlockResponse
         try
         {
             getBlockResponse = this.fioNetworkProvider
-                .getBlock(GetBlockRequest(headBlockNum.toString()))
+                .getBlock(GetBlockRequest(getInfoResponse.lastIrreversibleBlockNumber.toString()))
         }
         catch (getBlockRpcError: GetBlockError)
         {

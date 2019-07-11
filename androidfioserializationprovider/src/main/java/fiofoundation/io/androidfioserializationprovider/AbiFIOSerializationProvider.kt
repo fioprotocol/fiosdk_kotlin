@@ -128,7 +128,7 @@ class AbiFIOSerializationProvider: ISerializationProvider {
 
             val hex:String = getBinHex(context!!)
 
-            serializationObject.hex = hex
+            serializationObject.hex = hex.toLowerCase()
 
         }
         catch (serializationProviderError:SerializationProviderError) {
@@ -147,7 +147,7 @@ class AbiFIOSerializationProvider: ISerializationProvider {
 
             serializationObject.json = json
             serialize(serializationObject)
-            return serializationObject.hex
+            return serializationObject.hex.toLowerCase()
         }
         catch (serializationProviderError:SerializationProviderError)
         {
@@ -164,7 +164,7 @@ class AbiFIOSerializationProvider: ISerializationProvider {
 
             serializationObject.json = json
             serialize(serializationObject)
-            return serializationObject.hex
+            return serializationObject.hex.toLowerCase()
         }
         catch (serializationProviderError:SerializationProviderError)
         {

@@ -48,7 +48,7 @@ class ExampleInstrumentedTest {
         var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
             serializationProvider,signatureProvider)
 
-        val request = fioSdk.registerFioAddress(fio_address,"",max_fee,wallet_fio_address)
+        val request = fioSdk.registerFioAddress(fio_address,fio_public_key,max_fee,wallet_fio_address)
 
 //        Log.i("REGFIOADDRESS","Request Data: " + request.actions[0].data)
 //

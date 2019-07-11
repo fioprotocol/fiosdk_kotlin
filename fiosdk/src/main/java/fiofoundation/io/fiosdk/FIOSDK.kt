@@ -8,6 +8,8 @@ import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
 import fiofoundation.io.fiosdk.models.fionetworkprovider.IAction
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RegisterFIOAddressAction
+import fiofoundation.io.fiosdk.session.RegisterFIOAddressTransactionProcesser
+import fiofoundation.io.fiosdk.session.TransactionProcessor
 import fiofoundation.io.fiosdk.session.TransactionSession
 import fiofoundation.io.fiosdk.utilities.PrivateKeyUtils
 
@@ -53,7 +55,7 @@ class FIOSDK(val privateKey: String, val publicKey: String,
     }
 
     init {
-        networkProvider = FIONetworkProvider("http://54.245.52.195:8889")
+        networkProvider = FIONetworkProvider("http://54.184.39.43:8889")
         abiProvider = ABIProvider(networkProvider,this.serializationProvider)
     }
 
@@ -62,8 +64,8 @@ class FIOSDK(val privateKey: String, val publicKey: String,
     {
         var registerFioAddressAction = RegisterFIOAddressAction(fioAddress,ownerPublicKey,walletFioAddress,maxFee,this.publicKey)
 
-        var transactionSession = TransactionSession(this.serializationProvider,this.networkProvider,this.abiProvider,this.signatureProvider)
-        var transactionProcessor = transactionSession.getTransactionProcessor()
+        //var transactionSession = TransactionSession(this.serializationProvider,this.networkProvider,this.abiProvider,this.signatureProvider)
+        var transactionProcessor = RegisterFIOAddressTransactionProcesser(this.serializationProvider,this.networkProvider,this.abiProvider,this.signatureProvider)
 
         var actionList = ArrayList<RegisterFIOAddressAction>()
         actionList.add(registerFioAddressAction)
