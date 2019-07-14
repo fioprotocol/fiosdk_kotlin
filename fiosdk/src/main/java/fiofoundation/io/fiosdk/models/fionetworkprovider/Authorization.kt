@@ -5,7 +5,7 @@ import java.io.Serializable
 
 class Authorization(actorPublicAddress: String, var permission: String): Serializable
 {
-    val actor: String
+    var actor: String
 
     init
     {

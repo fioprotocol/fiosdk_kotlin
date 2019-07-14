@@ -102,9 +102,10 @@ public class ExampleKeyGenTests {
     }
 
     @Test
-    public void generatePEMFromMn()
+    public void generatePrivateKey()
     {
-        String mn = "valley alien library bread worry brother bundle hammer loyal barely dune brave";//"ability sport fly alarm pool spin cupboard quarter laptop write comic torch";
+        //String mn = "valley alien library bread worry brother bundle hammer loyal barely dune brave";//"ability sport fly alarm pool spin cupboard quarter laptop write comic torch";
+        String mn = String.join(" ", getRandomSeedWords());
 
         try
         {

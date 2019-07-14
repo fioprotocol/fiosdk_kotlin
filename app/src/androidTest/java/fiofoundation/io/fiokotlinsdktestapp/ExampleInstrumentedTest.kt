@@ -29,16 +29,16 @@ class ExampleInstrumentedTest {
 
     @Test
     fun testRegisterFioAddress() {
-        val private_key = "5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu"
+        val private_key = "5JLxoeRoMDGBbkLdXJjxuh3zHsSS7Lg6Ak9Ft8v8sSdYPkFuABF" //"5KHNgifC5hRJuq8pqYQ9pCxZbMNvHVW9bfvivY4UHyuxWcoa49T" //5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu
 
         val serializationProvider = AbiFIOSerializationProvider()
         val signatureProvider = SoftKeySignatureProvider()
         signatureProvider.importKey(private_key)
 
-        val fio_address = "shawnmullen123.brd"
-        val fio_public_key = "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o"
+        val fio_address = "shawnmullen123:brd"
+        val fio_public_key = "FIO5oBUYbtGTxMS66pPkjC2p8pbA3zCtc8XD4dq9fMut867GRdh82" //"FIO8iB2mYT1zjMwyejw5UYaT5r4cq58sTuvGctoYwQ9rjFT5DGFDq" //FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o
         val wallet_fio_address = "rewards:wallet"
-        val max_fee = 300000000
+        val max_fee = 4000000000000000000
 
         val actor = Utils.generateActor(fio_public_key)
 

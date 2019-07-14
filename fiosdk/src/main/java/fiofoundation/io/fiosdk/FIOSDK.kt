@@ -60,7 +60,7 @@ class FIOSDK(val privateKey: String, val publicKey: String,
     }
 
     fun registerFioAddress(fioAddress:String,ownerPublicKey:String,
-                           maxFee:Int,walletFioAddress:String)
+                           maxFee:Long,walletFioAddress:String)
     {
         var registerFioAddressAction = RegisterFIOAddressAction(fioAddress,ownerPublicKey,walletFioAddress,maxFee,this.publicKey)
 

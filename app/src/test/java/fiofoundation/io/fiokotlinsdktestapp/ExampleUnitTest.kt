@@ -14,7 +14,7 @@ class ExampleUnitTest {
     @Test
     fun initializeSDK()
     {
-        val fio_sdk = FIOSDK.fiosdk
+        //val fio_sdk = FIOSDK.fiosdk
 
     }
 

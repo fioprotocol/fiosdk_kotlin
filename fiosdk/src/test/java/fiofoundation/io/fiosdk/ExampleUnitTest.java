@@ -63,7 +63,7 @@ public class ExampleUnitTest {
     public void testGetPubAddressLookUp() {
         try{
             FIONetworkProvider provider = new FIONetworkProvider("http://54.184.39.43:8889");
-            GetPublicAddressRequest request = new GetPublicAddressRequest("pawel78261.woohoo713841","FIO");
+            GetPublicAddressRequest request = new GetPublicAddressRequest("shawnmullen123:brd","FIO");
             GetPublicAddressResponse response = provider.getPublicAddress(request);
 
             System.out.println(response.getPublicAddress());

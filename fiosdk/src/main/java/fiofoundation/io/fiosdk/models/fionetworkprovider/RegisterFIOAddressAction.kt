@@ -7,7 +7,7 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.response.FIOResponse
 class RegisterFIOAddressAction(fioAddress: String,
                                ownerPublicKey: String,
                                walletFioAddress: String,
-                               maxFee: Int,
+                               maxFee: Long,
                                actorPublicKey: String) : IAction
 {
     override var account = "fio.system"
@@ -22,8 +22,8 @@ class RegisterFIOAddressAction(fioAddress: String,
             fioAddress,
             ownerPublicKey,
             maxFee,
-            walletFioAddress,
-            auth.actor
+            auth.actor,
+            walletFioAddress
         )
 
         this.authorization.add(auth)
@@ -32,7 +32,7 @@ class RegisterFIOAddressAction(fioAddress: String,
 
     class FIOAddressRequestData(@field:SerializedName("fio_address") var fioAddress:String,
                                 @field:SerializedName("owner_fio_public_key") var ownerPublicKey:String,
-                                @field:SerializedName("max_fee") var max_fee:Int,
-                                @field:SerializedName("tpid") var walletFioAddress:String,
-                                @field:SerializedName("actor") var actor:String): FIOResponse()
+                                @field:SerializedName("max_fee") var max_fee:Long,
+                                @field:SerializedName("actor") var actor:String,
+                                @field:SerializedName("tpid") var walletFioAddress:String): FIOResponse()
 }
