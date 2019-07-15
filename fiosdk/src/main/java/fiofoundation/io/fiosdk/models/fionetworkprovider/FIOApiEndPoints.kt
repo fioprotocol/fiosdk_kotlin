@@ -17,6 +17,8 @@ class FIOApiEndPoints {
          const val get_account = "v1/chain/get_account"
          const val push_transaction = "v1/chain/push_transaction"
          const val get_required_keys = "v1/chain/get_required_keys"
+         const val get_pending_fio_requests = "v1/chain/get_pending_fio_requests"
+         const val new_funds_request = "v1/chain/new_funds_request"
 
          val no_fioaddress_endpoints: List<String> = listOf(register_fio_domain,register_fio_address,transfer_tokens_pub_key,transfer_tokens_fio_address)
 
