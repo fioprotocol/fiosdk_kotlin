@@ -6,19 +6,23 @@ import fiofoundation.io.fiosdk.implementations.ABIProvider
 import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
-import fiofoundation.io.fiosdk.models.fionetworkprovider.IAction
-import fiofoundation.io.fiosdk.models.fionetworkprovider.RegisterFIOAddressAction
-import fiofoundation.io.fiosdk.session.RegisterFIOAddressTransactionProcesser
-import fiofoundation.io.fiosdk.session.TransactionProcessor
-import fiofoundation.io.fiosdk.session.TransactionSession
+import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.IAction
+import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIOAddressAction
+import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIODomainAction
+import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.TransferTokensPubKeyAction
+import fiofoundation.io.fiosdk.session.processors.RegisterFIOAddressTrxProcessor
+import fiofoundation.io.fiosdk.session.processors.RegisterFIODomainTrxProcessor
+import fiofoundation.io.fiosdk.session.processors.TransTokensPublicKeyTrxProcessor
 import fiofoundation.io.fiosdk.utilities.PrivateKeyUtils
+
+import java.math.BigInteger
 
 class FIOSDK(val privateKey: String, val publicKey: String,
              val serializationProvider: ISerializationProvider,
              val signatureProvider: ISignatureProvider) {
 
-    val networkProvider:FIONetworkProvider
-    val abiProvider:ABIProvider
+    private val networkProvider:FIONetworkProvider = FIONetworkProvider("http://54.184.39.43:8889")
+    private val abiProvider:ABIProvider = ABIProvider(networkProvider,this.serializationProvider)
 
     companion object Static {
         private var fioSdk: FIOSDK? = null
@@ -54,18 +58,24 @@ class FIOSDK(val privateKey: String, val publicKey: String,
 
     }
 
-    init {
-        networkProvider = FIONetworkProvider("http://54.184.39.43:8889")
-        abiProvider = ABIProvider(networkProvider,this.serializationProvider)
-    }
-
-    fun registerFioAddress(fioAddress:String,ownerPublicKey:String,
-                           maxFee:Long,walletFioAddress:String)
+    fun registerFioAddress(fioAddress:String,ownerPublicKey:String, maxFee:BigInteger,
+                           walletFioAddress:String)
     {
-        var registerFioAddressAction = RegisterFIOAddressAction(fioAddress,ownerPublicKey,walletFioAddress,maxFee,this.publicKey)
+        var registerFioAddressAction =
+            RegisterFIOAddressAction(
+                fioAddress,
+                ownerPublicKey,
+                walletFioAddress,
+                maxFee,
+                this.publicKey
+            )
 
-        //var transactionSession = TransactionSession(this.serializationProvider,this.networkProvider,this.abiProvider,this.signatureProvider)
-        var transactionProcessor = RegisterFIOAddressTransactionProcesser(this.serializationProvider,this.networkProvider,this.abiProvider,this.signatureProvider)
+        var transactionProcessor = RegisterFIOAddressTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
 
         var actionList = ArrayList<RegisterFIOAddressAction>()
         actionList.add(registerFioAddressAction)
@@ -75,8 +85,62 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         transactionProcessor.sign()
 
         transactionProcessor.broadcast()
+    }
 
+    fun registerFioDomain(fioDomain:String,ownerPublicKey:String, maxFee:BigInteger,
+                          walletFioAddress:String)
+    {
+        var registerFioDomainAction = RegisterFIODomainAction(
+            fioDomain,
+            ownerPublicKey,
+            walletFioAddress,
+            maxFee,
+            this.publicKey
+        )
 
+        var transactionProcessor = RegisterFIODomainTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        var actionList = ArrayList<RegisterFIODomainAction>()
+        actionList.add(registerFioDomainAction)
+
+        transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+        transactionProcessor.sign()
+
+        transactionProcessor.broadcast()
+    }
+
+    fun transferTokensToPublicKey(payeePublicKey:String,amount:String, maxFee:BigInteger,
+                                  walletFioAddress:String)
+    {
+        var transferTokensToPublickey = TransferTokensPubKeyAction(
+            payeePublicKey,
+            amount,
+            maxFee,
+            walletFioAddress,
+            this.publicKey
+        )
+
+        var transactionProcessor = TransTokensPublicKeyTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        var actionList = ArrayList<TransferTokensPubKeyAction>()
+        actionList.add(transferTokensToPublickey)
+
+        transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+        transactionProcessor.sign()
+
+        transactionProcessor.broadcast()
     }
 
 }

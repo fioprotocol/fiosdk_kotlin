@@ -1,6 +1,7 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider
 
 import com.google.gson.annotations.SerializedName
+import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.IAction
 import java.io.Serializable
 import java.math.BigInteger
 

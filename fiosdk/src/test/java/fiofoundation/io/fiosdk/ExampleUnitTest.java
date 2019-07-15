@@ -38,7 +38,7 @@ public class ExampleUnitTest {
         try
         {//shawnmullen123.brd
             FIONetworkProvider provider = new FIONetworkProvider("http://54.184.39.43:8889");
-            GetFIONamesRequest request = new GetFIONamesRequest("FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o");
+            GetFIONamesRequest request = new GetFIONamesRequest("FIO5oBUYbtGTxMS66pPkjC2p8pbA3zCtc8XD4dq9fMut867GRdh82");
             GetFIONamesResponse response = provider.getFIONames(request);
 
             System.out.println(response.getFioDomains());

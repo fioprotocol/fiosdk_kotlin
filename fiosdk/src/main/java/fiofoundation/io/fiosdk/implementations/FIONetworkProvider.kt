@@ -196,4 +196,30 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider {
         }
     }
 
+    @Throws(PushTransactionError::class)
+    override fun registerFioDomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.registerFioDomain(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
+    @Throws(PushTransactionError::class)
+    override fun transferTokensToPublicKey(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.transferTokensToPublicKey(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
 }

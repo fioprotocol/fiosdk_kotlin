@@ -1,4 +1,5 @@
-package fiofoundation.io.fiosdk.session
+package fiofoundation.io.fiosdk.session.processors
+
 
 import fiofoundation.io.fiosdk.errors.ErrorConstants
 import fiofoundation.io.fiosdk.errors.fionetworkprovider.PushTransactionError
@@ -9,17 +10,19 @@ import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.PushTransactionRequest
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.PushTransactionResponse
+import fiofoundation.io.fiosdk.session.processors.TransactionProcessor
 
-class RegisterFIOAddressTransactionProcesser(serializationProvider: ISerializationProvider,
-                                             fioNetworkProvider: IFIONetworkProvider,
-                                             abiProvider: IABIProvider,
-                                             signatureProvider: ISignatureProvider
+class RegisterFIODomainTrxProcessor(serializationProvider: ISerializationProvider,
+                                    fioNetworkProvider: IFIONetworkProvider,
+                                    abiProvider: IABIProvider,
+                                    signatureProvider: ISignatureProvider
 ) : TransactionProcessor(serializationProvider,fioNetworkProvider,abiProvider,signatureProvider)
 {
+    @Throws(TransactionPushTransactionError::class)
     override fun pushTransaction(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse {
         try
         {
-            return fioNetworkProvider.registerFioAddress(pushTransactionRequest)
+            return fioNetworkProvider.registerFioDomain(pushTransactionRequest)
         }
         catch (pushTransactionError: PushTransactionError)
         {

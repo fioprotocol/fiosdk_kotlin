@@ -19,4 +19,6 @@ interface IFIONetworkProvider {
     fun pushTransaction(pushTransaction: PushTransactionRequest): PushTransactionResponse
     fun getRequiredKeys(getRequiredKeysRequest: GetRequiredKeysRequest): GetRequiredKeysResponse
     fun registerFioAddress(pushTransaction: PushTransactionRequest): PushTransactionResponse
+    fun registerFioDomain(pushTransaction: PushTransactionRequest): PushTransactionResponse
+    fun transferTokensToPublicKey(pushTransaction: PushTransactionRequest): PushTransactionResponse
 }

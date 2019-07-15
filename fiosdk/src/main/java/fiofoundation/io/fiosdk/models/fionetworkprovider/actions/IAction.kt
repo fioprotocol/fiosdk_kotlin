@@ -1,5 +1,6 @@
-package fiofoundation.io.fiosdk.models.fionetworkprovider
+package fiofoundation.io.fiosdk.models.fionetworkprovider.actions
 
+import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization
 import java.io.Serializable
 
 interface IAction: Serializable

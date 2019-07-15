@@ -1,4 +1,4 @@
-package fiofoundation.io.fiosdk.session
+package fiofoundation.io.fiosdk.session.processors
 
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
 import fiofoundation.io.fiosdk.interfaces.IABIProvider
@@ -17,7 +17,6 @@ import fiofoundation.io.fiosdk.errors.session.TransactionPrepareError
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.GetInfoResponse
 import fiofoundation.io.fiosdk.errors.session.TransactionPrepareInputError
 import fiofoundation.io.fiosdk.formatters.DateFormatter
-import fiofoundation.io.fiosdk.models.fionetworkprovider.Action
 import java.math.BigInteger
 import java.text.ParseException
 import fiofoundation.io.fiosdk.utilities.Utils
@@ -37,13 +36,10 @@ import fiofoundation.io.fiosdk.errors.fionetworkprovider.PushTransactionError
 import fiofoundation.io.fiosdk.errors.session.TransactionPushTransactionError
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.PushTransactionRequest
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.PushTransactionResponse
-import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetRequiredKeysError
 import fiofoundation.io.fiosdk.errors.session.TransactionCreateSignatureRequestRpcError
-import fiofoundation.io.fiosdk.errors.session.TransactionCreateSignatureRequestRequiredKeysEmptyError
 import fiofoundation.io.fiosdk.errors.session.TransactionCreateSignatureRequestEmptyAvailableKeyError
 import fiofoundation.io.fiosdk.errors.session.TransactionCreateSignatureRequestKeyError
 import fiofoundation.io.fiosdk.errors.signatureprovider.GetAvailableKeysError
-import fiofoundation.io.fiosdk.models.fionetworkprovider.request.GetRequiredKeysRequest
 import fiofoundation.io.fiosdk.errors.session.TransactionBroadCastError
 import fiofoundation.io.fiosdk.errors.session.TransactionBroadCastEmptySignatureError
 import fiofoundation.io.fiosdk.errors.session.TransactionSignAndBroadCastError
@@ -58,7 +54,7 @@ import fiofoundation.io.fiosdk.errors.session.TransactionCreateSignatureRequestA
 import fiofoundation.io.fiosdk.errors.abiprovider.GetAbiError
 
 import fiofoundation.io.fiosdk.models.FIOName
-import fiofoundation.io.fiosdk.models.fionetworkprovider.IAction
+import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.IAction
 import fiofoundation.io.fiosdk.models.serializationprovider.AbiFIOSerializationObject
 
 
