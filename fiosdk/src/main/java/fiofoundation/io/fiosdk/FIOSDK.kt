@@ -1,5 +1,6 @@
 package fiofoundation.io.fiosdk
 
+import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.errors.formatters.FIOFormatterError
 import fiofoundation.io.fiosdk.formatters.FIOFormatter
 import fiofoundation.io.fiosdk.implementations.ABIProvider
@@ -14,6 +15,7 @@ import fiofoundation.io.fiosdk.session.processors.RegisterFIOAddressTrxProcessor
 import fiofoundation.io.fiosdk.session.processors.RegisterFIODomainTrxProcessor
 import fiofoundation.io.fiosdk.session.processors.TransTokensPublicKeyTrxProcessor
 import fiofoundation.io.fiosdk.utilities.PrivateKeyUtils
+import java.lang.Exception
 
 import java.math.BigInteger
 
@@ -58,35 +60,38 @@ class FIOSDK(val privateKey: String, val publicKey: String,
 
     }
 
+    @Throws(FIOError::class)
     fun registerFioAddress(fioAddress:String,ownerPublicKey:String, maxFee:BigInteger,
                            walletFioAddress:String)
     {
-        var registerFioAddressAction =
-            RegisterFIOAddressAction(
-                fioAddress,
-                ownerPublicKey,
-                walletFioAddress,
-                maxFee,
-                this.publicKey
+            var registerFioAddressAction =
+                RegisterFIOAddressAction(
+                    fioAddress,
+                    ownerPublicKey,
+                    walletFioAddress,
+                    maxFee,
+                    this.publicKey
+                )
+
+            var transactionProcessor = RegisterFIOAddressTrxProcessor(
+                this.serializationProvider,
+                this.networkProvider,
+                this.abiProvider,
+                this.signatureProvider
             )
 
-        var transactionProcessor = RegisterFIOAddressTrxProcessor(
-            this.serializationProvider,
-            this.networkProvider,
-            this.abiProvider,
-            this.signatureProvider
-        )
+            var actionList = ArrayList<RegisterFIOAddressAction>()
+            actionList.add(registerFioAddressAction)
 
-        var actionList = ArrayList<RegisterFIOAddressAction>()
-        actionList.add(registerFioAddressAction)
+            transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
-        transactionProcessor.prepare(actionList as ArrayList<IAction>)
+            transactionProcessor.sign()
 
-        transactionProcessor.sign()
+            transactionProcessor.broadcast()
 
-        transactionProcessor.broadcast()
     }
 
+    @Throws(FIOError::class)
     fun registerFioDomain(fioDomain:String,ownerPublicKey:String, maxFee:BigInteger,
                           walletFioAddress:String)
     {
@@ -115,6 +120,7 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         transactionProcessor.broadcast()
     }
 
+    @Throws(FIOError::class)
     fun transferTokensToPublicKey(payeePublicKey:String,amount:String, maxFee:BigInteger,
                                   walletFioAddress:String)
     {
