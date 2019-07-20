@@ -631,7 +631,7 @@ class FIOFormatter {
         }
 
         @Throws(Base58ManipulationError::class)
-        private fun decodePrivateKey(strKey:String, keyType: AlgorithmEmployed):ByteArray
+        fun decodePrivateKey(strKey:String, keyType: AlgorithmEmployed):ByteArray
         {
             if (strKey.isEmpty())
             {
@@ -882,7 +882,7 @@ class FIOFormatter {
         }
 
         @Throws(FIOFormatterError::class)
-        private fun decompressPublickey(compressedPublicKey:ByteArray, algorithmEmployed:AlgorithmEmployed): ByteArray
+        fun decompressPublickey(compressedPublicKey:ByteArray, algorithmEmployed:AlgorithmEmployed): ByteArray
         {
             try
             {

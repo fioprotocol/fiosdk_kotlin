@@ -2,11 +2,23 @@ package fiofoundation.io.fiosdk;
 
 import fiofoundation.io.fiosdk.errors.fionetworkprovider.*;
 
+import fiofoundation.io.fiosdk.models.Cryptography;
 import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization;
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.FIONameAvailabilityCheckRequest;
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.FIONameAvailabilityCheckResponse;
 
+import fiofoundation.io.fiosdk.utilities.HashUtils;
 import fiofoundation.io.fiosdk.utilities.Utils;
+
+import org.bouncycastle.crypto.agreement.ECDHBasicAgreement;
+import org.bouncycastle.crypto.params.ECDomainParameters;
+
+import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
+import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import org.bouncycastle.jce.ECNamedCurveTable;
+
+import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
+
 import org.junit.Test;
 
 import fiofoundation.io.fiosdk.implementations.FIONetworkProvider;
@@ -23,6 +35,11 @@ import fiofoundation.io.fiosdk.errors.formatters.*;
 import fiofoundation.io.fiosdk.models.PEMProcessor;
 
 import org.bouncycastle.util.encoders.Hex;
+
+import java.math.BigInteger;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 
 import static org.junit.Assert.*;
 
@@ -524,5 +541,91 @@ public class ExampleUnitTest {
 //        System.out.println("FIO Address: " + request.getFioAddress());
 //        System.out.println("FIO Private: " + request.getOwnerPublicKey());
     }
+
+    @Test
+    public void testEncryption()
+    {
+        String secret = "02332627b9325cb70510a70f0f6be4bcb008fbbc7893ca51dedf5bf46aa740c0fc9d3fbd737d09a3c4046d221f4f1a323f515332c3fef46e7f075db561b1a2c9";
+
+        String IV = "f300888ca4f512cebdc0020ff0f7224c";
+
+        Cryptography crypt = new Cryptography(secret,IV);
+
+        try
+        {
+//            String testData = crypt.bytesToHex(IV);
+//            System.out.println(testData.getBytes().length);
+
+           byte[] encData = crypt.encrypt("secret message");
+//
+//            System.out.println(new String(secret));
+
+//            byte[] decData = crypt.decrypt(encData);
+//
+//            System.out.println(new String(decData));
+
+        }
+        catch (Exception e)
+        {
+            System.out.println("ERROR");
+        }
+
+
+
+    }
+
+    public String toHex(String arg) {
+        return String.format("%040x", new BigInteger(1, arg.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    @Test
+    public void testGenerateSharedSecret()
+    {
+        //alice-public: 5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o
+        //acclice-private: 5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu
+
+        //bob-public: 5oBUYbtGTxMS66pPkjC2p8pbA3zCtc8XD4dq9fMut867GRdh82
+        //bob-private: 5JLxoeRoMDGBbkLdXJjxuh3zHsSS7Lg6Ak9Ft8v8sSdYPkFuABF
+
+        String pubKey_str = "5oBUYbtGTxMS66pPkjC2p8pbA3zCtc8XD4dq9fMut867GRdh82";
+        String privKey = "5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu";
+
+
+        try {
+            byte[] publicKey = FIOFormatter.Static.decodePublicKey(pubKey_str,"FIO");
+            byte[] privateKey = FIOFormatter.Static.decodePrivateKey(privKey,AlgorithmEmployed.SECP256K1);
+
+
+            ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec("secp256k1");
+            ECDomainParameters domain =
+                    new ECDomainParameters(spec.getCurve(), spec.getG(), spec.getN(), spec.getH());
+            ECPublicKeyParameters pubKey =
+                    new ECPublicKeyParameters(spec.getCurve().decodePoint(publicKey), domain);
+            ECPrivateKeyParameters prvkey =
+                    new ECPrivateKeyParameters(new BigInteger(1, privateKey), domain);
+
+            ECDHBasicAgreement agreement = new ECDHBasicAgreement();
+            agreement.init(prvkey);
+            byte[] password = agreement.calculateAgreement(pubKey).toByteArray();
+
+            String s = new ByteFormatter(password).toHex();
+
+            Cryptography crypt = new Cryptography(s,null);
+
+            byte[] encResults = crypt.encrypt("secret message");
+
+            String test = new ByteFormatter(encResults).toHex();
+
+            String stop = "";
+
+
+            //Aes.generateKey(ByteUtilities.toHexString(password), password);
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+
 
 }
