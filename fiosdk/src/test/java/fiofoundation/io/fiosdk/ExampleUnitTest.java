@@ -6,7 +6,7 @@ import fiofoundation.io.fiosdk.models.Cryptography;
 import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization;
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.FIONameAvailabilityCheckRequest;
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.FIONameAvailabilityCheckResponse;
-
+import fiofoundation.io.fiosdk.utilities.CryptoUtils;
 import fiofoundation.io.fiosdk.utilities.HashUtils;
 import fiofoundation.io.fiosdk.utilities.Utils;
 
@@ -37,10 +37,8 @@ import fiofoundation.io.fiosdk.models.PEMProcessor;
 import org.bouncycastle.util.encoders.Hex;
 
 import java.math.BigInteger;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
-
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.*;
 
 
@@ -543,20 +541,47 @@ public class ExampleUnitTest {
     }
 
     @Test
+    public void testRegisterFioNameForUser()
+    {
+
+        //pvt key: 5KiGdMtgmjeMQPKeo9nbiEpA4Vu3Q91spGUCqHN3Gk8MAdWFYVP
+        //pblk key: FIO87MK3VsNmCjSTtscRKBnEwzbNYsCnGaUWdFgGuCLCV3tVW4Wai
+
+        String fio_name = "shawnmullen223:brd";
+        String fio_public_key = "FIO87MK3VsNmCjSTtscRKBnEwzbNYsCnGaUWdFgGuCLCV3tVW4Wai";
+
+        FIONetworkProvider provider = new FIONetworkProvider("http://54.184.39.43:8889","http://mock.dapix.io");
+        RegisterFIONameForUserRequest request = new RegisterFIONameForUserRequest(fio_name,fio_public_key);
+
+        try
+        {
+            RegisterFIONameForUserResponse response= provider.registerFioNameOnBehalfOfUser(request);
+
+            System.out.println("Status: " + response.getStatus());
+        }
+        catch(RegisterFIONameForUserError e)
+        {
+            System.out.println(e.getResponseError().getMessage());
+        }
+
+
+    }
+
+    @Test
     public void testEncryption()
     {
-        String secret = "02332627b9325cb70510a70f0f6be4bcb008fbbc7893ca51dedf5bf46aa740c0fc9d3fbd737d09a3c4046d221f4f1a323f515332c3fef46e7f075db561b1a2c9";
-
-        String IV = "f300888ca4f512cebdc0020ff0f7224c";
-
-        Cryptography crypt = new Cryptography(secret,IV);
+//        String secret = "02332627b9325cb70510a70f0f6be4bcb008fbbc7893ca51dedf5bf46aa740c0fc9d3fbd737d09a3c4046d221f4f1a323f515332c3fef46e7f075db561b1a2c9";
+//
+//        String IV = "f300888ca4f512cebdc0020ff0f7224c";
+//
+//        Cryptography crypt = new Cryptography(secret,IV);
 
         try
         {
 //            String testData = crypt.bytesToHex(IV);
 //            System.out.println(testData.getBytes().length);
 
-           byte[] encData = crypt.encrypt("secret message");
+//           byte[] encData = crypt.encrypt("secret message");
 //
 //            System.out.println(new String(secret));
 
@@ -575,51 +600,47 @@ public class ExampleUnitTest {
     }
 
     public String toHex(String arg) {
-        return String.format("%040x", new BigInteger(1, arg.getBytes(StandardCharsets.UTF_8)));
+        return String.format("%040x", new BigInteger(1, arg.getBytes(UTF_8)));
     }
 
     @Test
     public void testGenerateSharedSecret()
     {
-        //alice-public: 5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o
+        //alice-public: FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o
         //acclice-private: 5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu
 
-        //bob-public: 5oBUYbtGTxMS66pPkjC2p8pbA3zCtc8XD4dq9fMut867GRdh82
+        //bob-public: FIO5oBUYbtGTxMS66pPkjC2p8pbA3zCtc8XD4dq9fMut867GRdh82
         //bob-private: 5JLxoeRoMDGBbkLdXJjxuh3zHsSS7Lg6Ak9Ft8v8sSdYPkFuABF
 
-        String pubKey_str = "5oBUYbtGTxMS66pPkjC2p8pbA3zCtc8XD4dq9fMut867GRdh82";
-        String privKey = "5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu";
+        String pubKey_str = "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o";
+        String privKey = "5JLxoeRoMDGBbkLdXJjxuh3zHsSS7Lg6Ak9Ft8v8sSdYPkFuABF";
 
+        try
+        {
 
-        try {
-            byte[] publicKey = FIOFormatter.Static.decodePublicKey(pubKey_str,"FIO");
-            byte[] privateKey = FIOFormatter.Static.decodePrivateKey(privKey,AlgorithmEmployed.SECP256K1);
+            String message = new String("the secret message of the day.".getBytes(), UTF_8);
+            byte[] sharedSecret = CryptoUtils.INSTANCE.generateSharedSecret(privKey,pubKey_str);
 
+            //IV: ExtensionsKt.hexStringToByteArray("DA5943B125EC5CF8FEBC5CAFA606FBC7")
 
-            ECNamedCurveParameterSpec spec = ECNamedCurveTable.getParameterSpec("secp256k1");
-            ECDomainParameters domain =
-                    new ECDomainParameters(spec.getCurve(), spec.getG(), spec.getN(), spec.getH());
-            ECPublicKeyParameters pubKey =
-                    new ECPublicKeyParameters(spec.getCurve().decodePoint(publicKey), domain);
-            ECPrivateKeyParameters prvkey =
-                    new ECPrivateKeyParameters(new BigInteger(1, privateKey), domain);
+            Cryptography crypt = new Cryptography(sharedSecret,null);
 
-            ECDHBasicAgreement agreement = new ECDHBasicAgreement();
-            agreement.init(prvkey);
-            byte[] password = agreement.calculateAgreement(pubKey).toByteArray();
+            byte[] encResults = crypt.encrypt(message);
 
-            String s = new ByteFormatter(password).toHex();
+            byte[] decResults = crypt.decrypt(encResults);
+            String decResultsAsString = crypt.decryptAsString(encResults);
 
-            Cryptography crypt = new Cryptography(s,null);
+            String ivHex = crypt.getIVasHex();
 
-            byte[] encResults = crypt.encrypt("secret message");
+            System.out.println("DEC STR1: " + decResultsAsString);
+            System.out.println("IV: " + ivHex);
 
-            String test = new ByteFormatter(encResults).toHex();
+            Cryptography crypt2 = new Cryptography(sharedSecret,ExtensionsKt.hexStringToByteArray(ivHex));
+
+            byte[] ReEncResults = crypt.encrypt(message);
 
             String stop = "";
 
-
-            //Aes.generateKey(ByteUtilities.toHexString(password), password);
 
         } catch (Exception e) {
             System.out.println(e.getMessage());

@@ -1,7 +1,6 @@
 package fiofoundation.io.fiosdk.models
 
-import fiofoundation.io.fiosdk.formatters.ByteFormatter
-import fiofoundation.io.fiosdk.utilities.HashUtils
+import fiofoundation.io.fiosdk.toHexString
 import java.nio.charset.StandardCharsets
 import javax.crypto.Cipher
 import javax.crypto.Mac
@@ -9,16 +8,17 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import java.security.SecureRandom
 
-import kotlin.experimental.and
-
-class Cryptography(val key:String,val iv:String?)
+class Cryptography(val key:ByteArray,var iv:ByteArray?)
 {
-    private val hexArray = "0123456789ABCDEF".toCharArray()
+    private val encKey:ByteArray
 
-    private val secureRandom = SecureRandom()
+    init {
 
-    //for testing only
-    var _iv:ByteArray? = null
+        if(iv == null)
+            iv = generateIv()
+
+        encKey = if(key.size>=32) key.copyOf(32) else key
+    }
 
     companion object Static {
         val Algorithm = "AES"
@@ -36,46 +36,65 @@ class Cryptography(val key:String,val iv:String?)
     @Throws(Exception::class)
     fun encrypt(plainText: String): ByteArray
     {
-        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
-        val keySpec = SecretKeySpec(key.toByteArray(StandardCharsets.UTF_8).copyOf(16), "AES")
-
-        _iv = generateIv()
-        val ivSpec = IvParameterSpec(_iv)
-
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec)
-
-        //val ciphertext = cipher.doFinal(plainText.toByteArray(StandardCharsets.UTF_8))
-
-        return cipher.doFinal(plainText.toByteArray(StandardCharsets.UTF_8))
+        return encrypt(plainText.toByteArray(StandardCharsets.UTF_8))
     }
 
     @Throws(Exception::class)
-    fun decrypt(ecnryptedText: ByteArray): ByteArray
+    fun encrypt(plainText: ByteArray): ByteArray
     {
         val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
-        val keySpec = SecretKeySpec(key.toByteArray(StandardCharsets.UTF_8).copyOf(16), "AES")
-        val ivSpec = IvParameterSpec(_iv)
+        val keySpec = SecretKeySpec(this.encKey, "AES")
+
+        val ivSpec = IvParameterSpec(iv)
+
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec)
+
+        return cipher.doFinal(plainText)
+    }
+
+    @Throws(Exception::class)
+    fun encryptAsString(plainText: ByteArray): String
+    {
+        return String(encrypt(plainText),StandardCharsets.UTF_8)
+    }
+
+
+    @Throws(Exception::class)
+    fun decrypt(encryptedText: String): ByteArray
+    {
+        return decrypt(encryptedText.toByteArray())
+    }
+
+    @Throws(Exception::class)
+    fun decrypt(encryptedText: ByteArray): ByteArray
+    {
+        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+        val keySpec = SecretKeySpec(this.encKey, "AES")
+        val ivSpec = IvParameterSpec(iv)
 
         cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec)
 
-        val plaintext = cipher.doFinal(ecnryptedText)
-        return plaintext
+        return cipher.doFinal(encryptedText)
     }
 
-
-    fun bytesToHex(bytes: ByteArray): String {
-        val hexChars = CharArray(bytes.size * 2)
-        for (j in bytes.indices) {
-            val v = (bytes[j] and 0xFF.toByte()).toInt()
-            hexChars[j * 2] = hexArray[v ushr 4]
-            hexChars[j * 2 + 1] = hexArray[v and 0x0F]
-        }
-        return String(hexChars)
+    @Throws(Exception::class)
+    fun decryptAsString(encryptedText: ByteArray): String
+    {
+        return String(decrypt(encryptedText),StandardCharsets.UTF_8)
     }
 
-    fun generateIv(): ByteArray {
+    fun getIVasHex():String
+    {
+        return iv!!.toHexString()
+    }
+
+    private fun generateIv(): ByteArray
+    {
+        val secureRandom = SecureRandom()
         val result = ByteArray(128 / 8)
+
         secureRandom.nextBytes(result)
+
         return result
     }
 }

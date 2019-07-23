@@ -19,6 +19,7 @@ class FIOApiEndPoints {
          const val get_required_keys = "v1/chain/get_required_keys"
          const val get_pending_fio_requests = "v1/chain/get_pending_fio_requests"
          const val new_funds_request = "v1/chain/new_funds_request"
+         const val register_fio_name_behalf_of_user = "mockd/DEV4/register_fio_name"
 
          val no_fioaddress_endpoints: List<String> = listOf(register_fio_domain,register_fio_address,transfer_tokens_pub_key,transfer_tokens_fio_address)
 

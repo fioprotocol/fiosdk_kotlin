@@ -16,24 +16,35 @@ import retrofit2.Response
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor.Level
 import com.google.gson.Gson
+import fiofoundation.io.fiosdk.interfaces.IFIOMockNetworkProviderApi
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.FIONameAvailabilityCheckRequest
 import okhttp3.logging.HttpLoggingInterceptor
 
 
-class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider {
-
-    private var retrofit: Retrofit
-
-    private var networkProviderApi: IFIONetworkProviderApi
-
-    init{
+class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
+{
+    constructor(baseURL: String, mockServerBaseUrl: String): this(baseURL)
+    {
         val httpClient = OkHttpClient.Builder()
 
-//        if (true) {
-//            val httpLoggingInterceptor = HttpLoggingInterceptor()
-//            httpLoggingInterceptor.setLevel(Level.BODY)
-//            httpClient.addInterceptor(httpLoggingInterceptor)
-//        }
+        this.mockRetrofit = Retrofit.Builder()
+            .baseUrl(mockServerBaseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(httpClient.build())
+            .build()
+
+        this.mockNetworkProviderApi = this.mockRetrofit!!.create(IFIOMockNetworkProviderApi::class.java)
+    }
+
+    private var retrofit: Retrofit
+    private var mockRetrofit: Retrofit?
+
+    private var networkProviderApi: IFIONetworkProviderApi
+    private var mockNetworkProviderApi: IFIOMockNetworkProviderApi?
+
+    init{
+
+        val httpClient = OkHttpClient.Builder()
 
         this.retrofit = Retrofit.Builder()
             .baseUrl(this.baseURL)
@@ -41,10 +52,14 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider {
             .client(httpClient.build())
             .build()
 
+        this.mockRetrofit = null
+
         this.networkProviderApi = this.retrofit.create(IFIONetworkProviderApi::class.java)
+        this.mockNetworkProviderApi = null
     }
 
     private fun <O> processCall(call: Call<O>): O {
+
         val response: Response<O> = call.execute()
         if (!response.isSuccessful) {
             var responseError: ResponseError? = null
@@ -219,6 +234,19 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider {
         }
         catch(e: FIONetworkProviderCallError){
             throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
+    @Throws(RegisterFIONameForUserError::class)
+    override fun registerFioNameOnBehalfOfUser(request: RegisterFIONameForUserRequest): RegisterFIONameForUserResponse
+    {
+        try
+        {
+            val syncCall = this.mockNetworkProviderApi!!.registerFioNameForUser(request)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw RegisterFIONameForUserError("",e,e.responseError)
         }
     }
 
