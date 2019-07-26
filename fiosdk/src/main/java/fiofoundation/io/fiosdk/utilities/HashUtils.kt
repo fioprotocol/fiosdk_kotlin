@@ -4,6 +4,7 @@ import java.security.MessageDigest
 
 object HashUtils {
     fun sha512(input: String) = hashString("SHA-512", input)
+    fun sha512(input: ByteArray) = hashBytes("SHA-512", input)
 
     fun sha256(input: String) = hashString("SHA-256", input)
 
@@ -14,6 +15,8 @@ object HashUtils {
         val bytes = MessageDigest
             .getInstance(type)
             .digest(input.toByteArray())
+
+
         val result = StringBuilder(bytes.size * 2)
 
         bytes.forEach {
@@ -23,5 +26,13 @@ object HashUtils {
         }
 
         return result.toString()
+    }
+
+    private fun hashBytes(type: String, input: ByteArray): ByteArray {
+        val bytes = MessageDigest
+            .getInstance(type)
+            .digest(input)
+
+        return bytes
     }
 }

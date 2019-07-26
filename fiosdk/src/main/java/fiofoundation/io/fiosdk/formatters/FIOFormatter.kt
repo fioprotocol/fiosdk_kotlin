@@ -674,7 +674,7 @@ class FIOFormatter {
                 if (decodedKey.size > STANDARD_KEY_LENGTH && keyType !== AlgorithmEmployed.SECP256R1)
                 {
                     decodedKey = Arrays.copyOfRange(decodedKey, 1, decodedKey.size)
-                    if ((decodedKey.size > STANDARD_KEY_LENGTH && decodedKey[STANDARD_KEY_LENGTH] == (1.toInt()).toByte()))
+                    if ((decodedKey.size > STANDARD_KEY_LENGTH && decodedKey[STANDARD_KEY_LENGTH] == (1).toByte()))
                     {
                         decodedKey = Arrays.copyOfRange(decodedKey, 0, decodedKey.size - 1)
                     }
@@ -790,6 +790,7 @@ class FIOFormatter {
             try
             {
                 val base58Decoded = Base58.decode(strKey)
+
                 val firstCheckSum = Arrays.copyOfRange(base58Decoded, base58Decoded.size - CHECKSUM_BYTES, base58Decoded.size)
 
                 decodedKey = Arrays.copyOfRange(base58Decoded, 0, base58Decoded.size - CHECKSUM_BYTES)
@@ -821,6 +822,12 @@ class FIOFormatter {
             }
 
             return decodedKey
+        }
+
+        @Throws(FIOFormatterError::class)
+        fun decompressPublicKey(compressedPublicKey:ByteArray, algorithmEmployed:AlgorithmEmployed): ByteArray
+        {
+            return this.decompressPublickey(compressedPublicKey,algorithmEmployed)
         }
 
         private fun invalidRipeMD160CheckSum(inputKey:ByteArray, checkSumToValidate:ByteArray, keyTypeByteArray:ByteArray): Boolean
@@ -882,7 +889,7 @@ class FIOFormatter {
         }
 
         @Throws(FIOFormatterError::class)
-        fun decompressPublickey(compressedPublicKey:ByteArray, algorithmEmployed:AlgorithmEmployed): ByteArray
+        private fun decompressPublickey(compressedPublicKey:ByteArray, algorithmEmployed:AlgorithmEmployed): ByteArray
         {
             try
             {

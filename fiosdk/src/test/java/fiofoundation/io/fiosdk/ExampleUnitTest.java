@@ -9,15 +9,7 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.response.FIONameAvailab
 import fiofoundation.io.fiosdk.utilities.CryptoUtils;
 import fiofoundation.io.fiosdk.utilities.HashUtils;
 import fiofoundation.io.fiosdk.utilities.Utils;
-
-import org.bouncycastle.crypto.agreement.ECDHBasicAgreement;
-import org.bouncycastle.crypto.params.ECDomainParameters;
-
-import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
-import org.bouncycastle.crypto.params.ECPublicKeyParameters;
-import org.bouncycastle.jce.ECNamedCurveTable;
-
-import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
+import fiofoundation.io.fiosdk.ExtensionsKt;
 
 import org.junit.Test;
 
@@ -48,11 +40,15 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
+
+    String baseUrl = "http://54.184.39.43:8889/v1/";
+    String baseMockUrl = "http://mock.dapix.io/mockd/DEV4/";
+
     @Test
     public void testFIONames() {
         try
         {//shawnmullen123.brd
-            FIONetworkProvider provider = new FIONetworkProvider("http://54.184.39.43:8889");
+            FIONetworkProvider provider = new FIONetworkProvider(baseUrl);
             GetFIONamesRequest request = new GetFIONamesRequest("FIO5oBUYbtGTxMS66pPkjC2p8pbA3zCtc8XD4dq9fMut867GRdh82");
             GetFIONamesResponse response = provider.getFIONames(request);
 
@@ -77,7 +73,7 @@ public class ExampleUnitTest {
     @Test
     public void testGetPubAddressLookUp() {
         try{
-            FIONetworkProvider provider = new FIONetworkProvider("http://54.184.39.43:8889");
+            FIONetworkProvider provider = new FIONetworkProvider(baseUrl);
             GetPublicAddressRequest request = new GetPublicAddressRequest("shawnmullen123:brd","FIO");
             GetPublicAddressResponse response = provider.getPublicAddress(request);
 
@@ -98,7 +94,7 @@ public class ExampleUnitTest {
     @Test
     public void testIsFIONameAvailable() {
         try{
-            FIONetworkProvider provider = new FIONetworkProvider("http://54.184.39.43:8889");
+            FIONetworkProvider provider = new FIONetworkProvider(baseUrl);
             FIONameAvailabilityCheckRequest request = new FIONameAvailabilityCheckRequest("pawel78261.woohoo713841");
             FIONameAvailabilityCheckResponse response = provider.isFIONameAvailable(request);
 
@@ -120,7 +116,7 @@ public class ExampleUnitTest {
     @Test
     public void testGetFIOBalance() {
         try{
-            FIONetworkProvider provider = new FIONetworkProvider("http://54.184.39.43:8889");
+            FIONetworkProvider provider = new FIONetworkProvider(baseUrl);
             GetFIOBalanceRequest request = new GetFIOBalanceRequest("FIO8PRe4WRZJj5mkem6qVGKyvNFgPsNnjNN6kPhh6EaCpzCVin5Jj");
             GetFIOBalanceResponse response = provider.getFIOBalance(request);
 
@@ -141,7 +137,7 @@ public class ExampleUnitTest {
     @Test
     public void testGetFee() {
         try{
-            FIONetworkProvider provider = new FIONetworkProvider("http://54.184.39.43:8889");
+            FIONetworkProvider provider = new FIONetworkProvider(baseUrl);
             GetFeeRequest request = new GetFeeRequest("add_pub_address","pawel78261.woohoo713841");
 
             System.out.println(request.toJson());
@@ -165,7 +161,7 @@ public class ExampleUnitTest {
     @Test
     public void testGetInfo() {
         try{
-            FIONetworkProvider provider = new FIONetworkProvider("http://54.184.39.43:8889");
+            FIONetworkProvider provider = new FIONetworkProvider(baseUrl);
             GetInfoResponse response = provider.getInfo();
 
             System.out.println(response.toJson());
@@ -184,7 +180,7 @@ public class ExampleUnitTest {
     @Test
     public void testGetBlock() {
         try{
-            FIONetworkProvider provider = new FIONetworkProvider("http://54.184.39.43:8889");
+            FIONetworkProvider provider = new FIONetworkProvider(baseUrl);
             GetBlockRequest request = new GetBlockRequest("1381533");
             GetBlockResponse response = provider.getBlock(request);
 
@@ -205,7 +201,7 @@ public class ExampleUnitTest {
     @Test
     public void testGetRawAbi() {
         try{
-            FIONetworkProvider provider = new FIONetworkProvider("http://54.184.39.43:8889");
+            FIONetworkProvider provider = new FIONetworkProvider(baseUrl);
             GetRawAbiRequest request = new GetRawAbiRequest("fio.token");
             GetRawAbiResponse response = provider.getRawAbi(request);
 
@@ -532,7 +528,7 @@ public class ExampleUnitTest {
         int max_fee = 300000000;
         String actor = Utils.Static.generateActor(fio_public_key);
 
-//        FIONetworkProvider provider = new FIONetworkProvider("http://54.184.39.43:8889");
+//        FIONetworkProvider provider = new FIONetworkProvider(baseUrl);
 //        RegisterFIOAddressRequest request = new RegisterFIOAddressRequest(fio_address,"",wallet_fio_address,max_fee,actor);
 //
 //        System.out.println("Actor Public Key: " + request.getActorPublicKey());
@@ -550,7 +546,7 @@ public class ExampleUnitTest {
         String fio_name = "shawnmullen223:brd";
         String fio_public_key = "FIO87MK3VsNmCjSTtscRKBnEwzbNYsCnGaUWdFgGuCLCV3tVW4Wai";
 
-        FIONetworkProvider provider = new FIONetworkProvider("http://54.184.39.43:8889","http://mock.dapix.io");
+        FIONetworkProvider provider = new FIONetworkProvider(baseUrl,baseMockUrl);
         RegisterFIONameForUserRequest request = new RegisterFIONameForUserRequest(fio_name,fio_public_key);
 
         try
@@ -618,10 +614,10 @@ public class ExampleUnitTest {
         try
         {
 
-            String message = new String("the secret message of the day.".getBytes(), UTF_8);
+            String message = new String("secret message".getBytes(), UTF_8);
             byte[] sharedSecret = CryptoUtils.INSTANCE.generateSharedSecret(privKey,pubKey_str);
 
-            //IV: ExtensionsKt.hexStringToByteArray("DA5943B125EC5CF8FEBC5CAFA606FBC7")
+            String sharedSecretHex = ExtensionsKt.toHexString(sharedSecret);
 
             Cryptography crypt = new Cryptography(sharedSecret,null);
 

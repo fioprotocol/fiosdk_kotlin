@@ -2,7 +2,7 @@ package fiofoundation.io.fiosdk
 
 fun ByteArray.toHexString():String
 {
-    val HEX_CHARS = "0123456789ABCDEFabcdef".toCharArray()
+    val HEX_CHARS = "0123456789ABCDEF".toCharArray()
 
     val result = StringBuffer()
 
@@ -19,7 +19,7 @@ fun ByteArray.toHexString():String
 
 fun String.hexStringToByteArray() : ByteArray
 {
-    val HEX_CHARS = "0123456789ABCDEFabcdef".toCharArray()
+    val HEX_CHARS = "0123456789ABCDEF".toCharArray()
 
     val result = ByteArray(length / 2)
 
