@@ -172,6 +172,30 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
         }
     }
 
+    @Throws(GetPendingFIORequestsError::class)
+    override fun getPendingFIORequests(getPendingFioRequests: GetPendingFIORequestsRequest): GetPendingFIORequestsResponse{
+        try
+        {
+            val syncCall = this.networkProviderApi.getPendingFIORequests(getPendingFioRequests)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw GetPendingFIORequestsError("",e,e.responseError)
+        }
+    }
+
+    @Throws(GetSentFIORequestsError::class)
+    override fun getSentFIORequests(getSentFioRequests: GetSentFIORequestsRequest): GetSentFIORequestsResponse{
+        try
+        {
+            val syncCall = this.networkProviderApi.getSentFIORequests(getSentFioRequests)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw GetSentFIORequestsError("",e,e.responseError)
+        }
+    }
+
     @Throws(PushTransactionError::class)
     override fun pushTransaction(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     {
@@ -249,5 +273,84 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
             throw RegisterFIONameForUserError("",e,e.responseError)
         }
     }
+
+    @Throws(PushTransactionError::class)
+    override fun requestNewFunds(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.requestNewFunds(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
+    @Throws(PushTransactionError::class)
+    override fun rejectNewFunds(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.rejectNewFunds(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
+    @Throws(PushTransactionError::class)
+    override fun burnExpired(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.burnExpired(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
+    @Throws(PushTransactionError::class)
+    override fun payTpIdRewards(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.payTpIdRewards(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
+    @Throws(PushTransactionError::class)
+    override fun claimBpRewards(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.claimBpRewards(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
+    @Throws(PushTransactionError::class)
+    override fun recordSend(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.recordSend(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
 
 }

@@ -10,9 +10,8 @@ import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.PushTransactionRequest
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.PushTransactionResponse
-import fiofoundation.io.fiosdk.session.processors.TransactionProcessor
 
-class TransTokensPublicKeyTrxProcessor(serializationProvider: ISerializationProvider,
+class TransTokensPubKeyTrxProcessor(serializationProvider: ISerializationProvider,
                                             fioNetworkProvider: IFIONetworkProvider,
                                             abiProvider: IABIProvider,
                                             signatureProvider: ISignatureProvider

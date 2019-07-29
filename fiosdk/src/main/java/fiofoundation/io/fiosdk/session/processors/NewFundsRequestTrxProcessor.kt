@@ -10,7 +10,7 @@ import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.PushTransactionRequest
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.PushTransactionResponse
 
-class RegisterFIOAddressTrxProcessor(serializationProvider: ISerializationProvider,
+class NewFundsRequestTrxProcessor(serializationProvider: ISerializationProvider,
                                      fioNetworkProvider: IFIONetworkProvider,
                                      abiProvider: IABIProvider,
                                      signatureProvider: ISignatureProvider
@@ -20,7 +20,7 @@ class RegisterFIOAddressTrxProcessor(serializationProvider: ISerializationProvid
     override fun pushTransaction(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse {
         try
         {
-            return fioNetworkProvider.registerFioAddress(pushTransactionRequest)
+            return fioNetworkProvider.requestNewFunds(pushTransactionRequest)
         }
         catch (pushTransactionError: PushTransactionError)
         {

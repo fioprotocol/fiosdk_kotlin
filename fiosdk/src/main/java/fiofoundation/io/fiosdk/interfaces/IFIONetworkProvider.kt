@@ -16,11 +16,18 @@ interface IFIONetworkProvider {
     fun getInfo(): GetInfoResponse
     fun getBlock(getBlockRequest: GetBlockRequest): GetBlockResponse
     fun getRawAbi(getRawAbiRequest: GetRawAbiRequest): GetRawAbiResponse
+    fun getPendingFIORequests(getPendingFioRequests: GetPendingFIORequestsRequest): GetPendingFIORequestsResponse
+    fun getSentFIORequests(getSentFioRequests: GetSentFIORequestsRequest): GetSentFIORequestsResponse
     fun pushTransaction(pushTransaction: PushTransactionRequest): PushTransactionResponse
     fun getRequiredKeys(getRequiredKeysRequest: GetRequiredKeysRequest): GetRequiredKeysResponse
     fun registerFioAddress(pushTransaction: PushTransactionRequest): PushTransactionResponse
     fun registerFioDomain(pushTransaction: PushTransactionRequest): PushTransactionResponse
     fun transferTokensToPublicKey(pushTransaction: PushTransactionRequest): PushTransactionResponse
     fun registerFioNameOnBehalfOfUser(request: RegisterFIONameForUserRequest): RegisterFIONameForUserResponse
-
+    fun requestNewFunds(pushTransaction: PushTransactionRequest): PushTransactionResponse
+    fun rejectNewFunds(pushTransaction: PushTransactionRequest): PushTransactionResponse
+    fun burnExpired(pushTransaction: PushTransactionRequest): PushTransactionResponse
+    fun payTpIdRewards(pushTransaction: PushTransactionRequest): PushTransactionResponse
+    fun claimBpRewards(pushTransaction: PushTransactionRequest): PushTransactionResponse
+    fun recordSend(pushTransaction: PushTransactionRequest): PushTransactionResponse
 }

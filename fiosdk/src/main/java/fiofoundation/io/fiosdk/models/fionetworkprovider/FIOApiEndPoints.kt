@@ -18,7 +18,13 @@ class FIOApiEndPoints {
          const val push_transaction = "chain/push_transaction"
          const val get_required_keys = "chain/get_required_keys"
          const val get_pending_fio_requests = "chain/get_pending_fio_requests"
+         const val get_sent_fio_requests = "chain/get_sent_fio_requests"
          const val new_funds_request = "chain/new_funds_request"
+         const val reject_funds_request = "chain/reject_funds_request"
+         const val burn_expired_request = "chain/burn_expired"
+         const val pay_tpid_rewards = "chain/pay_tpid_rewards"
+         const val claim_bp_rewards = "chain/claim_bp_rewards"
+         const val record_send = "chain/record_send"
          const val register_fio_name_behalf_of_user = "mockd/DEV4/register_fio_name"
 
          val no_fioaddress_endpoints: List<String> = listOf(register_fio_domain,register_fio_address,transfer_tokens_pub_key,transfer_tokens_fio_address)

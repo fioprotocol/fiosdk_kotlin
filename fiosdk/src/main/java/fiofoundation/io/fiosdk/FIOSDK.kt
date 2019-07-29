@@ -13,9 +13,8 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIODoma
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.TransferTokensPubKeyAction
 import fiofoundation.io.fiosdk.session.processors.RegisterFIOAddressTrxProcessor
 import fiofoundation.io.fiosdk.session.processors.RegisterFIODomainTrxProcessor
-import fiofoundation.io.fiosdk.session.processors.TransTokensPublicKeyTrxProcessor
+import fiofoundation.io.fiosdk.session.processors.TransTokensPubKeyTrxProcessor
 import fiofoundation.io.fiosdk.utilities.PrivateKeyUtils
-import java.lang.Exception
 
 import java.math.BigInteger
 
@@ -132,7 +131,7 @@ class FIOSDK(val privateKey: String, val publicKey: String,
             this.publicKey
         )
 
-        var transactionProcessor = TransTokensPublicKeyTrxProcessor(
+        var transactionProcessor = TransTokensPubKeyTrxProcessor(
             this.serializationProvider,
             this.networkProvider,
             this.abiProvider,
