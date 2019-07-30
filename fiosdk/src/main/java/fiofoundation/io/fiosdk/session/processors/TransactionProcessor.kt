@@ -310,7 +310,7 @@ open class TransactionProcessor(val serializationProvider: ISerializationProvide
 
         try {
             this.serializationProvider.serialize(actionAbifioSerializationObject)
-            if (actionAbifioSerializationObject.hex.isEmpty())
+            if (actionAbifioSerializationObject.hex.isEmpty() && !actionAbifioSerializationObject.emptyDataAllowed)
             {
                 throw TransactionCreateSignatureRequestSerializationError(
                     ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_ACTION_WORKED_BUT_EMPTY_RESULT

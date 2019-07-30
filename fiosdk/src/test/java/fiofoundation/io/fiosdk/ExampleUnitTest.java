@@ -117,7 +117,7 @@ public class ExampleUnitTest {
     public void testGetFIOBalance() {
         try{
             FIONetworkProvider provider = new FIONetworkProvider(baseUrl);
-            GetFIOBalanceRequest request = new GetFIOBalanceRequest("FIO8PRe4WRZJj5mkem6qVGKyvNFgPsNnjNN6kPhh6EaCpzCVin5Jj");
+            GetFIOBalanceRequest request = new GetFIOBalanceRequest("FIO5oBUYbtGTxMS66pPkjC2p8pbA3zCtc8XD4dq9fMut867GRdh82");
             GetFIOBalanceResponse response = provider.getFIOBalance(request);
 
             System.out.println(response.getBalance());
@@ -643,6 +643,58 @@ public class ExampleUnitTest {
         }
     }
 
+    @Test
+    public void testGetPendingFioRequests()
+    {
+        String fio_public_key = "FIO87MK3VsNmCjSTtscRKBnEwzbNYsCnGaUWdFgGuCLCV3tVW4Wai";
 
+        try{
+            FIONetworkProvider provider = new FIONetworkProvider(baseUrl);
+            GetPendingFIORequestsRequest request = new GetPendingFIORequestsRequest(fio_public_key);
+
+            System.out.println(request.toJson());
+
+            GetPendingFIORequestsResponse response = provider.getPendingFIORequests(request);
+
+            System.out.println(response.getRequests());
+            System.out.println(response.toJson());
+        }
+        catch (GetPendingFIORequestsError e)
+        {
+            System.out.println(e.getResponseError());
+            System.out.println(e.toJson());
+        }
+        catch(Exception ex)
+        {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testGetSentFioRequests()
+    {
+        String fio_public_key = "FIO87MK3VsNmCjSTtscRKBnEwzbNYsCnGaUWdFgGuCLCV3tVW4Wai";
+
+        try{
+            FIONetworkProvider provider = new FIONetworkProvider(baseUrl);
+            GetSentFIORequestsRequest request = new GetSentFIORequestsRequest(fio_public_key);
+
+            System.out.println(request.toJson());
+
+            GetSentFIORequestsResponse response = provider.getSentFIORequests(request);
+
+            System.out.println(response.getRequests());
+            System.out.println(response.toJson());
+        }
+        catch (GetSentFIORequestsError e)
+        {
+            System.out.println(e.getResponseError());
+            System.out.println(e.toJson());
+        }
+        catch(Exception ex)
+        {
+            System.out.println(ex.getMessage());
+        }
+    }
 
 }

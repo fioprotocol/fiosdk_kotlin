@@ -1,19 +1,17 @@
 package fiofoundation.io.fiosdk
 
 import fiofoundation.io.fiosdk.errors.FIOError
+import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetFIOBalanceError
 import fiofoundation.io.fiosdk.errors.formatters.FIOFormatterError
 import fiofoundation.io.fiosdk.formatters.FIOFormatter
 import fiofoundation.io.fiosdk.implementations.ABIProvider
 import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
-import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.IAction
-import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIOAddressAction
-import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIODomainAction
-import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.TransferTokensPubKeyAction
-import fiofoundation.io.fiosdk.session.processors.RegisterFIOAddressTrxProcessor
-import fiofoundation.io.fiosdk.session.processors.RegisterFIODomainTrxProcessor
-import fiofoundation.io.fiosdk.session.processors.TransTokensPubKeyTrxProcessor
+import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.*
+import fiofoundation.io.fiosdk.models.fionetworkprovider.request.GetFIOBalanceRequest
+import fiofoundation.io.fiosdk.models.fionetworkprovider.response.PushTransactionResponse
+import fiofoundation.io.fiosdk.session.processors.*
 import fiofoundation.io.fiosdk.utilities.PrivateKeyUtils
 
 import java.math.BigInteger
@@ -22,7 +20,7 @@ class FIOSDK(val privateKey: String, val publicKey: String,
              val serializationProvider: ISerializationProvider,
              val signatureProvider: ISignatureProvider) {
 
-    private val networkProvider:FIONetworkProvider = FIONetworkProvider("http://54.184.39.43:8889")
+    private val networkProvider:FIONetworkProvider = FIONetworkProvider("http://54.184.39.43:8889/v1/")
     private val abiProvider:ABIProvider = ABIProvider(networkProvider,this.serializationProvider)
 
     companion object Static {
@@ -61,7 +59,7 @@ class FIOSDK(val privateKey: String, val publicKey: String,
 
     @Throws(FIOError::class)
     fun registerFioAddress(fioAddress:String,ownerPublicKey:String, maxFee:BigInteger,
-                           walletFioAddress:String)
+                           walletFioAddress:String): PushTransactionResponse
     {
             var registerFioAddressAction =
                 RegisterFIOAddressAction(
@@ -86,13 +84,13 @@ class FIOSDK(val privateKey: String, val publicKey: String,
 
             transactionProcessor.sign()
 
-            transactionProcessor.broadcast()
+            return transactionProcessor.broadcast()
 
     }
 
     @Throws(FIOError::class)
     fun registerFioDomain(fioDomain:String,ownerPublicKey:String, maxFee:BigInteger,
-                          walletFioAddress:String)
+                          walletFioAddress:String): PushTransactionResponse
     {
         var registerFioDomainAction = RegisterFIODomainAction(
             fioDomain,
@@ -116,12 +114,12 @@ class FIOSDK(val privateKey: String, val publicKey: String,
 
         transactionProcessor.sign()
 
-        transactionProcessor.broadcast()
+        return transactionProcessor.broadcast()
     }
 
     @Throws(FIOError::class)
     fun transferTokensToPublicKey(payeePublicKey:String,amount:String, maxFee:BigInteger,
-                                  walletFioAddress:String)
+                                  walletFioAddress:String): PushTransactionResponse
     {
         var transferTokensToPublickey = TransferTokensPubKeyAction(
             payeePublicKey,
@@ -145,7 +143,71 @@ class FIOSDK(val privateKey: String, val publicKey: String,
 
         transactionProcessor.sign()
 
-        transactionProcessor.broadcast()
+        return transactionProcessor.broadcast()
+    }
+
+    @Throws(FIOError::class)
+    fun getFioBalance(): BigInteger
+    {
+        try
+        {
+            val request = GetFIOBalanceRequest(this.publicKey)
+            val response = this.networkProvider.getFIOBalance(request)
+
+            return response.balance
+        }
+        catch(fioBalanceError: GetFIOBalanceError)
+        {
+            throw FIOError(fioBalanceError.message!!,fioBalanceError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    @Throws(FIOError::class)
+    fun payTpIdRewards(): PushTransactionResponse
+    {
+        var payTpIdReward = PayTpIdRewardsAction(this.publicKey)
+
+        var transactionProcessor = PayTpIdRewardsTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        var actionList = ArrayList<PayTpIdRewardsAction>()
+        actionList.add(payTpIdReward)
+
+        transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+        transactionProcessor.sign()
+
+        return transactionProcessor.broadcast()
+    }
+
+    @Throws(FIOError::class)
+    fun burnExpiredFioAddressesAndDomains(): PushTransactionResponse
+    {
+        var burnExpired = BurnExpiredAction(this.publicKey)
+
+        var transactionProcessor = BurnExpiredTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        var actionList = ArrayList<BurnExpiredAction>()
+        actionList.add(burnExpired)
+
+        transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+        transactionProcessor.sign()
+
+        return transactionProcessor.broadcast()
     }
 
 }

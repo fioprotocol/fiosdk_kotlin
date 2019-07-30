@@ -1,3 +1,5 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider.response
 
-class GetFIOBalanceResponse(val balance: Long): FIOResponse()
+import java.math.BigInteger
+
+class GetFIOBalanceResponse(val balance: BigInteger): FIOResponse()
