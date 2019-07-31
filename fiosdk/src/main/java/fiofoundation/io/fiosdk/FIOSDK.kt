@@ -210,4 +210,26 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         return transactionProcessor.broadcast()
     }
 
+    @Throws(FIOError::class)
+    fun claimBlockProducerRewards(blockProducerFioAddress: String): PushTransactionResponse
+    {
+        var claimBpRewards = ClaimBpRewardsAction(blockProducerFioAddress,this.publicKey)
+
+        var transactionProcessor = ClaimBpRewardsTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        var actionList = ArrayList<ClaimBpRewardsAction>()
+        actionList.add(claimBpRewards)
+
+        transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+        transactionProcessor.sign()
+
+        return transactionProcessor.broadcast()
+    }
+
 }
