@@ -29,4 +29,6 @@ class NewFundsRequestTrxProcessor(serializationProvider: ISerializationProvider,
                 pushTransactionError)
         }
     }
+
+
 }

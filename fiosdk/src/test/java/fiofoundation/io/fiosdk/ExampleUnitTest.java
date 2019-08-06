@@ -602,11 +602,11 @@ public class ExampleUnitTest {
     @Test
     public void testGenerateSharedSecret()
     {
-        //alice-public: FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o
-        //acclice-private: 5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu
+        //alice-public: FIO7zsqi7QUAjTAdyynd6DVe8uv4K8gCTRHnAoMN9w9CA1xLCTDVv
+        String alicePrivate = "5J9bWm2ThenDm3tjvmUgHtWCVMUdjRR1pxnRtnJjvKA4b2ut5WK";
 
-        //bob-public: FIO5oBUYbtGTxMS66pPkjC2p8pbA3zCtc8XD4dq9fMut867GRdh82
-        //bob-private: 5JLxoeRoMDGBbkLdXJjxuh3zHsSS7Lg6Ak9Ft8v8sSdYPkFuABF
+        String bobPublic = "FIO5VE6Dgy9FUmd1mFotXwF88HkQN1KysCWLPqpVnDMjRvGRi1YrM";
+        //bob-private: 5JoQtsKQuH8hC9MyvfJAqo6qmKLm8ePYNucs7tPu2YxG12trzBt
 
         String pubKey_str = "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o";
         String privKey = "5JLxoeRoMDGBbkLdXJjxuh3zHsSS7Lg6Ak9Ft8v8sSdYPkFuABF";
@@ -615,7 +615,7 @@ public class ExampleUnitTest {
         {
 
             String message = new String("secret message".getBytes(), UTF_8);
-            byte[] sharedSecret = CryptoUtils.INSTANCE.generateSharedSecret(privKey,pubKey_str);
+            byte[] sharedSecret = CryptoUtils.INSTANCE.generateSharedSecret(alicePrivate,bobPublic);
 
             String sharedSecretHex = ExtensionsKt.toHexString(sharedSecret);
 
@@ -631,7 +631,7 @@ public class ExampleUnitTest {
             System.out.println("DEC STR1: " + decResultsAsString);
             System.out.println("IV: " + ivHex);
 
-            Cryptography crypt2 = new Cryptography(sharedSecret,ExtensionsKt.hexStringToByteArray(ivHex));
+            Cryptography crypt2 = new Cryptography(sharedSecret,ExtensionsKt.hexStringToByteArray(ivHex,false));
 
             byte[] ReEncResults = crypt.encrypt(message);
 

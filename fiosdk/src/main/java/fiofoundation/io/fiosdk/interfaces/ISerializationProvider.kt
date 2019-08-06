@@ -26,4 +26,10 @@ interface ISerializationProvider {
 
     @Throws(SerializeAbiError::class)
     fun serializeAbi(json: String): String
+
+    @Throws(SerializeTransactionError::class)
+    fun serializeNewFundsContent(json: String): String
+
+    @Throws(DeserializeTransactionError::class)
+    fun deserializeNewFundsContent(hex: String): String
 }

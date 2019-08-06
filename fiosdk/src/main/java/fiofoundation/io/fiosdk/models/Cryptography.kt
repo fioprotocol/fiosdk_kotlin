@@ -17,7 +17,7 @@ class Cryptography(val key:ByteArray,var iv:ByteArray?)
         if(iv == null)
             iv = generateIv()
 
-        encKey = if(key.size>=32) key.copyOf(32) else key
+        encKey = if(key.size>32) key.copyOf(32) else key
     }
 
     companion object Static {
@@ -40,7 +40,7 @@ class Cryptography(val key:ByteArray,var iv:ByteArray?)
     }
 
     @Throws(Exception::class)
-    fun encrypt(plainText: ByteArray): ByteArray
+    fun encrypt(data: ByteArray): ByteArray
     {
         val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
         val keySpec = SecretKeySpec(this.encKey, "AES")
@@ -49,7 +49,20 @@ class Cryptography(val key:ByteArray,var iv:ByteArray?)
 
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec)
 
-        return cipher.doFinal(plainText)
+        return cipher.doFinal(data)
+    }
+
+    @Throws(Exception::class)
+    fun encrypt(data: UByteArray): ByteArray
+    {
+        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+        val keySpec = SecretKeySpec(this.encKey, "AES")
+
+        val ivSpec = IvParameterSpec(iv)
+
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec)
+
+        return cipher.doFinal(data.asByteArray())
     }
 
     @Throws(Exception::class)

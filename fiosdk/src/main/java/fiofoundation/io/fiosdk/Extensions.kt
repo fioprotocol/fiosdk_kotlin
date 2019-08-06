@@ -17,19 +17,22 @@ fun ByteArray.toHexString():String
     return result.toString()
 }
 
-fun String.hexStringToByteArray() : ByteArray
+fun String.hexStringToByteArray(returnUnsignedIntegers:Boolean=false) : ByteArray
 {
     val HEX_CHARS = "0123456789ABCDEF".toCharArray()
 
     val result = ByteArray(length / 2)
 
     for (i in 0 until length step 2) {
-        val firstIndex = HEX_CHARS.indexOf(this[i]);
-        val secondIndex = HEX_CHARS.indexOf(this[i + 1]);
+        val firstIndex = HEX_CHARS.indexOf(this[i])
+        val secondIndex = HEX_CHARS.indexOf(this[i + 1])
 
         val octet = firstIndex.shl(4).or(secondIndex)
         result.set(i.shr(1), octet.toByte())
     }
 
-    return result
+    if(returnUnsignedIntegers)
+        return result.filter { byte->byte.compareTo(-1)!=0 }.toByteArray()
+    else
+        return result
 }

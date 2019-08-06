@@ -2,19 +2,28 @@ package fiofoundation.io.fiosdk
 
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetFIOBalanceError
+import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetPublicAddressError
 import fiofoundation.io.fiosdk.errors.formatters.FIOFormatterError
 import fiofoundation.io.fiosdk.formatters.FIOFormatter
 import fiofoundation.io.fiosdk.implementations.ABIProvider
 import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
+import fiofoundation.io.fiosdk.models.Cryptography
+import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.*
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.GetFIOBalanceRequest
+import fiofoundation.io.fiosdk.models.fionetworkprovider.request.GetPublicAddressRequest
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.PushTransactionResponse
 import fiofoundation.io.fiosdk.session.processors.*
+import fiofoundation.io.fiosdk.utilities.CryptoUtils
+import fiofoundation.io.fiosdk.utilities.HashUtils
 import fiofoundation.io.fiosdk.utilities.PrivateKeyUtils
 
 import java.math.BigInteger
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.nio.charset.StandardCharsets
 
 class FIOSDK(val privateKey: String, val publicKey: String,
              val serializationProvider: ISerializationProvider,
@@ -167,6 +176,26 @@ class FIOSDK(val privateKey: String, val publicKey: String,
     }
 
     @Throws(FIOError::class)
+    fun getPublicKey(fioAddress:String): String
+    {
+        try
+        {
+            val request = GetPublicAddressRequest(fioAddress,"FIO")
+            val response = this.networkProvider.getPublicAddress(request)
+
+            return response.publicAddress
+        }
+        catch(getPublicAddressError: GetPublicAddressError)
+        {
+            throw FIOError(getPublicAddressError.message!!,getPublicAddressError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    @Throws(FIOError::class)
     fun payTpIdRewards(): PushTransactionResponse
     {
         var payTpIdReward = PayTpIdRewardsAction(this.publicKey)
@@ -230,6 +259,69 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         transactionProcessor.sign()
 
         return transactionProcessor.broadcast()
+    }
+
+    @Throws(FIOError::class)
+    fun requestNewFunds(payerfioAddress:String,payeefioAddress:String,
+                        fundsRequestContent: FundsRequestContent,maxFee:BigInteger,
+                          walletFioAddress:String): PushTransactionResponse
+    {
+        var transactionProcessor = NewFundsRequestTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        val payerPublicKey = this.getPublicKey(payerfioAddress)
+
+        val encryptedContent = serializeAndEncryptNewFundsContent(fundsRequestContent,payerPublicKey)
+
+        var newFundsRequestAction = NewFundsRequestAction(
+            payerfioAddress,
+            payeefioAddress,
+            encryptedContent,
+            maxFee,
+            walletFioAddress,
+            this.publicKey
+        )
+
+
+        var actionList = ArrayList<NewFundsRequestAction>()
+        actionList.add(newFundsRequestAction)
+
+        transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+        transactionProcessor.sign()
+
+        return transactionProcessor.broadcast()
+    }
+
+    private fun serializeAndEncryptNewFundsContent(fundsRequestContent: FundsRequestContent,payerPublickey: String): String
+    {
+        val serializedNewFundsContent = this.serializationProvider.serializeNewFundsContent(fundsRequestContent.toJson())
+
+        val secretKey = CryptoUtils.generateSharedSecret(this.privateKey,payerPublickey)
+
+        val hashedSecretKey = HashUtils.sha512(secretKey)
+
+        val encryptionKey = hashedSecretKey.copyOf(32)
+        val hmacKey = hashedSecretKey.copyOfRange(32,hashedSecretKey.size)
+        val encryptor = Cryptography(encryptionKey,null)
+        val encryptedMessage = encryptor.encrypt(serializedNewFundsContent.hexStringToByteArray().asUByteArray())
+        val hmacContent = ByteArray(encryptor.iv!!.size + encryptedMessage.size)
+
+        encryptor.iv!!.copyInto(hmacContent)
+        encryptedMessage.copyInto(hmacContent,encryptor.iv!!.size)
+
+        val hmacData = Cryptography.createHmac(hmacContent,hmacKey)
+
+        val returnArray = ByteArray(hmacContent.size + hmacData.size)
+
+        hmacContent.copyInto(returnArray)
+        hmacData.copyInto(returnArray,hmacContent.size)
+
+        return returnArray.toHexString()
     }
 
 }

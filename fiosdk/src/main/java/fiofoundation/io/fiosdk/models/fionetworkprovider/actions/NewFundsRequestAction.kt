@@ -8,10 +8,10 @@ import java.math.BigInteger
 
 class NewFundsRequestAction(payerfioAddress: String,
                             payeefioAddress: String,
-                            content: FundsRequestContent,
+                            content: String,
                             maxFee: BigInteger,
-                            actorPublicKey: String,
-                            walletFioAddress: String) : IAction
+                            walletFioAddress: String,
+                            actorPublicKey: String) : IAction
 {
     override var account = "fio.reqobt"
     override var name = "newfundsreq"
@@ -25,7 +25,7 @@ class NewFundsRequestAction(payerfioAddress: String,
             NewFundsRequestData(
                 payerfioAddress,
                 payeefioAddress,
-                content.toJson(),
+                content,
                 maxFee,
                 auth.actor,
                 walletFioAddress

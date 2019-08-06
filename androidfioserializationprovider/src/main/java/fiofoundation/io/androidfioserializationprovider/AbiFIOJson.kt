@@ -514,6 +514,84 @@ object AbiFIOJson {
                 "    ]\n" +
                 "}"
 
+        jsonMap["fio.abi.json"] = "{\n" +
+                "    \"version\": \"eosio::abi/1.0\",\n" +
+                "    \"structs\": [\n" +
+                "        {\n" +
+                "            \"name\": \"new_funds_content\",\n" +
+                "            \"base\": \"\",\n" +
+                "            \"fields\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"payee_public_address\",\n" +
+                "                    \"type\": \"string\"\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"name\": \"amount\",\n" +
+                "                    \"type\": \"string\"\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"name\": \"token_code\",\n" +
+                "                    \"type\": \"string\"\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"name\": \"memo\",\n" +
+                "                    \"type\": \"string?\"\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"name\": \"hash\",\n" +
+                "                    \"type\": \"string?\"\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"name\": \"offline_url\",\n" +
+                "                    \"type\": \"string?\"\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"name\": \"record_send_content\",\n" +
+                "            \"base\": \"\",\n" +
+                "            \"fields\": [\n" +
+                "                {\n" +
+                "                    \"name\": \"payer_public_address\",\n" +
+                "                    \"type\": \"string\"\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"name\": \"payee_public_address\",\n" +
+                "                    \"type\": \"string\"\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"name\": \"amount\",\n" +
+                "                    \"type\": \"string\"\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"name\": \"token_code\",\n" +
+                "                    \"type\": \"string\"\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"name\": \"status\",\n" +
+                "                    \"type\": \"string\"\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"name\": \"obt_id\",\n" +
+                "                    \"type\": \"string\"\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"name\": \"memo\",\n" +
+                "                    \"type\": \"string?\"\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"name\": \"hash\",\n" +
+                "                    \"type\": \"string?\"\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"name\": \"offline_url\",\n" +
+                "                    \"type\": \"string?\"\n" +
+                "                }\n" +
+                "            ]\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}"
+
         return jsonMap
     }
 }

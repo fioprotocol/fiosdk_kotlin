@@ -6,6 +6,7 @@ import android.util.Log
 import fiofoundation.io.androidfioserializationprovider.AbiFIOSerializationProvider
 import fiofoundation.io.androidfiosoftkeysignatureprovider.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.FIOSDK
+import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -197,16 +198,55 @@ class ExampleInstrumentedTest {
 
             val response = fioSdk.claimBlockProducerRewards(producer)
 
-            Log.i("BurnExpired - processed:",response.processed.toString())
+            Log.i("ClaimBlockProducerRewards - processed:",response.processed.toString())
 
-            Log.i("BurnExpired - responseKey:",response.processed!!["action_traces"].toString())
-            Log.i("BurnExpired - json:",response.toJson())
+            Log.i("ClaimBlockProducerRewards - responseKey:",response.processed!!["action_traces"].toString())
+            Log.i("ClaimBlockProducerRewards - json:",response.toJson())
 
-            Log.i("BurnExpired",response.transactionId)
+            Log.i("ClaimBlockProducerRewards",response.transactionId)
         }
         catch(e:Exception)
         {
-            Log.e("PayTpIdRewards",e.message)
+            Log.e("ClaimBlockProducerRewards",e.message)
+        }
+    }
+
+    @Test
+    fun testNewFundsRequest()
+    {
+        val private_key = "5J9bWm2ThenDm3tjvmUgHtWCVMUdjRR1pxnRtnJjvKA4b2ut5WK" //"5KHNgifC5hRJuq8pqYQ9pCxZbMNvHVW9bfvivY4UHyuxWcoa49T" //5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu
+
+        val wallet_fio_address = "rewards:wallet"
+        val max_fee = BigInteger("4000000000000000000")
+
+        val serializationProvider = AbiFIOSerializationProvider()
+        val signatureProvider = SoftKeySignatureProvider()
+        signatureProvider.importKey(private_key)
+
+        val fio_public_key = "FIO7zsqi7QUAjTAdyynd6DVe8uv4K8gCTRHnAoMN9w9CA1xLCTDVv" //"FIO8iB2mYT1zjMwyejw5UYaT5r4cq58sTuvGctoYwQ9rjFT5DGFDq" //FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o
+        val payeeBTCAddress = "1AkZGXsnyDfp4faMmVfTWsN1nNRRvEZJk8"
+
+        val newFundsContent = FundsRequestContent(payeeBTCAddress,"3.0","BTC")
+
+
+        try
+        {
+            var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
+                serializationProvider,signatureProvider)
+
+            val response = fioSdk.requestNewFunds("shawnmullen223:brd",
+                "alice:brd",newFundsContent,max_fee,wallet_fio_address)
+
+            Log.i("NewFundsRequest - processed:",response.processed.toString())
+
+            Log.i("NewFundsRequest - responseKey:",response.processed!!["action_traces"].toString())
+            Log.i("NewFundsRequest - json:",response.toJson())
+
+            Log.i("NewFundsRequest",response.transactionId)
+        }
+        catch(e:Exception)
+        {
+            Log.e("ClaimBlockProducerRewards",e.message)
         }
     }
 }
