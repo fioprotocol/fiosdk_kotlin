@@ -26,8 +26,5 @@ interface IFIONetworkProvider {
     fun registerFioNameOnBehalfOfUser(request: RegisterFIONameForUserRequest): RegisterFIONameForUserResponse
     fun requestNewFunds(pushTransaction: PushTransactionRequest): PushTransactionResponse
     fun rejectNewFunds(pushTransaction: PushTransactionRequest): PushTransactionResponse
-    fun burnExpired(pushTransaction: PushTransactionRequest): PushTransactionResponse
-    fun payTpIdRewards(pushTransaction: PushTransactionRequest): PushTransactionResponse
-    fun claimBpRewards(pushTransaction: PushTransactionRequest): PushTransactionResponse
     fun recordSend(pushTransaction: PushTransactionRequest): PushTransactionResponse
 }

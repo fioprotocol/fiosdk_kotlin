@@ -12,7 +12,7 @@ class FundsRequestContent(
     @field:SerializedName("offline_url") var offlineUrl:String?=null)
 {
     fun toJson(): String {
-        val gson = GsonBuilder().serializeNulls() .create()
+        val gson = GsonBuilder().serializeNulls().create()
         return gson.toJson(this,this.javaClass)
     }
 }

@@ -85,7 +85,7 @@ class AbiFIOSerializationProvider: ISerializationProvider {
         try {
             refreshContext()
 
-            if (serializationObject.json.isEmpty() && !serializationObject.emptyDataAllowed) {
+            if (serializationObject.json.isEmpty()) {
                 throw SerializeError("No content to serialize.")
             }
 
@@ -118,7 +118,7 @@ class AbiFIOSerializationProvider: ISerializationProvider {
 
             val jsonToBinResult:Boolean = jsonToBin(context!!, contract64, typeStr, serializationObject.json, true)
 
-            if (!jsonToBinResult && !serializationObject.emptyDataAllowed)
+            if (!jsonToBinResult)
             {
                 val err:String? = error()
                 val errMsg:String = String.format("Unable to pack json to bin. %s", if(err == null) "" else err)

@@ -564,42 +564,6 @@ public class ExampleUnitTest {
     }
 
     @Test
-    public void testEncryption()
-    {
-//        String secret = "02332627b9325cb70510a70f0f6be4bcb008fbbc7893ca51dedf5bf46aa740c0fc9d3fbd737d09a3c4046d221f4f1a323f515332c3fef46e7f075db561b1a2c9";
-//
-//        String IV = "f300888ca4f512cebdc0020ff0f7224c";
-//
-//        Cryptography crypt = new Cryptography(secret,IV);
-
-        try
-        {
-//            String testData = crypt.bytesToHex(IV);
-//            System.out.println(testData.getBytes().length);
-
-//           byte[] encData = crypt.encrypt("secret message");
-//
-//            System.out.println(new String(secret));
-
-//            byte[] decData = crypt.decrypt(encData);
-//
-//            System.out.println(new String(decData));
-
-        }
-        catch (Exception e)
-        {
-            System.out.println("ERROR");
-        }
-
-
-
-    }
-
-    public String toHex(String arg) {
-        return String.format("%040x", new BigInteger(1, arg.getBytes(UTF_8)));
-    }
-
-    @Test
     public void testGenerateSharedSecret()
     {
         //alice-public: FIO7zsqi7QUAjTAdyynd6DVe8uv4K8gCTRHnAoMN9w9CA1xLCTDVv

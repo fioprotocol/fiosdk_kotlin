@@ -6,7 +6,7 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.FIOResponse
 import java.math.BigInteger
 
-class ReecordSendAction(payerFioAddress:String,
+class RecordSendAction(payerFioAddress:String,
                         payeeFioAddress: String,
                         content: RecordSendContent,
                         fioRequestId: String,

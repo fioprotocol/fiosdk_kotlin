@@ -299,45 +299,6 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
     }
 
     @Throws(PushTransactionError::class)
-    override fun burnExpired(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
-    {
-        try
-        {
-            val syncCall = this.networkProviderApi.burnExpired(pushTransactionRequest)
-            return processCall(syncCall)
-        }
-        catch(e: FIONetworkProviderCallError){
-            throw PushTransactionError("",e,e.responseError)
-        }
-    }
-
-    @Throws(PushTransactionError::class)
-    override fun payTpIdRewards(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
-    {
-        try
-        {
-            val syncCall = this.networkProviderApi.payTpIdRewards(pushTransactionRequest)
-            return processCall(syncCall)
-        }
-        catch(e: FIONetworkProviderCallError){
-            throw PushTransactionError("",e,e.responseError)
-        }
-    }
-
-    @Throws(PushTransactionError::class)
-    override fun claimBpRewards(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
-    {
-        try
-        {
-            val syncCall = this.networkProviderApi.claimBpRewards(pushTransactionRequest)
-            return processCall(syncCall)
-        }
-        catch(e: FIONetworkProviderCallError){
-            throw PushTransactionError("",e,e.responseError)
-        }
-    }
-
-    @Throws(PushTransactionError::class)
     override fun recordSend(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     {
         try

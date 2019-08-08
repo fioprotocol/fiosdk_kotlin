@@ -16,7 +16,7 @@ class RecordSendContent(
 {
 
     fun toJson(): String {
-        val gson = GsonBuilder().create()
+        val gson = GsonBuilder().serializeNulls().create()
         return gson.toJson(this,this.javaClass)
     }
 }

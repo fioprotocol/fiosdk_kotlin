@@ -63,16 +63,7 @@ interface IFIONetworkProviderApi {
 
     @POST(FIOApiEndPoints.reject_funds_request)
     fun rejectNewFunds(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
-
-    @POST(FIOApiEndPoints.burn_expired_request)
-    fun burnExpired(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
-
-    @POST(FIOApiEndPoints.pay_tpid_rewards)
-    fun payTpIdRewards(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
-
-    @POST(FIOApiEndPoints.claim_bp_rewards)
-    fun claimBpRewards(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
-
+    
     @POST(FIOApiEndPoints.record_send)
     fun recordSend(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
 

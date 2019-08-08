@@ -5,7 +5,4 @@ class AbiFIOSerializationObject (val contract: String?, val name: String, val ty
     var hex: String = ""
     var json: String = ""
 
-    val emptyDataAllowed: Boolean
-        get() = this.name == "burnexpired" && this.contract == "fio.system"
-
 }
