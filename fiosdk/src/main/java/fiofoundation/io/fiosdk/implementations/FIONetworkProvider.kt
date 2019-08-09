@@ -234,6 +234,32 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
     }
 
     @Throws(PushTransactionError::class)
+    override fun renewFioAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.renewFioAddress(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
+    @Throws(PushTransactionError::class)
+    override fun renewFioDomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.renewFioDomain(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
+    @Throws(PushTransactionError::class)
     override fun registerFioDomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     {
         try

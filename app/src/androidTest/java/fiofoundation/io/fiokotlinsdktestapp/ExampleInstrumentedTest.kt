@@ -140,8 +140,8 @@ class ExampleInstrumentedTest {
             var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
                 serializationProvider,signatureProvider)
 
-            val response = fioSdk.requestNewFunds("shawnmullen223:brd",
-                "alice:brd",newFundsContent,max_fee,wallet_fio_address)
+            val response = fioSdk.requestNewFunds("shawnmullen21:brd",
+                "mullin1:brd",newFundsContent,max_fee,wallet_fio_address)
 
             Log.i("NewFundsRequest - processed:",response.processed.toString())
 
@@ -155,4 +155,99 @@ class ExampleInstrumentedTest {
             Log.e("ClaimBlockProducerRewards",e.message)
         }
     }
+
+    @Test
+    fun testPendingRequests()
+    {
+        val private_key = "5J9bWm2ThenDm3tjvmUgHtWCVMUdjRR1pxnRtnJjvKA4b2ut5WK" //"5KHNgifC5hRJuq8pqYQ9pCxZbMNvHVW9bfvivY4UHyuxWcoa49T" //5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu
+        val fio_public_key = "FIO7zsqi7QUAjTAdyynd6DVe8uv4K8gCTRHnAoMN9w9CA1xLCTDVv"
+
+        val wallet_fio_address = "rewards:wallet"
+        val max_fee = BigInteger("4000000000000000000")
+
+        val serializationProvider = AbiFIOSerializationProvider()
+        val signatureProvider = SoftKeySignatureProvider()
+        signatureProvider.importKey(private_key)
+
+        val payerFioAddress = "shawnmullen21:brd"
+
+        var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
+            serializationProvider,signatureProvider)
+
+        try
+        {
+            val pendingRequests = fioSdk.getPendingFioRequests("FIO87MK3VsNmCjSTtscRKBnEwzbNYsCnGaUWdFgGuCLCV3tVW4Wai")
+
+            pendingRequests.toList()
+        }
+        catch(e:Exception)
+        {
+            System.out.println(e.message)
+        }
+
+    }
+
+    @Test
+    fun testSentRequests()
+    {
+        val private_key = "5J9bWm2ThenDm3tjvmUgHtWCVMUdjRR1pxnRtnJjvKA4b2ut5WK" //"5KHNgifC5hRJuq8pqYQ9pCxZbMNvHVW9bfvivY4UHyuxWcoa49T" //5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu
+        val fio_public_key = "FIO7zsqi7QUAjTAdyynd6DVe8uv4K8gCTRHnAoMN9w9CA1xLCTDVv"
+
+        val wallet_fio_address = "rewards:wallet"
+        val max_fee = BigInteger("4000000000000000000")
+
+        val serializationProvider = AbiFIOSerializationProvider()
+        val signatureProvider = SoftKeySignatureProvider()
+        signatureProvider.importKey(private_key)
+
+        val payerFioAddress = "shawnmullen21:brd"
+
+        var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
+            serializationProvider,signatureProvider)
+
+        try
+        {
+            val sentRequests = fioSdk.getSentFioRequests("FIO7zsqi7QUAjTAdyynd6DVe8uv4K8gCTRHnAoMN9w9CA1xLCTDVv")
+
+            sentRequests.toList()
+        }
+        catch(e:Exception)
+        {
+            System.out.println(e.message)
+        }
+
+    }
+
+    @Test
+    fun testRejectFundsRequest()
+    {
+        val private_key = "5J9bWm2ThenDm3tjvmUgHtWCVMUdjRR1pxnRtnJjvKA4b2ut5WK" //"5KHNgifC5hRJuq8pqYQ9pCxZbMNvHVW9bfvivY4UHyuxWcoa49T" //5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu
+        val fio_public_key = "FIO7zsqi7QUAjTAdyynd6DVe8uv4K8gCTRHnAoMN9w9CA1xLCTDVv"
+
+        val wallet_fio_address = "rewards:wallet"
+        val max_fee = BigInteger("4000000000000000000")
+
+        val serializationProvider = AbiFIOSerializationProvider()
+        val signatureProvider = SoftKeySignatureProvider()
+        signatureProvider.importKey(private_key)
+
+        val payerFioAddress = "shawnmullen21:brd"
+
+        var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
+            serializationProvider,signatureProvider)
+
+        try
+        {
+            val response = fioSdk.rejectFundsRequest("8",max_fee,wallet_fio_address)
+
+            println(response)
+            println(response.toJson())
+
+        }
+        catch(e:Exception)
+        {
+            println(e.message)
+        }
+    }
+
 }

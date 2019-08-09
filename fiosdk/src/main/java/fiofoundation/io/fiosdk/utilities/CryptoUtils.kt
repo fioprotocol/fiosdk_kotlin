@@ -88,6 +88,33 @@ object CryptoUtils
         {
             throw FIOError(e.message!!,e)
         }
-
     }
+
+    @Throws(FIOError::class)
+    fun decryptSharedMessage(encryptedMessageAsHexString: String, sharedKey: ByteArray): String
+    {
+        val hashedSecretKey = HashUtils.sha512(sharedKey)
+
+        val decryptionKey = hashedSecretKey.copyOf(32)
+        val hmacKey = hashedSecretKey.copyOfRange(32,hashedSecretKey.size)
+
+        val messageBytes = encryptedMessageAsHexString.hexStringToByteArray()
+        val hmacContent = messageBytes.copyOfRange(0,messageBytes.size-32)
+        val messageHmacData = messageBytes.copyOfRange(hmacContent.size,messageBytes.size)
+
+        val iv = hmacContent.copyOf(16)
+        val encryptedMessage = hmacContent.copyOfRange(iv.size,hmacContent.size)
+
+        val hmacData = Cryptography.createHmac(hmacContent,hmacKey)
+        if(hmacData != messageHmacData)
+            throw FIOError("Hmac does not match.")
+        else
+        {
+            val decrypter = Cryptography(decryptionKey, iv)
+            val decryptedMessage = decrypter.decrypt(encryptedMessage)
+
+            return String(decryptedMessage)
+        }
+    }
+
 }

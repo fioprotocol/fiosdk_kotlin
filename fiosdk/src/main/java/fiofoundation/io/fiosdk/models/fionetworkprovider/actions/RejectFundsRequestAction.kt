@@ -6,9 +6,9 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.response.FIOResponse
 import java.math.BigInteger
 
 class RejectFundsRequestAction(fioRequestId: String,
-                            maxFee: BigInteger,
-                            actorPublicKey: String,
-                            walletFioAddress: String) : IAction
+                            maxFee: BigInteger, walletFioAddress: String,
+                            actorPublicKey: String
+                            ) : IAction
 {
     override var account = "fio.reqobt"
     override var name = "rejectfndreq"

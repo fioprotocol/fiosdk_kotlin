@@ -74,7 +74,7 @@ public class ExampleUnitTest {
     public void testGetPubAddressLookUp() {
         try{
             FIONetworkProvider provider = new FIONetworkProvider(baseUrl);
-            GetPublicAddressRequest request = new GetPublicAddressRequest("shawnmullen123:brd","FIO");
+            GetPublicAddressRequest request = new GetPublicAddressRequest("shawnm127:brd","FIO");
             GetPublicAddressResponse response = provider.getPublicAddress(request);
 
             System.out.println(response.getPublicAddress());
@@ -513,7 +513,7 @@ public class ExampleUnitTest {
     @Test
     public void testGenerateActor()
     {
-        String p_key = "FIO6D6gSipBmP1KW9SMB5r4ELjooaogFt77gEs25V9TU9FrxKVeFb";
+        String p_key = "FIO5oBUYbtGTxMS66pPkjC2p8pbA3zCtc8XD4dq9fMut867GRdh82";
         System.out.println(new Authorization(p_key,"action").getActor());
 
     }
@@ -522,13 +522,13 @@ public class ExampleUnitTest {
     public void testRegisterFioAddress()
     {
 
-        String fio_address = "shawnmullen123.brd";
-        String fio_public_key = "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o";
+        String fio_address = "shawnmullen21:brd";
+        String fio_public_key = "FIO87MK3VsNmCjSTtscRKBnEwzbNYsCnGaUWdFgGuCLCV3tVW4Wai";
         String wallet_fio_address = "rewards:wallet";
         int max_fee = 300000000;
         String actor = Utils.Static.generateActor(fio_public_key);
 
-//        FIONetworkProvider provider = new FIONetworkProvider(baseUrl);
+       FIONetworkProvider provider = new FIONetworkProvider(baseUrl);
 //        RegisterFIOAddressRequest request = new RegisterFIOAddressRequest(fio_address,"",wallet_fio_address,max_fee,actor);
 //
 //        System.out.println("Actor Public Key: " + request.getActorPublicKey());
@@ -543,8 +543,8 @@ public class ExampleUnitTest {
         //pvt key: 5KiGdMtgmjeMQPKeo9nbiEpA4Vu3Q91spGUCqHN3Gk8MAdWFYVP
         //pblk key: FIO87MK3VsNmCjSTtscRKBnEwzbNYsCnGaUWdFgGuCLCV3tVW4Wai
 
-        String fio_name = "shawnmullen223:brd";
-        String fio_public_key = "FIO87MK3VsNmCjSTtscRKBnEwzbNYsCnGaUWdFgGuCLCV3tVW4Wai";
+        String fio_name = "mullin1:brd";
+        String fio_public_key = "FIO7zsqi7QUAjTAdyynd6DVe8uv4K8gCTRHnAoMN9w9CA1xLCTDVv";//"FIO87MK3VsNmCjSTtscRKBnEwzbNYsCnGaUWdFgGuCLCV3tVW4Wai";
 
         FIONetworkProvider provider = new FIONetworkProvider(baseUrl,baseMockUrl);
         RegisterFIONameForUserRequest request = new RegisterFIONameForUserRequest(fio_name,fio_public_key);

@@ -181,6 +181,109 @@ class FIOSDK(val privateKey: String, val publicKey: String,
     }
 
     @Throws(FIOError::class)
+    fun renewFioDomain(fioDomain:String, maxFee:BigInteger,
+                          walletFioAddress:String): PushTransactionResponse
+    {
+        var transactionProcessor = RegisterFIODomainTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            var renewFioDomainAction = RenewFIODomainAction(
+                fioDomain,
+                maxFee,
+                walletFioAddress,
+                this.publicKey
+            )
+
+            var actionList = ArrayList<RenewFIODomainAction>()
+            actionList.add(renewFioDomainAction)
+
+            transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+            transactionProcessor.sign()
+
+            return transactionProcessor.broadcast()
+        }
+        catch(fioError:FIOError)
+        {
+            throw fioError
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    @Throws(FIOError::class)
+    fun renewFioAddress(fioAddress:String, maxFee:BigInteger,
+                           walletFioAddress:String): PushTransactionResponse
+    {
+        var transactionProcessor = RenewFIOAddressTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            var renewFioAddressAction =
+                RenewFIOAddressAction(
+                    fioAddress,
+                    maxFee,
+                    walletFioAddress,
+                    this.publicKey
+                )
+
+            var actionList = ArrayList<RenewFIOAddressAction>()
+            actionList.add(renewFioAddressAction)
+
+            transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+            transactionProcessor.sign()
+
+            return transactionProcessor.broadcast()
+        }
+        catch(fioError:FIOError)
+        {
+            throw fioError
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    @Throws(FIOError::class)
     fun transferTokensToPublicKey(payeePublicKey:String,amount:String, maxFee:BigInteger,
                                   walletFioAddress:String): PushTransactionResponse
     {
@@ -408,6 +511,11 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         }
     }
 
+    fun getPendingFioRequests(): List<FIORequestContent>
+    {
+        return this.getPendingFioRequests(this.publicKey)
+    }
+
     @Throws(FIOError::class)
     fun getSentFioRequests(requesteeFioPublicKey:String): List<FIORequestContent>
     {
@@ -429,7 +537,31 @@ class FIOSDK(val privateKey: String, val publicKey: String,
     }
 
     @Throws(FIOError::class)
+    fun getSentFioRequests(): List<FIORequestContent>
+    {
+        return this.getSentFioRequests(this.publicKey)
+    }
+
+    @Throws(FIOError::class)
     private fun serializeAndEncryptNewFundsContent(fundsRequestContent: FundsRequestContent,payerPublickey: String): String
+    {
+        try
+        {
+            val serializedNewFundsContent = this.serializationProvider.serializeNewFundsContent(fundsRequestContent.toJson())
+
+            val secretKey = CryptoUtils.generateSharedSecret(this.privateKey,payerPublickey)
+
+            return CryptoUtils.encryptSharedMessage(serializedNewFundsContent,secretKey)
+        }
+        catch(serializeError: SerializeTransactionError)
+        {
+            throw FIOError(serializeError.message!!,serializeError)
+        }
+
+    }
+
+    @Throws(FIOError::class)
+    private fun deserializeAndDecryptNewFundsContent(fundsRequestContent: FundsRequestContent,payerPublickey: String): String
     {
         try
         {

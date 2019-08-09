@@ -55,6 +55,12 @@ interface IFIONetworkProviderApi {
     @POST(FIOApiEndPoints.register_fio_domain)
     fun registerFioDomain(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
 
+    @POST(FIOApiEndPoints.renew_fio_domain)
+    fun renewFioDomain(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
+
+    @POST(FIOApiEndPoints.renew_fio_address)
+    fun renewFioAddress(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
+
     @POST(FIOApiEndPoints.transfer_tokens_pub_key)
     fun transferTokensToPublicKey(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
 

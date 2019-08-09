@@ -13,6 +13,8 @@ class FIOApiEndPoints {
          const val register_fio_domain = "chain/register_fio_domain"
          const val register_fio_address = "chain/register_fio_address"
          const val transfer_tokens_pub_key = "chain/transfer_tokens_pub_key"
+         const val renew_fio_domain = "chain/renew_fio_domain"
+         const val renew_fio_address = "chain/renew_fio_address"
          const val transfer_tokens_fio_address = "chain/transfer_tokens_fio_address"
          const val get_account = "chain/get_account"
          const val push_transaction = "chain/push_transaction"
@@ -22,7 +24,7 @@ class FIOApiEndPoints {
          const val new_funds_request = "chain/new_funds_request"
          const val reject_funds_request = "chain/reject_funds_request"
          const val record_send = "chain/record_send"
-         const val register_fio_name_behalf_of_user = "mockd/DEV4/register_fio_name"
+         const val register_fio_name_behalf_of_user = "register_fio_name"
 
          val no_fioaddress_endpoints: List<String> = listOf(register_fio_domain,register_fio_address,transfer_tokens_pub_key,transfer_tokens_fio_address)
 
