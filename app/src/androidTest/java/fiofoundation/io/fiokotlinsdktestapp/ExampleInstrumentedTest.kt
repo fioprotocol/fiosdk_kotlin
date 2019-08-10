@@ -7,6 +7,7 @@ import fiofoundation.io.androidfioserializationprovider.AbiFIOSerializationProvi
 import fiofoundation.io.androidfiosoftkeysignatureprovider.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.FIOSDK
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
+import fiofoundation.io.fiosdk.utilities.CryptoUtils
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -120,7 +121,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testNewFundsRequest()
     {
-        val private_key = "5J9bWm2ThenDm3tjvmUgHtWCVMUdjRR1pxnRtnJjvKA4b2ut5WK" //"5KHNgifC5hRJuq8pqYQ9pCxZbMNvHVW9bfvivY4UHyuxWcoa49T" //5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu
+        val private_key = "5JbcPK6qTpYxMXtfpGXagYbo3KFE3qqxv2tLXLMPR8dTWWeYCp9" //sm0alice
 
         val wallet_fio_address = "rewards:wallet"
         val max_fee = BigInteger("4000000000000000000")
@@ -129,7 +130,7 @@ class ExampleInstrumentedTest {
         val signatureProvider = SoftKeySignatureProvider()
         signatureProvider.importKey(private_key)
 
-        val fio_public_key = "FIO7zsqi7QUAjTAdyynd6DVe8uv4K8gCTRHnAoMN9w9CA1xLCTDVv" //"FIO8iB2mYT1zjMwyejw5UYaT5r4cq58sTuvGctoYwQ9rjFT5DGFDq" //FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o
+        val fio_public_key = "FIO7c8SVyAyu6cACCaUjmPFEUyW9p2owWHeqq2WSEZ18FFTgErE1K" //sm0alice
         val payeeBTCAddress = "1AkZGXsnyDfp4faMmVfTWsN1nNRRvEZJk8"
 
         val newFundsContent = FundsRequestContent(payeeBTCAddress,"3.0","BTC")
@@ -140,8 +141,8 @@ class ExampleInstrumentedTest {
             var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
                 serializationProvider,signatureProvider)
 
-            val response = fioSdk.requestNewFunds("shawnmullen21:brd",
-                "mullin1:brd",newFundsContent,max_fee,wallet_fio_address)
+            val response = fioSdk.requestNewFunds("sm0bob:brd",
+                "sm0alice:brd",newFundsContent,max_fee,wallet_fio_address)
 
             Log.i("NewFundsRequest - processed:",response.processed.toString())
 
@@ -190,26 +191,31 @@ class ExampleInstrumentedTest {
     @Test
     fun testSentRequests()
     {
-        val private_key = "5J9bWm2ThenDm3tjvmUgHtWCVMUdjRR1pxnRtnJjvKA4b2ut5WK" //"5KHNgifC5hRJuq8pqYQ9pCxZbMNvHVW9bfvivY4UHyuxWcoa49T" //5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu
-        val fio_public_key = "FIO7zsqi7QUAjTAdyynd6DVe8uv4K8gCTRHnAoMN9w9CA1xLCTDVv"
-
-        val wallet_fio_address = "rewards:wallet"
-        val max_fee = BigInteger("4000000000000000000")
-
-        val serializationProvider = AbiFIOSerializationProvider()
-        val signatureProvider = SoftKeySignatureProvider()
-        signatureProvider.importKey(private_key)
-
-        val payerFioAddress = "shawnmullen21:brd"
-
-        var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
-            serializationProvider,signatureProvider)
-
         try
         {
-            val sentRequests = fioSdk.getSentFioRequests("FIO7zsqi7QUAjTAdyynd6DVe8uv4K8gCTRHnAoMN9w9CA1xLCTDVv")
+            val private_key = "5JbcPK6qTpYxMXtfpGXagYbo3KFE3qqxv2tLXLMPR8dTWWeYCp9"  //sm0alice
+            val fio_public_key = "FIO7c8SVyAyu6cACCaUjmPFEUyW9p2owWHeqq2WSEZ18FFTgErE1K"  //sm0alice
 
-            sentRequests.toList()
+//            val wallet_fio_address = "rewards:wallet"
+//            val max_fee = BigInteger("4000000000000000000")
+
+            val serializationProvider = AbiFIOSerializationProvider()
+            val signatureProvider = SoftKeySignatureProvider()
+            signatureProvider.importKey(private_key)
+
+            var fioSdk: FIOSDK = FIOSDK.getInstance(
+                private_key, fio_public_key,
+                serializationProvider, signatureProvider
+            )
+
+
+            val sentRequests = fioSdk.getSentFioRequests()
+
+//            val sharedSecretKey = CryptoUtils.generateSharedSecret(private_key, sentRequests[0].payerFioPublicKey)
+//
+//            sentRequests[0].deserializeRequestContent(sharedSecretKey,serializationProvider)
+
+            val s = ""
         }
         catch(e:Exception)
         {

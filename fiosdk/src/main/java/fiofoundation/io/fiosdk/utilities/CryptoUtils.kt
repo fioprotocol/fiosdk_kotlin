@@ -106,14 +106,14 @@ object CryptoUtils
         val encryptedMessage = hmacContent.copyOfRange(iv.size,hmacContent.size)
 
         val hmacData = Cryptography.createHmac(hmacContent,hmacKey)
-        if(hmacData != messageHmacData)
+        if(hmacData.equals(messageHmacData))
             throw FIOError("Hmac does not match.")
         else
         {
             val decrypter = Cryptography(decryptionKey, iv)
             val decryptedMessage = decrypter.decrypt(encryptedMessage)
 
-            return String(decryptedMessage)
+            return decryptedMessage.toHexString()
         }
     }
 

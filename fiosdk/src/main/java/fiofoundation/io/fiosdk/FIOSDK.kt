@@ -517,26 +517,6 @@ class FIOSDK(val privateKey: String, val publicKey: String,
     }
 
     @Throws(FIOError::class)
-    fun getSentFioRequests(requesteeFioPublicKey:String): List<FIORequestContent>
-    {
-        try
-        {
-            val request = GetSentFIORequestsRequest(requesteeFioPublicKey)
-            val response = this.networkProvider.getSentFIORequests(request)
-
-            return response.requests
-        }
-        catch(getSentFIORequestsError: GetSentFIORequestsError)
-        {
-            throw FIOError(getSentFIORequestsError.message!!,getSentFIORequestsError)
-        }
-        catch(e:Exception)
-        {
-            throw FIOError(e.message!!,e)
-        }
-    }
-
-    @Throws(FIOError::class)
     fun getSentFioRequests(): List<FIORequestContent>
     {
         return this.getSentFioRequests(this.publicKey)
@@ -561,21 +541,29 @@ class FIOSDK(val privateKey: String, val publicKey: String,
     }
 
     @Throws(FIOError::class)
-    private fun deserializeAndDecryptNewFundsContent(fundsRequestContent: FundsRequestContent,payerPublickey: String): String
+    private fun getSentFioRequests(requesteeFioPublicKey:String): List<FIORequestContent>
     {
         try
         {
-            val serializedNewFundsContent = this.serializationProvider.serializeNewFundsContent(fundsRequestContent.toJson())
+            val request = GetSentFIORequestsRequest(requesteeFioPublicKey)
+            val response = this.networkProvider.getSentFIORequests(request)
 
-            val secretKey = CryptoUtils.generateSharedSecret(this.privateKey,payerPublickey)
+            for (item in response.requests)
+            {
+                val sharedSecretKey = CryptoUtils.generateSharedSecret(this.privateKey, item.payerFioPublicKey)
+                item.deserializeRequestContent(sharedSecretKey,this.serializationProvider)
+            }
 
-            return CryptoUtils.encryptSharedMessage(serializedNewFundsContent,secretKey)
+            return response.requests
         }
-        catch(serializeError: SerializeTransactionError)
+        catch(getSentFIORequestsError: GetSentFIORequestsError)
         {
-            throw FIOError(serializeError.message!!,serializeError)
+            throw FIOError(getSentFIORequestsError.message!!,getSentFIORequestsError)
         }
-
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
     }
 
 }

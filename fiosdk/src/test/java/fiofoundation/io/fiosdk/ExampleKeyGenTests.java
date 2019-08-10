@@ -124,6 +124,12 @@ public class ExampleKeyGenTests {
 
     }
 
+    //alice - 5JbcPK6qTpYxMXtfpGXagYbo3KFE3qqxv2tLXLMPR8dTWWeYCp9 : FIO7c8SVyAyu6cACCaUjmPFEUyW9p2owWHeqq2WSEZ18FFTgErE1K
+
+    //bob - 5JAExdhmQw8F1siD7uzLrhmzfjW97hubw7ZNxjAiAu6p7Xq9wqG : FIO8LKt4DBzXKzDGjFcZo5x82Nv5ahmbZ8AUNXBv2vMfm6smiHst3
+
+    //jack - 5J5ps9x1XMuuBuNS7fNMxsNJm3maTLh8A6XPX5Bia8buMfQVWCm : FIO5iv7fFAqc5Uwj56wrATt4f8JwgHjQ6HZhsb4psk5aqro5zQXF2
+
     private List<String> getRandomSeedWords() {
         List<String> seedWords;
         try {
