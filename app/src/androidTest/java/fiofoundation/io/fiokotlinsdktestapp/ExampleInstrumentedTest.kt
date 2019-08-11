@@ -121,7 +121,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testNewFundsRequest()
     {
-        val private_key = "5JbcPK6qTpYxMXtfpGXagYbo3KFE3qqxv2tLXLMPR8dTWWeYCp9" //sm0alice
+        val private_key = "5JAExdhmQw8F1siD7uzLrhmzfjW97hubw7ZNxjAiAu6p7Xq9wqG" //sm0bob
 
         val wallet_fio_address = "rewards:wallet"
         val max_fee = BigInteger("4000000000000000000")
@@ -130,10 +130,10 @@ class ExampleInstrumentedTest {
         val signatureProvider = SoftKeySignatureProvider()
         signatureProvider.importKey(private_key)
 
-        val fio_public_key = "FIO7c8SVyAyu6cACCaUjmPFEUyW9p2owWHeqq2WSEZ18FFTgErE1K" //sm0alice
+        val fio_public_key = "FIO8LKt4DBzXKzDGjFcZo5x82Nv5ahmbZ8AUNXBv2vMfm6smiHst3" //sm0bob
         val payeeBTCAddress = "1AkZGXsnyDfp4faMmVfTWsN1nNRRvEZJk8"
 
-        val newFundsContent = FundsRequestContent(payeeBTCAddress,"3.0","BTC")
+        val newFundsContent = FundsRequestContent(payeeBTCAddress,"4.2","BTC")
 
 
         try
@@ -141,8 +141,8 @@ class ExampleInstrumentedTest {
             var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
                 serializationProvider,signatureProvider)
 
-            val response = fioSdk.requestNewFunds("sm0bob:brd",
-                "sm0alice:brd",newFundsContent,max_fee,wallet_fio_address)
+            val response = fioSdk.requestNewFunds("sm0alice:brd",
+                "sm0bob:brd",newFundsContent,max_fee,wallet_fio_address)
 
             Log.i("NewFundsRequest - processed:",response.processed.toString())
 
@@ -160,8 +160,8 @@ class ExampleInstrumentedTest {
     @Test
     fun testPendingRequests()
     {
-        val private_key = "5J9bWm2ThenDm3tjvmUgHtWCVMUdjRR1pxnRtnJjvKA4b2ut5WK" //"5KHNgifC5hRJuq8pqYQ9pCxZbMNvHVW9bfvivY4UHyuxWcoa49T" //5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu
-        val fio_public_key = "FIO7zsqi7QUAjTAdyynd6DVe8uv4K8gCTRHnAoMN9w9CA1xLCTDVv"
+        val private_key = "5JbcPK6qTpYxMXtfpGXagYbo3KFE3qqxv2tLXLMPR8dTWWeYCp9" //sm0alice
+        val fio_public_key = "FIO7c8SVyAyu6cACCaUjmPFEUyW9p2owWHeqq2WSEZ18FFTgErE1K" //sm0alice
 
         val wallet_fio_address = "rewards:wallet"
         val max_fee = BigInteger("4000000000000000000")
@@ -170,14 +170,12 @@ class ExampleInstrumentedTest {
         val signatureProvider = SoftKeySignatureProvider()
         signatureProvider.importKey(private_key)
 
-        val payerFioAddress = "shawnmullen21:brd"
-
         var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
             serializationProvider,signatureProvider)
 
         try
         {
-            val pendingRequests = fioSdk.getPendingFioRequests("FIO87MK3VsNmCjSTtscRKBnEwzbNYsCnGaUWdFgGuCLCV3tVW4Wai")
+            val pendingRequests = fioSdk.getPendingFioRequests()
 
             pendingRequests.toList()
         }
@@ -227,8 +225,8 @@ class ExampleInstrumentedTest {
     @Test
     fun testRejectFundsRequest()
     {
-        val private_key = "5J9bWm2ThenDm3tjvmUgHtWCVMUdjRR1pxnRtnJjvKA4b2ut5WK" //"5KHNgifC5hRJuq8pqYQ9pCxZbMNvHVW9bfvivY4UHyuxWcoa49T" //5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu
-        val fio_public_key = "FIO7zsqi7QUAjTAdyynd6DVe8uv4K8gCTRHnAoMN9w9CA1xLCTDVv"
+        val private_key = "5JbcPK6qTpYxMXtfpGXagYbo3KFE3qqxv2tLXLMPR8dTWWeYCp9" //sm0alice
+        val fio_public_key = "FIO7c8SVyAyu6cACCaUjmPFEUyW9p2owWHeqq2WSEZ18FFTgErE1K" //sm0alice
 
         val wallet_fio_address = "rewards:wallet"
         val max_fee = BigInteger("4000000000000000000")
@@ -237,14 +235,12 @@ class ExampleInstrumentedTest {
         val signatureProvider = SoftKeySignatureProvider()
         signatureProvider.importKey(private_key)
 
-        val payerFioAddress = "shawnmullen21:brd"
-
         var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
             serializationProvider,signatureProvider)
 
         try
         {
-            val response = fioSdk.rejectFundsRequest("8",max_fee,wallet_fio_address)
+            val response = fioSdk.rejectFundsRequest("10",max_fee,wallet_fio_address)
 
             println(response)
             println(response.toJson())

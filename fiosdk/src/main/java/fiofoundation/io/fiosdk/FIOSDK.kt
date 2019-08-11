@@ -491,26 +491,6 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         }
     }
 
-    @Throws(FIOError::class)
-    fun getPendingFioRequests(requesteeFioPublicKey:String): List<FIORequestContent>
-    {
-        try
-        {
-            val request = GetPendingFIORequestsRequest(requesteeFioPublicKey)
-            val response = this.networkProvider.getPendingFIORequests(request)
-
-            return response.requests
-        }
-        catch(getPendingFIORequestsError: GetPendingFIORequestsError)
-        {
-            throw FIOError(getPendingFIORequestsError.message!!,getPendingFIORequestsError)
-        }
-        catch(e:Exception)
-        {
-            throw FIOError(e.message!!,e)
-        }
-    }
-
     fun getPendingFioRequests(): List<FIORequestContent>
     {
         return this.getPendingFioRequests(this.publicKey)
@@ -559,6 +539,32 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         catch(getSentFIORequestsError: GetSentFIORequestsError)
         {
             throw FIOError(getSentFIORequestsError.message!!,getSentFIORequestsError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    @Throws(FIOError::class)
+    private fun getPendingFioRequests(requesteeFioPublicKey:String): List<FIORequestContent>
+    {
+        try
+        {
+            val request = GetPendingFIORequestsRequest(requesteeFioPublicKey)
+            val response = this.networkProvider.getPendingFIORequests(request)
+
+            for (item in response.requests)
+            {
+                val sharedSecretKey = CryptoUtils.generateSharedSecret(this.privateKey, item.payeeFioPublicKey)
+                item.deserializeRequestContent(sharedSecretKey,this.serializationProvider)
+            }
+
+            return response.requests
+        }
+        catch(getPendingFIORequestsError: GetPendingFIORequestsError)
+        {
+            throw FIOError(getPendingFIORequestsError.message!!,getPendingFIORequestsError)
         }
         catch(e:Exception)
         {
