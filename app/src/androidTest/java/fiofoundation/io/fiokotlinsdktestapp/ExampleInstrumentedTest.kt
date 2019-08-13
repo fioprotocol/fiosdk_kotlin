@@ -7,6 +7,7 @@ import fiofoundation.io.androidfioserializationprovider.AbiFIOSerializationProvi
 import fiofoundation.io.androidfiosoftkeysignatureprovider.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.FIOSDK
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
+import fiofoundation.io.fiosdk.models.fionetworkprovider.response.PushTransactionResponse
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
 
 import org.junit.Test
@@ -240,7 +241,12 @@ class ExampleInstrumentedTest {
 
         try
         {
-            val response = fioSdk.rejectFundsRequest("10",max_fee,wallet_fio_address)
+            val response = fioSdk.rejectFundsRequest("20",max_fee,wallet_fio_address)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            println(actionTraceResponse)
+
 
             println(response)
             println(response.toJson())

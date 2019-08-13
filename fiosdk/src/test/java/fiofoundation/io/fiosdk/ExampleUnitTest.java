@@ -543,8 +543,8 @@ public class ExampleUnitTest {
         //pvt key: 5KiGdMtgmjeMQPKeo9nbiEpA4Vu3Q91spGUCqHN3Gk8MAdWFYVP
         //pblk key: FIO87MK3VsNmCjSTtscRKBnEwzbNYsCnGaUWdFgGuCLCV3tVW4Wai
 
-        String fio_name = "sm0bob:brd";
-        String fio_public_key = "FIO8LKt4DBzXKzDGjFcZo5x82Nv5ahmbZ8AUNXBv2vMfm6smiHst3";
+        String fio_name = "sm0alice:brd";
+        String fio_public_key = "FIO7c8SVyAyu6cACCaUjmPFEUyW9p2owWHeqq2WSEZ18FFTgErE1K";
 
         FIONetworkProvider provider = new FIONetworkProvider(baseUrl,baseMockUrl);
         RegisterFIONameForUserRequest request = new RegisterFIONameForUserRequest(fio_name,fio_public_key);
