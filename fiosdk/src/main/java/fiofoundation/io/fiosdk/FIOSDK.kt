@@ -6,6 +6,7 @@ import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetPendingFIORequestsEr
 import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetPublicAddressError
 import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetSentFIORequestsError
 import fiofoundation.io.fiosdk.errors.formatters.FIOFormatterError
+import fiofoundation.io.fiosdk.errors.serializationprovider.DeserializeTransactionError
 import fiofoundation.io.fiosdk.errors.serializationprovider.SerializeTransactionError
 import fiofoundation.io.fiosdk.errors.session.TransactionBroadCastError
 import fiofoundation.io.fiosdk.errors.session.TransactionPrepareError
@@ -613,8 +614,15 @@ class FIOSDK(val privateKey: String, val publicKey: String,
 
             for (item in response.requests)
             {
-                val sharedSecretKey = CryptoUtils.generateSharedSecret(this.privateKey, item.payerFioPublicKey)
-                item.deserializeRequestContent(sharedSecretKey,this.serializationProvider)
+                try
+                {
+                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.privateKey, item.payerFioPublicKey)
+                    item.deserializeRequestContent(sharedSecretKey,this.serializationProvider)
+                }
+                catch(deserializationError: DeserializeTransactionError)
+                {
+                    //eat this error.  We do not want this error to stop the process.
+                }
             }
 
             return response.requests
@@ -639,8 +647,15 @@ class FIOSDK(val privateKey: String, val publicKey: String,
 
             for (item in response.requests)
             {
-                val sharedSecretKey = CryptoUtils.generateSharedSecret(this.privateKey, item.payeeFioPublicKey)
-                item.deserializeRequestContent(sharedSecretKey,this.serializationProvider)
+                try
+                {
+                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.privateKey, item.payeeFioPublicKey)
+                    item.deserializeRequestContent(sharedSecretKey,this.serializationProvider)
+                }
+                catch(deserializationError: DeserializeTransactionError)
+                {
+                    //eat this error.  We do not want this error to stop the process.
+                }
             }
 
             return response.requests
