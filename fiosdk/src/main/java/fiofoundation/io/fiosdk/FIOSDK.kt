@@ -18,6 +18,7 @@ import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
 import fiofoundation.io.fiosdk.models.Cryptography
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIORequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
+import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.*
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.GetFIOBalanceRequest
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.GetPendingFIORequestsRequest
@@ -491,6 +492,70 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         }
     }
 
+    @Throws(FIOError::class)
+    fun recordSend(payerFioAddress:String,payeeFioAddress:String,
+                        recordSendContent: RecordSendContent, fioRequestId: String,
+                   maxFee:BigInteger, walletFioAddress:String): PushTransactionResponse
+    {
+        var transactionProcessor = RecordSendTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            if(recordSendContent.status == "")
+                recordSendContent.status = "sent_to_blockchain"
+
+            //TODO: If the requestId is not blank, need to verify that the payeePublicKey, token_code
+            // and amount match the corresponding parameters of the funds request.
+
+            val encryptedContent = serializeAndEncryptRecordSendContent(recordSendContent,this.publicKey)
+
+            var recordSendAction = RecordSendAction(
+                payerFioAddress,
+                payeeFioAddress,
+                encryptedContent,
+                fioRequestId,
+                maxFee,
+                walletFioAddress,
+                this.publicKey
+            )
+
+
+            var actionList = ArrayList<RecordSendAction>()
+            actionList.add(recordSendAction)
+
+            transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+            transactionProcessor.sign()
+
+            return transactionProcessor.broadcast()
+        }
+        catch(fioError:FIOError)
+        {
+            throw fioError
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
     fun getPendingFioRequests(): List<FIORequestContent>
     {
         return this.getPendingFioRequests(this.publicKey)
@@ -508,6 +573,24 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         try
         {
             val serializedNewFundsContent = this.serializationProvider.serializeNewFundsContent(fundsRequestContent.toJson())
+
+            val secretKey = CryptoUtils.generateSharedSecret(this.privateKey,payerPublickey)
+
+            return CryptoUtils.encryptSharedMessage(serializedNewFundsContent,secretKey)
+        }
+        catch(serializeError: SerializeTransactionError)
+        {
+            throw FIOError(serializeError.message!!,serializeError)
+        }
+
+    }
+
+    @Throws(FIOError::class)
+    private fun serializeAndEncryptRecordSendContent(recordSendContent: RecordSendContent,payerPublickey: String): String
+    {
+        try
+        {
+            val serializedNewFundsContent = this.serializationProvider.serializeRecordSendContent(recordSendContent.toJson())
 
             val secretKey = CryptoUtils.generateSharedSecret(this.privateKey,payerPublickey)
 

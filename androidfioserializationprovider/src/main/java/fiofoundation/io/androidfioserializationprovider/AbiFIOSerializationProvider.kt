@@ -295,6 +295,40 @@ class AbiFIOSerializationProvider: ISerializationProvider {
         }
     }
 
+    @Throws(SerializeTransactionError::class)
+    override fun serializeRecordSendContent(json:String): String
+    {
+        try {
+            val abi:String = getAbiJsonString("fio.abi.json")
+            val serializationObject = AbiFIOSerializationObject(null, "", "record_send_content", abi)
+
+            serializationObject.json = json
+            serialize(serializationObject)
+            return serializationObject.hex
+        }
+        catch (serializationProviderError:SerializationProviderError)
+        {
+            throw SerializeTransactionError(serializationProviderError)
+        }
+    }
+
+    @Throws(DeserializeTransactionError::class)
+    override fun deserializeRecordSendContent(hex:String):String  {
+        try {
+            val abi:String = getAbiJsonString("fio.abi.json")
+            val serializationObject = AbiFIOSerializationObject(null, "", "record_send_content", abi)
+
+            serializationObject.hex = hex
+            deserialize(serializationObject)
+
+            return serializationObject.json
+        }
+        catch (serializationProviderError:SerializationProviderError)
+        {
+            throw DeserializeTransactionError(serializationProviderError)
+        }
+    }
+
     @Throws(SerializationProviderError::class)
     private fun refreshContext()
     {

@@ -8,7 +8,7 @@ import java.math.BigInteger
 
 class RecordSendAction(payerFioAddress:String,
                         payeeFioAddress: String,
-                        content: RecordSendContent,
+                        content: String,
                         fioRequestId: String,
                         maxFee: BigInteger,
                         walletFioAddress: String,
@@ -23,7 +23,7 @@ class RecordSendAction(payerFioAddress:String,
     {
         val auth = Authorization(actorPublicKey, "active")
         var requestData = RecordSendData(
-            payerFioAddress, payeeFioAddress, content.toJson(), maxFee,fioRequestId,
+            payerFioAddress, payeeFioAddress, content, maxFee,fioRequestId,
             auth.actor, walletFioAddress)
 
         this.authorization.add(auth)

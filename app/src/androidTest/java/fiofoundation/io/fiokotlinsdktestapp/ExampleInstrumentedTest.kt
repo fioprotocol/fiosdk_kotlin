@@ -7,6 +7,7 @@ import fiofoundation.io.androidfioserializationprovider.AbiFIOSerializationProvi
 import fiofoundation.io.androidfiosoftkeysignatureprovider.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.FIOSDK
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
+import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.PushTransactionResponse
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
 
@@ -246,6 +247,44 @@ class ExampleInstrumentedTest {
             val actionTraceResponse = response.getActionTraceResponse()
 
             println(actionTraceResponse)
+
+
+            println(response)
+            println(response.toJson())
+
+        }
+        catch(e:Exception)
+        {
+            println(e.message)
+        }
+    }
+
+    @Test
+    fun testRecordSend()
+    {
+        val private_key = "5JbcPK6qTpYxMXtfpGXagYbo3KFE3qqxv2tLXLMPR8dTWWeYCp9" //sm0alice
+        val fio_public_key = "FIO7c8SVyAyu6cACCaUjmPFEUyW9p2owWHeqq2WSEZ18FFTgErE1K" //sm0alice
+
+        val payeeBTCAddress = "1AkZGXsnyDfp4faMmVfTWsN1nNRRvEZJk8" //sm0bob:brd
+        val payerBTCAddress = "1PzCN3cBkTL72GPeJmpcueU4wQi9guiLa6" //sm0alice:brd
+
+        val wallet_fio_address = "rewards:wallet"
+        val max_fee = BigInteger("4000000000000000000")
+
+        val serializationProvider = AbiFIOSerializationProvider()
+        val signatureProvider = SoftKeySignatureProvider()
+        signatureProvider.importKey(private_key)
+
+        var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
+            serializationProvider,signatureProvider)
+
+        try
+        {
+            var recordSendContent = RecordSendContent(payerBTCAddress,payeeBTCAddress,"4.2","BTC","1234567")
+
+            val response = fioSdk.recordSend("sm0alice:brd",
+                "sm0bob:brd", recordSendContent,"5",
+                max_fee,wallet_fio_address)
 
 
             println(response)
