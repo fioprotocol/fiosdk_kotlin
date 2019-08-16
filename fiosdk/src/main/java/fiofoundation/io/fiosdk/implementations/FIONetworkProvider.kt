@@ -23,15 +23,18 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
 {
     constructor(baseURL: String, mockServerBaseUrl: String): this(baseURL)
     {
-        val httpClient = OkHttpClient.Builder()
+        if (mockServerBaseUrl.isNotEmpty())
+        {
+            val httpClient = OkHttpClient.Builder()
 
-        this.mockRetrofit = Retrofit.Builder()
-            .baseUrl(mockServerBaseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(httpClient.build())
-            .build()
+            this.mockRetrofit = Retrofit.Builder()
+                .baseUrl(mockServerBaseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClient.build())
+                .build()
 
-        this.mockNetworkProviderApi = this.mockRetrofit!!.create(IFIOMockNetworkProviderApi::class.java)
+            this.mockNetworkProviderApi = this.mockRetrofit!!.create(IFIOMockNetworkProviderApi::class.java)
+        }
     }
 
     private var retrofit: Retrofit
@@ -40,8 +43,8 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
     private var networkProviderApi: IFIONetworkProviderApi
     private var mockNetworkProviderApi: IFIOMockNetworkProviderApi?
 
-    init{
-
+    init
+    {
         val httpClient = OkHttpClient.Builder()
 
         this.retrofit = Retrofit.Builder()

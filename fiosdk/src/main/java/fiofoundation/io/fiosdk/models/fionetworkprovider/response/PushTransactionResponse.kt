@@ -1,12 +1,15 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider.response
 
+import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.internal.LinkedTreeMap
+import java.io.Serializable
+import java.math.BigInteger
 
 class PushTransactionResponse(@SerializedName("transaction_id") val transactionId: String,
                               @SerializedName("processed") val processed: Map<*, *>?): FIOResponse()
 {
-    fun getActionTraceResponse() : String
+    fun getActionTraceResponse() : ActionTraceResponse?
     {
         if(this.processed!!.containsKey("action_traces"))
         {
@@ -19,12 +22,27 @@ class PushTransactionResponse(@SerializedName("transaction_id") val transactionI
 
                 if(actionTraceReceipt["response"]!=null)
                 {
-                    return actionTraceReceipt["response"].toString()
+                    val actionTraceResponse = actionTraceReceipt["response"].toString()
+
+                    return Gson().fromJson(actionTraceResponse,ActionTraceResponse::class.java)
                 }
             }
 
         }
 
-        return ""
+        return null
+    }
+
+    class ActionTraceResponse: Serializable
+    {
+        @SerializedName("status")
+        val status: String =""
+
+        @SerializedName("expiration")
+        val expiration: String =""
+
+        @SerializedName("fee_collected")
+        val feeCollected: BigInteger = BigInteger("0")
+
     }
 }

@@ -120,8 +120,6 @@ public class ExampleKeyGenTests {
         {
             System.out.println(e.getMessage());
         }
-
-
     }
 
     //alice - 5JbcPK6qTpYxMXtfpGXagYbo3KFE3qqxv2tLXLMPR8dTWWeYCp9 : FIO7c8SVyAyu6cACCaUjmPFEUyW9p2owWHeqq2WSEZ18FFTgErE1K

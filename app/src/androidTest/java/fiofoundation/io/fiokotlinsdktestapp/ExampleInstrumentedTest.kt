@@ -6,17 +6,25 @@ import android.util.Log
 import fiofoundation.io.androidfioserializationprovider.AbiFIOSerializationProvider
 import fiofoundation.io.androidfiosoftkeysignatureprovider.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.FIOSDK
+import fiofoundation.io.fiosdk.errors.FIOError
+import fiofoundation.io.fiosdk.errors.fionetworkprovider.RegisterFIONameForUserError
+import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
+import fiofoundation.io.fiosdk.models.fionetworkprovider.request.RegisterFIONameForUserRequest
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.PushTransactionResponse
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
+import org.bitcoinj.crypto.MnemonicCode
+import org.bitcoinj.crypto.MnemonicException
 
 import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.junit.Assert.*
+import java.io.IOException
 import java.lang.Exception
 import java.math.BigInteger
+import java.security.SecureRandom
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -25,275 +33,252 @@ import java.math.BigInteger
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
-    @Test
-    fun useAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getTargetContext()
-        assertEquals("fiofoundation.io.fiokotlinsdktestapp", appContext.packageName)
-    }
+
+    private var alicePrivateKey = "5JbcPK6qTpYxMXtfpGXagYbo3KFE3qqxv2tLXLMPR8dTWWeYCp9"
+    private var alicePublicKey = "FIO7c8SVyAyu6cACCaUjmPFEUyW9p2owWHeqq2WSEZ18FFTgErE1K"
+    private var bobPrivateKey = "5JAExdhmQw8F1siD7uzLrhmzfjW97hubw7ZNxjAiAu6p7Xq9wqG"
+    private var bobPublicKey = "FIO8LKt4DBzXKzDGjFcZo5x82Nv5ahmbZ8AUNXBv2vMfm6smiHst3"
+
+    private var aliceFioAddress = "test-alice:brd"
+    private var bobFioAddress = "test-bob:brd"
+
+    private var testFioDomain = "sm"
+
+    private var walletFioAddress = "rewards:wallet"
+    private var testMaxFee = BigInteger("4000000000000000000")
+
+    private var sharedSecretKey = ""
+
+    private var baseUrl = "http://54.184.39.43:8889/v1/"
+    private var baseMockUrl = "http://mock.dapix.io/mockd/DEV4/"
+    private var fioSdk:FIOSDK? = null
+
+    private var logTag = "FIOSDK-TEST"
+
+    private val skipRegisterFioAddress = true
+    private val skipRegisterFioDomain = true
 
     @Test
-    fun testRegisterFioAddress() {
-        val private_key = "5JLxoeRoMDGBbkLdXJjxuh3zHsSS7Lg6Ak9Ft8v8sSdYPkFuABF"
-
-        //"5KHNgifC5hRJuq8pqYQ9pCxZbMNvHVW9bfvivY4UHyuxWcoa49T" //5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu  //5JLxoeRoMDGBbkLdXJjxuh3zHsSS7Lg6Ak9Ft8v8sSdYPkFuABF (pawel test key)
-
-        val serializationProvider = AbiFIOSerializationProvider()
-        val signatureProvider = SoftKeySignatureProvider()
-        signatureProvider.importKey(private_key)
-
-        val fio_address = "shawnm127:brd"
-        val fio_public_key = "FIO5oBUYbtGTxMS66pPkjC2p8pbA3zCtc8XD4dq9fMut867GRdh82"
-
-        //"FIO8iB2mYT1zjMwyejw5UYaT5r4cq58sTuvGctoYwQ9rjFT5DGFDq" //FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o (registered via mock) //FIO5oBUYbtGTxMS66pPkjC2p8pbA3zCtc8XD4dq9fMut867GRdh82 (pawel test key)
-
-        val wallet_fio_address = "rewards:wallet"
-        val max_fee = BigInteger("4000000000000000000")
-
-        var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
-            serializationProvider,signatureProvider)
-
-        fioSdk.registerFioAddress(fio_address,fio_public_key,max_fee,wallet_fio_address)
-    }
-
-    @Test
-    fun testRegisterFioDomain() {
-        val private_key = "5JLxoeRoMDGBbkLdXJjxuh3zHsSS7Lg6Ak9Ft8v8sSdYPkFuABF" //"5KHNgifC5hRJuq8pqYQ9pCxZbMNvHVW9bfvivY4UHyuxWcoa49T" //5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu
-
-        val serializationProvider = AbiFIOSerializationProvider()
-        val signatureProvider = SoftKeySignatureProvider()
-        signatureProvider.importKey(private_key)
-
-        val fio_domain = "yoroi"
-        val fio_public_key = "FIO5oBUYbtGTxMS66pPkjC2p8pbA3zCtc8XD4dq9fMut867GRdh82" //"FIO8iB2mYT1zjMwyejw5UYaT5r4cq58sTuvGctoYwQ9rjFT5DGFDq" //FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o
-        val wallet_fio_address = "rewards:wallet"
-        val max_fee = BigInteger("4000000000000000000")
-
-        var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
-            serializationProvider,signatureProvider)
-
-        fioSdk.registerFioDomain(fio_domain,fio_public_key,max_fee,wallet_fio_address)
-    }
-
-    @Test
-    fun testTransferTokensToPublicKey() {
-        val private_key = "5JLxoeRoMDGBbkLdXJjxuh3zHsSS7Lg6Ak9Ft8v8sSdYPkFuABF" //"5KHNgifC5hRJuq8pqYQ9pCxZbMNvHVW9bfvivY4UHyuxWcoa49T" //5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu
-
-        val serializationProvider = AbiFIOSerializationProvider()
-        val signatureProvider = SoftKeySignatureProvider()
-        signatureProvider.importKey(private_key)
-
-        val payee_public_key = "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o"
-        val fio_public_key = "FIO5oBUYbtGTxMS66pPkjC2p8pbA3zCtc8XD4dq9fMut867GRdh82" //"FIO8iB2mYT1zjMwyejw5UYaT5r4cq58sTuvGctoYwQ9rjFT5DGFDq" //FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o
-        val wallet_fio_address = "rewards:wallet"
-        val max_fee = BigInteger("4000000000000000000")
-        var amount = "10"
-
-        var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
-            serializationProvider,signatureProvider)
-
-        fioSdk.transferTokensToPublicKey(payee_public_key,amount,max_fee,wallet_fio_address)
-    }
-
-    @Test
-    fun testGetFioBalance()
+    fun setupTestVariable()
     {
-        val private_key = "5JLxoeRoMDGBbkLdXJjxuh3zHsSS7Lg6Ak9Ft8v8sSdYPkFuABF" //"5KHNgifC5hRJuq8pqYQ9pCxZbMNvHVW9bfvivY4UHyuxWcoa49T" //5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu
+        this.logTag = this.logTag + ": " + (0..10000).random().toString()
 
-        val serializationProvider = AbiFIOSerializationProvider()
-        val signatureProvider = SoftKeySignatureProvider()
-        signatureProvider.importKey(private_key)
+        Log.i(this.logTag,"Start setupTestVariable")
 
-        val fio_public_key = "FIO5oBUYbtGTxMS66pPkjC2p8pbA3zCtc8XD4dq9fMut867GRdh82" //"FIO8iB2mYT1zjMwyejw5UYaT5r4cq58sTuvGctoYwQ9rjFT5DGFDq" //FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o
+        this.generatePrivateAndPublicKeys()
 
+        aliceFioAddress = "test-alice" + (0..10000).random().toString() + ":brd"
+        bobFioAddress = "test-bob" + (0..10000).random().toString() + ":brd"
+
+        Log.i(this.logTag,"Alice FIO Address: " + this.aliceFioAddress)
+        Log.i(this.logTag,"Bob FIO Address: " + this.bobFioAddress)
+
+        assertTrue(this.aliceFioAddress.isNotEmpty())
+        assertTrue(this.bobFioAddress.isNotEmpty())
+
+        Log.i(this.logTag,"Finish setupTestVariable")
+    }
+
+    @Test
+    fun initializeFIOSDK()
+    {
+        this.setupTestVariable()
+
+        Log.i(this.logTag,"Start initializeFIOSDK")
+
+        this.switchUser("alice")
+
+        assertTrue("FIOSDK Initialize",this.fioSdk!=null)
+
+        Log.i(this.logTag,"Finish initializeFIOSDK")
+    }
+
+    @Test
+    fun registerFioNameForUser() {
+
+        this.initializeFIOSDK()
+
+        Log.i(this.logTag,"Start registerFioNameForUser")
+
+        var response = this.fioSdk!!.registerFioNameOnBehalfOfUser(this.aliceFioAddress)
+
+        Log.i(this.logTag,"Register FioName For Alice: " + response.status)
+
+        assertTrue(response.status == "OK")
+
+        this.switchUser("bob")
+
+        response = this.fioSdk!!.registerFioNameOnBehalfOfUser(this.bobFioAddress)
+
+        Log.i(this.logTag,"Register FioName For Bob: " + response.status)
+
+        assertTrue(response.status == "OK")
+
+        this.switchUser("alice")
+
+        Log.i(this.logTag,"Finish registerFioNameForUser")
+    }
+
+    @Test
+    fun registerFioDomain()
+    {
+
+        if(skipRegisterFioDomain == false)
+        {
+            try {
+                this.registerFioNameForUser()
+
+                Log.i(this.logTag, "Start registerFioDomain")
+
+                val fioDomainToRegister = testFioDomain + (0..8).random().toString()
+
+                val response = this.fioSdk!!.registerFioDomain(
+                    fioDomainToRegister, this.alicePublicKey,
+                    testMaxFee, walletFioAddress
+                )
+
+                val actionTraceResponse = response.getActionTraceResponse()
+                if (actionTraceResponse != null) {
+                    Log.i(
+                        this.logTag,
+                        "Register Fio Domain, " + fioDomainToRegister + ", for Alice: " + actionTraceResponse.status
+                    )
+
+
+                    assertTrue(actionTraceResponse.status == "OK")
+                } else
+                    Log.i(this.logTag, "Register Fio Domain, " + fioDomainToRegister + ", for Alice: failed")
+
+            }
+            catch (e: FIOError) {
+                Log.e(this.logTag, e.toJson())
+            }
+
+            Log.i(this.logTag, "Finish registerFioDomain")
+        }
+        else
+            Log.i(this.logTag, "Skipped registerFioDomain")
+
+    }
+
+    @Test
+    fun registerFioAddress() {
+
+        if(skipRegisterFioAddress == false) {
+            try {
+                this.registerFioNameForUser()
+
+                Log.i(this.logTag, "Start registerFioAddress")
+
+                val fioAddressToRegister = "test-shawn" + (0..10000).random().toString() + ":brd"
+
+                val response = this.fioSdk!!.registerFioAddress(
+                    fioAddressToRegister, this.alicePublicKey,
+                    testMaxFee, walletFioAddress
+                )
+
+                val actionTraceResponse = response.getActionTraceResponse()
+                if (actionTraceResponse != null) {
+                    Log.i(
+                        this.logTag,
+                        "Register Fio Address for Alice: " + (actionTraceResponse.status == "OK").toString()
+                    )
+
+                    assertTrue(actionTraceResponse.status == "OK")
+                } else
+                    Log.i(this.logTag, "Register Fio Address for Alice: failed")
+            } catch (e: FIOError) {
+                Log.e(this.logTag, e.toJson())
+            }
+
+            Log.i(this.logTag, "Finish registerFioAddress")
+        }
+        else
+            Log.i(this.logTag, "Skipped registerFioAddress")
+    }
+
+    @Test
+    fun getFioBalance()
+    {
         try
         {
-            var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
-                serializationProvider,signatureProvider)
+            this.registerFioNameForUser()
 
-            Log.i("GET_FIO_BALANCE",fioSdk.getFioBalance().toString())
+            Log.i(this.logTag, "Start getFioBalance")
+
+            val balance = this.fioSdk!!.getFioBalance()
+
+            Log.i(this.logTag, "GetFioBalance: " + balance.toString())
+
+            assertTrue(true)
         }
-        catch(e:Exception)
+        catch (e: FIOError)
         {
-            Log.e("GET_FIO_BALANCE",e.message)
+            Log.e(this.logTag, e.toJson())
         }
 
+        Log.i(this.logTag, "Finish getFioBalance")
     }
 
-    @Test
-    fun testNewFundsRequest()
-    {
-        val private_key = "5JAExdhmQw8F1siD7uzLrhmzfjW97hubw7ZNxjAiAu6p7Xq9wqG" //sm0bob
 
-        val wallet_fio_address = "rewards:wallet"
-        val max_fee = BigInteger("4000000000000000000")
+    //Private Methods
 
-        val serializationProvider = AbiFIOSerializationProvider()
-        val signatureProvider = SoftKeySignatureProvider()
-        signatureProvider.importKey(private_key)
+    private fun generatePrivateAndPublicKeys() {
+        //String mn = "valley alien library bread worry brother bundle hammer loyal barely dune brave";//"ability sport fly alarm pool spin cupboard quarter laptop write comic torch";
 
-        val fio_public_key = "FIO8LKt4DBzXKzDGjFcZo5x82Nv5ahmbZ8AUNXBv2vMfm6smiHst3" //sm0bob
-        val payeeBTCAddress = "1AkZGXsnyDfp4faMmVfTWsN1nNRRvEZJk8"
+        //Alice First
+        var mn = getRandomSeedWords().joinToString(" ")
 
-        val newFundsContent = FundsRequestContent(payeeBTCAddress,"4.2","BTC")
+        alicePrivateKey = FIOSDK.createPrivateKey(mn)
+        alicePublicKey = FIOSDK.derivePublicKey(alicePrivateKey)
 
+        //Bob Next
 
-        try
-        {
-            var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
-                serializationProvider,signatureProvider)
+        mn = getRandomSeedWords().joinToString(" ")
 
-            val response = fioSdk.requestNewFunds("sm0alice:brd",
-                "sm0bob:brd",newFundsContent,max_fee,wallet_fio_address)
-
-            Log.i("NewFundsRequest - processed:",response.processed.toString())
-
-            Log.i("NewFundsRequest - responseKey:",response.processed!!["action_traces"].toString())
-            Log.i("NewFundsRequest - json:",response.toJson())
-
-            Log.i("NewFundsRequest",response.transactionId)
-        }
-        catch(e:Exception)
-        {
-            Log.e("ClaimBlockProducerRewards",e.message)
-        }
+        bobPrivateKey = FIOSDK.createPrivateKey(mn)
+        bobPublicKey = FIOSDK.derivePublicKey(bobPrivateKey)
     }
 
-    @Test
-    fun testPendingRequests()
-    {
-        val private_key = "5JbcPK6qTpYxMXtfpGXagYbo3KFE3qqxv2tLXLMPR8dTWWeYCp9" //sm0alice
-        val fio_public_key = "FIO7c8SVyAyu6cACCaUjmPFEUyW9p2owWHeqq2WSEZ18FFTgErE1K" //sm0alice
+    private fun getRandomSeedWords(): List<String> {
+        val seedWords: List<String>
 
-        val wallet_fio_address = "rewards:wallet"
-        val max_fee = BigInteger("4000000000000000000")
+            val mnemonicCode = MnemonicCode()
 
-        val serializationProvider = AbiFIOSerializationProvider()
-        val signatureProvider = SoftKeySignatureProvider()
-        signatureProvider.importKey(private_key)
+            seedWords = mnemonicCode.toMnemonic(SecureRandom().generateSeed(16))
 
-        var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
-            serializationProvider,signatureProvider)
-
-        try
-        {
-            val pendingRequests = fioSdk.getPendingFioRequests()
-
-            pendingRequests.toList()
-        }
-        catch(e:Exception)
-        {
-            System.out.println(e.message)
-        }
-
+        return seedWords
     }
 
-    @Test
-    fun testSentRequests()
+    private fun switchUser(userToSwitchTo: String)
     {
-        try
+        if(userToSwitchTo == "alice")
         {
-            val private_key = "5JbcPK6qTpYxMXtfpGXagYbo3KFE3qqxv2tLXLMPR8dTWWeYCp9"  //sm0alice
-            val fio_public_key = "FIO7c8SVyAyu6cACCaUjmPFEUyW9p2owWHeqq2WSEZ18FFTgErE1K"  //sm0alice
-
-//            val wallet_fio_address = "rewards:wallet"
-//            val max_fee = BigInteger("4000000000000000000")
+            FIOSDK.destroyInstance()
 
             val serializationProvider = AbiFIOSerializationProvider()
             val signatureProvider = SoftKeySignatureProvider()
-            signatureProvider.importKey(private_key)
+            signatureProvider.importKey(this.alicePrivateKey)
 
-            var fioSdk: FIOSDK = FIOSDK.getInstance(
-                private_key, fio_public_key,
-                serializationProvider, signatureProvider
-            )
+            this.fioSdk = FIOSDK.getInstance(this.alicePrivateKey,this.alicePublicKey,
+                serializationProvider,signatureProvider,baseUrl,baseMockUrl)
 
-
-            val sentRequests = fioSdk.getSentFioRequests()
-
-//            val sharedSecretKey = CryptoUtils.generateSharedSecret(private_key, sentRequests[0].payerFioPublicKey)
-//
-//            sentRequests[0].deserializeRequestContent(sharedSecretKey,serializationProvider)
-
-            val s = ""
+            Log.i(this.logTag,"Alice Private Key: " + this.alicePrivateKey)
+            Log.i(this.logTag,"Alice Public Key: " + this.alicePublicKey)
         }
-        catch(e:Exception)
+        else if(userToSwitchTo == "bob")
         {
-            System.out.println(e.message)
-        }
+            FIOSDK.destroyInstance()
 
-    }
+            val serializationProvider = AbiFIOSerializationProvider()
+            val signatureProvider = SoftKeySignatureProvider()
+            signatureProvider.importKey(this.bobPrivateKey)
 
-    @Test
-    fun testRejectFundsRequest()
-    {
-        val private_key = "5JbcPK6qTpYxMXtfpGXagYbo3KFE3qqxv2tLXLMPR8dTWWeYCp9" //sm0alice
-        val fio_public_key = "FIO7c8SVyAyu6cACCaUjmPFEUyW9p2owWHeqq2WSEZ18FFTgErE1K" //sm0alice
+            this.fioSdk = FIOSDK.getInstance(this.bobPrivateKey,this.bobPublicKey,
+                serializationProvider,signatureProvider,baseUrl,baseMockUrl)
 
-        val wallet_fio_address = "rewards:wallet"
-        val max_fee = BigInteger("4000000000000000000")
-
-        val serializationProvider = AbiFIOSerializationProvider()
-        val signatureProvider = SoftKeySignatureProvider()
-        signatureProvider.importKey(private_key)
-
-        var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
-            serializationProvider,signatureProvider)
-
-        try
-        {
-            val response = fioSdk.rejectFundsRequest("20",max_fee,wallet_fio_address)
-
-            val actionTraceResponse = response.getActionTraceResponse()
-
-            println(actionTraceResponse)
-
-
-            println(response)
-            println(response.toJson())
-
-        }
-        catch(e:Exception)
-        {
-            println(e.message)
-        }
-    }
-
-    @Test
-    fun testRecordSend()
-    {
-        val private_key = "5JbcPK6qTpYxMXtfpGXagYbo3KFE3qqxv2tLXLMPR8dTWWeYCp9" //sm0alice
-        val fio_public_key = "FIO7c8SVyAyu6cACCaUjmPFEUyW9p2owWHeqq2WSEZ18FFTgErE1K" //sm0alice
-
-        val payeeBTCAddress = "1AkZGXsnyDfp4faMmVfTWsN1nNRRvEZJk8" //sm0bob:brd
-        val payerBTCAddress = "1PzCN3cBkTL72GPeJmpcueU4wQi9guiLa6" //sm0alice:brd
-
-        val wallet_fio_address = "rewards:wallet"
-        val max_fee = BigInteger("4000000000000000000")
-
-        val serializationProvider = AbiFIOSerializationProvider()
-        val signatureProvider = SoftKeySignatureProvider()
-        signatureProvider.importKey(private_key)
-
-        var fioSdk:FIOSDK = FIOSDK.getInstance(private_key,fio_public_key,
-            serializationProvider,signatureProvider)
-
-        try
-        {
-            var recordSendContent = RecordSendContent(payerBTCAddress,payeeBTCAddress,"4.2","BTC","1234567")
-
-            val response = fioSdk.recordSend("sm0alice:brd",
-                "sm0bob:brd", recordSendContent,"5",
-                max_fee,wallet_fio_address)
-
-
-            println(response)
-            println(response.toJson())
-
-        }
-        catch(e:Exception)
-        {
-            println(e.message)
+            Log.i(this.logTag,"Bob Private Key: " + this.bobPrivateKey)
+            Log.i(this.logTag,"Bob Public Key: " + this.bobPublicKey)
         }
     }
 

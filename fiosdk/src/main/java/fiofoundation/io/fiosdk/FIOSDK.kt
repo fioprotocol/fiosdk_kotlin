@@ -1,10 +1,7 @@
 package fiofoundation.io.fiosdk
 
 import fiofoundation.io.fiosdk.errors.FIOError
-import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetFIOBalanceError
-import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetPendingFIORequestsError
-import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetPublicAddressError
-import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetSentFIORequestsError
+import fiofoundation.io.fiosdk.errors.fionetworkprovider.*
 import fiofoundation.io.fiosdk.errors.formatters.FIOFormatterError
 import fiofoundation.io.fiosdk.errors.serializationprovider.DeserializeTransactionError
 import fiofoundation.io.fiosdk.errors.serializationprovider.SerializeTransactionError
@@ -16,31 +13,25 @@ import fiofoundation.io.fiosdk.implementations.ABIProvider
 import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
-import fiofoundation.io.fiosdk.models.Cryptography
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIORequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.*
-import fiofoundation.io.fiosdk.models.fionetworkprovider.request.GetFIOBalanceRequest
-import fiofoundation.io.fiosdk.models.fionetworkprovider.request.GetPendingFIORequestsRequest
-import fiofoundation.io.fiosdk.models.fionetworkprovider.request.GetPublicAddressRequest
-import fiofoundation.io.fiosdk.models.fionetworkprovider.request.GetSentFIORequestsRequest
+import fiofoundation.io.fiosdk.models.fionetworkprovider.request.*
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.PushTransactionResponse
+import fiofoundation.io.fiosdk.models.fionetworkprovider.response.RegisterFIONameForUserResponse
 import fiofoundation.io.fiosdk.session.processors.*
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
-import fiofoundation.io.fiosdk.utilities.HashUtils
 import fiofoundation.io.fiosdk.utilities.PrivateKeyUtils
 
 import java.math.BigInteger
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import java.nio.charset.StandardCharsets
 
 class FIOSDK(val privateKey: String, val publicKey: String,
              val serializationProvider: ISerializationProvider,
-             val signatureProvider: ISignatureProvider) {
+             val signatureProvider: ISignatureProvider, networkBaseUrl:String,mockServerBaseUrl:String="") {
 
-    private val networkProvider:FIONetworkProvider = FIONetworkProvider("http://54.184.39.43:8889/v1/")
+    private val networkProvider:FIONetworkProvider = FIONetworkProvider(networkBaseUrl,mockServerBaseUrl)
+
     private val abiProvider:ABIProvider = ABIProvider(networkProvider,this.serializationProvider)
 
     companion object Static {
@@ -66,15 +57,51 @@ class FIOSDK(val privateKey: String, val publicKey: String,
 
         fun getInstance(privateKey: String,publickey: String,
                         serializationProvider: ISerializationProvider,
-                        signatureProvider: ISignatureProvider): FIOSDK
+                        signatureProvider: ISignatureProvider,networkBaseUrl:String
+                        ,mockServerBaseUrl:String=""): FIOSDK
         {
             if(fioSdk == null)
-             fioSdk = FIOSDK(privateKey,publickey,serializationProvider, signatureProvider)
+             fioSdk = FIOSDK(privateKey,publickey,serializationProvider, signatureProvider,networkBaseUrl,mockServerBaseUrl)
 
             return fioSdk!!
         }
 
+        fun getInstance(): FIOSDK
+        {
+            return fioSdk!!
+        }
 
+        fun destroyInstance()
+        {
+            fioSdk = null
+        }
+    }
+
+    @Throws(FIOError::class)
+    fun registerFioNameOnBehalfOfUser(fioName:String): RegisterFIONameForUserResponse
+    {
+        val request = RegisterFIONameForUserRequest(fioName, this.publicKey)
+
+        return this.networkProvider.registerFioNameOnBehalfOfUser(request)
+    }
+
+    @Throws(FIOError::class)
+    fun registerFioNameOnBehalfOfUser(fioName:String,ownerPublicKey:String): RegisterFIONameForUserResponse
+    {
+        try
+        {
+            val request = RegisterFIONameForUserRequest(fioName, ownerPublicKey)
+
+            return this.networkProvider.registerFioNameOnBehalfOfUser(request)
+        }
+        catch(registerFIONameForUserError: RegisterFIONameForUserError)
+        {
+            throw FIOError(registerFIONameForUserError.message!!,registerFIONameForUserError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
     }
 
     @Throws(FIOError::class)
@@ -131,6 +158,12 @@ class FIOSDK(val privateKey: String, val publicKey: String,
     }
 
     @Throws(FIOError::class)
+    fun registerFioAddress(fioAddress:String, maxFee:BigInteger, walletFioAddress:String): PushTransactionResponse
+    {
+        return registerFioAddress(fioAddress,this.publicKey,maxFee,walletFioAddress)
+    }
+
+    @Throws(FIOError::class)
     fun registerFioDomain(fioDomain:String,ownerPublicKey:String, maxFee:BigInteger,
                           walletFioAddress:String): PushTransactionResponse
     {
@@ -180,6 +213,13 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         {
             throw FIOError(e.message!!,e)
         }
+    }
+
+    @Throws(FIOError::class)
+    fun registerFioDomain(fioDomain:String, maxFee:BigInteger,
+                          walletFioAddress:String): PushTransactionResponse
+    {
+        return registerFioDomain(fioDomain,this.publicKey,maxFee,walletFioAddress)
     }
 
     @Throws(FIOError::class)
