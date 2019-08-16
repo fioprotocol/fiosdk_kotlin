@@ -22,6 +22,7 @@ import org.junit.runner.RunWith
 
 import org.junit.Assert.*
 import java.io.IOException
+import java.lang.AssertionError
 import java.lang.Exception
 import java.math.BigInteger
 import java.security.SecureRandom
@@ -47,7 +48,10 @@ class ExampleInstrumentedTest {
     private var walletFioAddress = "rewards:wallet"
     private var testMaxFee = BigInteger("4000000000000000000")
 
-    private var sharedSecretKey = ""
+    private var payeeBTCAddress = "1AkZGXsnyDfp4faMmVfTWsN1nNRRvEZJk8"
+    private var newFundsRequestId = ""
+
+    private var sharedSecretKey:ByteArray? = null
 
     private var baseUrl = "http://54.184.39.43:8889/v1/"
     private var baseMockUrl = "http://mock.dapix.io/mockd/DEV4/"
@@ -152,6 +156,12 @@ class ExampleInstrumentedTest {
             }
             catch (e: FIOError) {
                 Log.e(this.logTag, e.toJson())
+
+                throw AssertionError("Register Fio Domain Failed: " + e.toJson())
+            }
+            catch(generalException:Exception)
+            {
+                throw AssertionError("Register Fio Domain Failed: " + generalException.message)
             }
 
             Log.i(this.logTag, "Finish registerFioDomain")
@@ -187,8 +197,16 @@ class ExampleInstrumentedTest {
                     assertTrue(actionTraceResponse.status == "OK")
                 } else
                     Log.i(this.logTag, "Register Fio Address for Alice: failed")
-            } catch (e: FIOError) {
+            }
+            catch (e: FIOError)
+            {
                 Log.e(this.logTag, e.toJson())
+
+                throw AssertionError("Register Fio Address for Alice Failed: " + e.toJson())
+            }
+            catch(generalException:Exception)
+            {
+                throw AssertionError("Register Fio Address for Alice: " + generalException.message)
             }
 
             Log.i(this.logTag, "Finish registerFioAddress")
@@ -215,11 +233,153 @@ class ExampleInstrumentedTest {
         catch (e: FIOError)
         {
             Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("GetFioBalance Failed: " + e.toJson())
         }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("GetFioBalance Failed: " + generalException.message)
+        }
+
 
         Log.i(this.logTag, "Finish getFioBalance")
     }
 
+    @Test
+    fun newFundsRequest()
+    {
+        try
+        {
+            this.registerFioNameForUser()
+
+            Log.i(this.logTag, "Start newFundsRequest")
+
+            val newFundsContent = FundsRequestContent(payeeBTCAddress,"4.2","BTC")
+
+            val response = this.fioSdk!!.requestNewFunds(this.bobFioAddress,
+                this.aliceFioAddress,newFundsContent,this.testMaxFee,this.walletFioAddress)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+            if (actionTraceResponse != null) {
+                Log.i(this.logTag,
+                    "New Funds Requested by Alice: " + (actionTraceResponse.status == "requested").toString()
+                )
+
+                this.newFundsRequestId = actionTraceResponse.fioRequestId
+
+                assertTrue(actionTraceResponse.status == "requested")
+            }
+            else
+                Log.i(this.logTag, "New Funds Requested by Alice: failed")
+
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("New Funds Request Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("New Funds Request Failed: " + generalException.message)
+        }
+
+        Log.i(this.logTag, "Finish newFundsRequest")
+    }
+
+    @Test
+    fun sentNewFundsRequests()
+    {
+        try
+        {
+            this.newFundsRequest()
+
+            Log.i(this.logTag, "Start sentRequests")
+
+            this.sharedSecretKey = CryptoUtils.generateSharedSecret(this.alicePrivateKey,this.bobPublicKey)
+
+            val sentRequests = this.fioSdk!!.getSentFioRequests()
+
+            if(sentRequests.isNotEmpty())
+            {
+                for (req in sentRequests)
+                {
+                    req.deserializeRequestContent(this.sharedSecretKey!!,this.fioSdk!!.serializationProvider)
+
+                    if(req.requestContent!=null)
+                    {
+                        Log.i(this.logTag, "Request Content: " + req.requestContent!!.toJson())
+
+                        assertTrue(req.requestContent != null)
+                    }
+                }
+
+                assertTrue(sentRequests.isNotEmpty())
+            }
+
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("Sent Funds Request Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("Sent Funds Request Failed: " + generalException.message)
+        }
+
+        Log.i(this.logTag, "Finish sentRequests")
+
+    }
+
+    @Test
+    fun pendingRequests()
+    {
+        try
+        {
+            this.newFundsRequest()
+
+            Log.i(this.logTag, "Start pendingRequests")
+
+            this.switchUser("bob")
+
+            this.sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,this.alicePublicKey)
+
+            val pendingRequests = this.fioSdk!!.getPendingFioRequests()
+
+            if(pendingRequests.isNotEmpty())
+            {
+                for (req in pendingRequests)
+                {
+                    req.deserializeRequestContent(this.sharedSecretKey!!,this.fioSdk!!.serializationProvider)
+
+                    if(req.requestContent!=null)
+                    {
+                        Log.i(this.logTag, "Request Content: " + req.requestContent!!.toJson())
+
+                        assertTrue(req.requestContent != null)
+                    }
+                }
+
+                assertTrue(pendingRequests.isNotEmpty())
+            }
+
+            this.switchUser("alice")
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("Pending Funds Request Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("Pending Funds Request Failed: " + generalException.message)
+        }
+
+        Log.i(this.logTag, "Finish pendingRequests")
+    }
 
     //Private Methods
 
