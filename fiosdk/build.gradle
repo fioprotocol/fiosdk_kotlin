@@ -1,6 +1,8 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'org.jetbrains.dokka-android'
+
 
 android {
     compileSdkVersion 28
@@ -23,9 +25,20 @@ android {
         }
     }
 
+    dokka {
+        moduleName = 'data'
+        outputFormat = 'html'
+        outputDirectory = "$buildDir/javadoc"
+
+        skipDeprecated = true
+
+    }
+
 }
 
+
 dependencies {
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation 'com.android.support:appcompat-v7:28.0.0'
@@ -42,6 +55,8 @@ dependencies {
     api 'org.bouncycastle:bcpkix-jdk15on:1.61'
     api 'com.google.guava:guava:27.1-android'
     api 'org.bitcoinj:bitcoinj-core:0.15.2'
+
+
 
 }
 repositories {
