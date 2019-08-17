@@ -389,12 +389,28 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         }
     }
 
+    /**
+     * Retrieves balance of FIO tokens using the public key of the client
+     * sending the request.
+     */
     @Throws(FIOError::class)
     fun getFioBalance(): GetFIOBalanceResponse
     {
+        return this.getFioBalance(this.publicKey)
+    }
+
+
+    /**
+     * Retrieves balance of FIO tokens
+     *
+     * @param fioPublicKey FIO public key.
+     */
+    @Throws(FIOError::class)
+    fun getFioBalance(fioPublicKey:String): GetFIOBalanceResponse
+    {
         try
         {
-            val request = GetFIOBalanceRequest(this.publicKey)
+            val request = GetFIOBalanceRequest(fioPublicKey)
 
             return this.networkProvider.getFIOBalance(request)
         }
@@ -595,6 +611,11 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         return this.getSentFioRequests(this.publicKey)
     }
 
+    /**
+     * Returns FIO Addresses and FIO Domains owned by this public key.
+     *
+     * @param fioPublicKey FIO public key of owner.
+     */
     @Throws(FIOError::class)
     fun getFioNames(fioPublicKey:String): GetFIONamesResponse
     {
@@ -652,6 +673,12 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         }
     }
 
+    /**
+     * Compute and return fee amount for specific call and specific user
+     *
+     * @param fioAddress FIO Address incurring the fee and owned by signer.
+     * @param endPointName Name of API call end point, e.g. add_pub_address.
+     */
     @Throws(FIOError::class)
     fun getFee(fioAddress:String,endPointName:String): GetFeeResponse
     {
@@ -671,6 +698,9 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         }
     }
 
+    /**
+     * Get FIO blockchain information
+     */
     @Throws(FIOError::class)
     fun getInfo(): GetInfoResponse
     {
@@ -688,6 +718,11 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         }
     }
 
+    /**
+     * Get FIO block information
+     *
+     * @param blockIdentifier last_irreversible_block_num or last_irreversible_block_id from /get_info.
+     */
     @Throws(FIOError::class)
     fun getBlock(blockIdentifier:String): GetBlockResponse
     {
