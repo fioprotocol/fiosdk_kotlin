@@ -9,6 +9,7 @@ import fiofoundation.io.fiosdk.FIOSDK
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.errors.fionetworkprovider.RegisterFIONameForUserError
 import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
+import fiofoundation.io.fiosdk.models.fionetworkprovider.FIORequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.RegisterFIONameForUserRequest
@@ -48,7 +49,9 @@ class ExampleInstrumentedTest {
     private var walletFioAddress = "rewards:wallet"
     private var testMaxFee = BigInteger("4000000000000000000")
 
-    private var payeeBTCAddress = "1AkZGXsnyDfp4faMmVfTWsN1nNRRvEZJk8"
+    private var payeeBTCAddress = "1AkZGXsnyDfp4faMmVfTWsN1nNRRvEZJk8"  //bob
+    private var payerBTCAddress = "1PzCN3cBkTL72GPeJmpcueU4wQi9guiLa6" //alice
+    private var otherBlockChainId = "123456789"
     private var newFundsRequestId = ""
 
     private var sharedSecretKey:ByteArray? = null
@@ -288,7 +291,7 @@ class ExampleInstrumentedTest {
     }
 
     @Test
-    fun sentNewFundsRequests()
+    fun sentRequests()
     {
         try
         {
@@ -379,6 +382,138 @@ class ExampleInstrumentedTest {
         }
 
         Log.i(this.logTag, "Finish pendingRequests")
+    }
+
+    @Test
+    fun rejectFundsRequest()
+    {
+        try
+        {
+            this.newFundsRequest()
+
+            Log.i(this.logTag, "Start rejectFundsRequest")
+
+            this.switchUser("bob")
+
+            //Find a pending request to reject.  There should be at least one since the "newFundsRequest" call succeeded
+            this.sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,this.alicePublicKey)
+
+            val pendingRequests = this.fioSdk!!.getPendingFioRequests()
+
+            if(pendingRequests.isNotEmpty())
+            {
+                val firstPendingRequest = pendingRequests.firstOrNull{it.payerFioAddress == this.bobFioAddress}
+
+                if(firstPendingRequest!=null)
+                {
+                    firstPendingRequest.deserializeRequestContent(this.sharedSecretKey!!,this.fioSdk!!.serializationProvider)
+
+                    if(firstPendingRequest.requestContent!=null)
+                    {
+                        val response = this.fioSdk!!.rejectFundsRequest(firstPendingRequest.fioRequestId,
+                            testMaxFee,
+                            walletFioAddress)
+
+                        val actionTraceResponse = response.getActionTraceResponse()
+
+                        if(actionTraceResponse!=null)
+                        {
+                            Log.i(this.logTag,
+                                "Reject Funds Requested by Alice: " + (actionTraceResponse.status == "request_rejected").toString()
+                            )
+                            assertTrue(actionTraceResponse.status == "request_rejected")
+                        }
+                    }
+                }
+                else
+                    throw AssertionError("Reject Funds Request Failed: Didn't find a pending request for Bob.")
+            }
+            else
+                throw AssertionError("Reject Funds Request Failed: Didn't find a pending request.")
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("Reject Funds Request Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("Reject Funds Request Failed: " + generalException.message)
+        }
+
+        this.switchUser("alice")
+
+        Log.i(this.logTag, "Finish rejectFundsRequest")
+    }
+
+    @Test
+    fun recordSend()
+    {
+        try
+        {
+            this.newFundsRequest()
+
+            Log.i(this.logTag, "Start recordSend")
+
+            this.switchUser("bob")
+
+            //Find a pending request to record.  There should be at least one since the "newFundsRequest" call succeeded
+            this.sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,this.alicePublicKey)
+
+            val pendingRequests = this.fioSdk!!.getPendingFioRequests()
+
+            if(pendingRequests.isNotEmpty())
+            {
+                val firstPendingRequest = pendingRequests.firstOrNull{it.payerFioAddress == this.bobFioAddress}
+
+                if(firstPendingRequest!=null)
+                {
+                    firstPendingRequest.deserializeRequestContent(this.sharedSecretKey!!,this.fioSdk!!.serializationProvider)
+
+                    if(firstPendingRequest.requestContent!=null)
+                    {
+                        var recordSendContent = RecordSendContent(payerBTCAddress,
+                            firstPendingRequest.requestContent!!.payeeTokenPublicAddress,
+                            firstPendingRequest.requestContent!!.amount,
+                            firstPendingRequest.requestContent!!.tokenCode,this.otherBlockChainId)
+
+                        val response = this.fioSdk!!.recordSend(this.bobFioAddress,this.aliceFioAddress,
+                            recordSendContent,firstPendingRequest.fioRequestId,
+                            testMaxFee,walletFioAddress)
+
+                        val actionTraceResponse = response.getActionTraceResponse()
+
+                        if(actionTraceResponse!=null)
+                        {
+                            Log.i(this.logTag,
+                                "Record Send by Bob: " + (actionTraceResponse.status == "sent_to_blockchain").toString()
+                            )
+
+                            assertTrue(actionTraceResponse.status == "sent_to_blockchain")
+                        }
+                    }
+                }
+                else
+                    throw AssertionError("Record Send Failed: Didn't find a pending request for Alice.")
+            }
+            else
+                throw AssertionError("Record Send Failed: Didn't find a pending request.")
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("Record Send Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("Record Send Failed: " + generalException.message)
+        }
+
+        Log.i(this.logTag, "Finish recordSend")
+
+        this.switchUser("alice")
     }
 
     //Private Methods
