@@ -13,7 +13,6 @@ import fiofoundation.io.fiosdk.implementations.ABIProvider
 import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
-import fiofoundation.io.fiosdk.models.FIOAddress
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIORequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
@@ -26,6 +25,18 @@ import fiofoundation.io.fiosdk.utilities.PrivateKeyUtils
 
 import java.math.BigInteger
 
+/**
+ * FIOSDK
+ *
+ * Kotlin SDK for FI Foundation API integration
+ *
+ * @param privateKey the fio private key of the client sending requests to FIO API.
+ * @param publicKey the fio public key of the client sending requests to FIO API.
+ * @param serializationProvider the serialization provider used for abi serialization and deserialization.
+ * @param signatureProvider the signature provider used to sign block chain transactions.
+ * @param networkBaseUrl the url to the FIO API.
+ * @param mockServerBaseUrl the url to the Mock Server.
+ */
 class FIOSDK(val privateKey: String, val publicKey: String,
              val serializationProvider: ISerializationProvider,
              val signatureProvider: ISignatureProvider, networkBaseUrl:String,mockServerBaseUrl:String="") {
