@@ -13,13 +13,13 @@ import fiofoundation.io.fiosdk.implementations.ABIProvider
 import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
+import fiofoundation.io.fiosdk.models.FIOAddress
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIORequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.*
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.*
-import fiofoundation.io.fiosdk.models.fionetworkprovider.response.PushTransactionResponse
-import fiofoundation.io.fiosdk.models.fionetworkprovider.response.RegisterFIONameForUserResponse
+import fiofoundation.io.fiosdk.models.fionetworkprovider.response.*
 import fiofoundation.io.fiosdk.session.processors.*
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
 import fiofoundation.io.fiosdk.utilities.PrivateKeyUtils
@@ -336,8 +336,6 @@ class FIOSDK(val privateKey: String, val publicKey: String,
             this.signatureProvider
         )
 
-
-
         try
         {
             var transferTokensToPublickey = TransferTokensPubKeyAction(
@@ -381,14 +379,13 @@ class FIOSDK(val privateKey: String, val publicKey: String,
     }
 
     @Throws(FIOError::class)
-    fun getFioBalance(): BigInteger
+    fun getFioBalance(): GetFIOBalanceResponse
     {
         try
         {
             val request = GetFIOBalanceRequest(this.publicKey)
-            val response = this.networkProvider.getFIOBalance(request)
 
-            return response.balance
+            return this.networkProvider.getFIOBalance(request)
         }
         catch(fioBalanceError: GetFIOBalanceError)
         {
@@ -399,27 +396,6 @@ class FIOSDK(val privateKey: String, val publicKey: String,
             throw FIOError(e.message!!,e)
         }
     }
-
-    @Throws(FIOError::class)
-    fun getPublicKey(fioAddress:String): String
-    {
-        try
-        {
-            val request = GetPublicAddressRequest(fioAddress,"FIO")
-            val response = this.networkProvider.getPublicAddress(request)
-
-            return response.publicAddress
-        }
-        catch(getPublicAddressError: GetPublicAddressError)
-        {
-            throw FIOError(getPublicAddressError.message!!,getPublicAddressError)
-        }
-        catch(e:Exception)
-        {
-            throw FIOError(e.message!!,e)
-        }
-    }
-
 
     @Throws(FIOError::class)
     fun requestNewFunds(payerfioAddress:String,payeefioAddress:String,
@@ -435,7 +411,7 @@ class FIOSDK(val privateKey: String, val publicKey: String,
 
         try
         {
-            val payerPublicKey = this.getPublicKey(payerfioAddress)
+            val payerPublicKey = this.getPublicAddress(payerfioAddress).publicAddress
 
             val encryptedContent = serializeAndEncryptNewFundsContent(fundsRequestContent,payerPublicKey)
 
@@ -607,6 +583,139 @@ class FIOSDK(val privateKey: String, val publicKey: String,
     {
         return this.getSentFioRequests(this.publicKey)
     }
+
+    @Throws(FIOError::class)
+    fun getFioNames(fioPublicKey:String): GetFIONamesResponse
+    {
+        try
+        {
+            val request = GetFIONamesRequest(fioPublicKey)
+
+            return this.networkProvider.getFIONames(request)
+        }
+        catch(getFioNamesError: GetFIONamesError)
+        {
+            throw FIOError(getFioNamesError.message!!,getFioNamesError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    @Throws(FIOError::class)
+    fun getPublicAddress(fioAddress:String): GetPublicAddressResponse
+    {
+        try
+        {
+            val request = GetPublicAddressRequest(fioAddress,"FIO")
+
+            return this.networkProvider.getPublicAddress(request)
+        }
+        catch(getPublicAddressError: GetPublicAddressError)
+        {
+            throw FIOError(getPublicAddressError.message!!,getPublicAddressError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    @Throws(FIOError::class)
+    fun isFioAddressAvailable(fioAddress:String): FIONameAvailabilityCheckResponse
+    {
+        try
+        {
+            val request = FIONameAvailabilityCheckRequest(fioAddress)
+
+            return this.networkProvider.isFIONameAvailable(request)
+        }
+        catch(fioNameAvailabilityCheckError: FIONameAvailabilityCheckError)
+        {
+            throw FIOError(fioNameAvailabilityCheckError.message!!,fioNameAvailabilityCheckError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    @Throws(FIOError::class)
+    fun getFee(fioAddress:String,endPointName:String): GetFeeResponse
+    {
+        try
+        {
+            val request = GetFeeRequest(endPointName,fioAddress)
+
+            return this.networkProvider.getFee(request)
+        }
+        catch(getFeeError: GetFeeError)
+        {
+            throw FIOError(getFeeError.message!!,getFeeError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    @Throws(FIOError::class)
+    fun getInfo(): GetInfoResponse
+    {
+        try
+        {
+            return this.networkProvider.getInfo()
+        }
+        catch(getInfoError: GetInfoError)
+        {
+            throw FIOError(getInfoError.message!!,getInfoError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    @Throws(FIOError::class)
+    fun getBlock(blockIdentifier:String): GetBlockResponse
+    {
+        try
+        {
+            val request = GetBlockRequest(blockIdentifier)
+
+            return this.networkProvider.getBlock(request)
+        }
+        catch(getBlockError: GetBlockError)
+        {
+            throw FIOError(getBlockError.message!!,getBlockError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    @Throws(FIOError::class)
+    fun getRawAbi(accountName:String): GetRawAbiResponse
+    {
+        try
+        {
+            val request = GetRawAbiRequest(accountName)
+
+            return this.networkProvider.getRawAbi(request)
+        }
+        catch(getRawAbiError: GetRawAbiError)
+        {
+            throw FIOError(getRawAbiError.message!!,getRawAbiError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    //Private Methods
 
     @Throws(FIOError::class)
     private fun serializeAndEncryptNewFundsContent(fundsRequestContent: FundsRequestContent,payerPublickey: String): String

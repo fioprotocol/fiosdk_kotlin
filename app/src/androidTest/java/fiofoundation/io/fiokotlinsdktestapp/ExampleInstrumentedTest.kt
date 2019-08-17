@@ -7,11 +7,13 @@ import fiofoundation.io.androidfioserializationprovider.AbiFIOSerializationProvi
 import fiofoundation.io.androidfiosoftkeysignatureprovider.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.FIOSDK
 import fiofoundation.io.fiosdk.errors.FIOError
+import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetFIONamesError
 import fiofoundation.io.fiosdk.errors.fionetworkprovider.RegisterFIONameForUserError
 import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIORequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
+import fiofoundation.io.fiosdk.models.fionetworkprovider.request.GetFIONamesRequest
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.RegisterFIONameForUserRequest
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.PushTransactionResponse
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
@@ -52,6 +54,11 @@ class ExampleInstrumentedTest {
     private var payeeBTCAddress = "1AkZGXsnyDfp4faMmVfTWsN1nNRRvEZJk8"  //bob
     private var payerBTCAddress = "1PzCN3cBkTL72GPeJmpcueU4wQi9guiLa6" //alice
     private var otherBlockChainId = "123456789"
+    private var endPointNameForGetFee = "add_pub_address"
+    private var chainId = "cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f"
+    private var blockNumber = BigInteger("1381533")
+    private var getRawAbiAccountName = "fio.token"
+
     private var newFundsRequestId = ""
 
     private var sharedSecretKey:ByteArray? = null
@@ -227,7 +234,7 @@ class ExampleInstrumentedTest {
 
             Log.i(this.logTag, "Start getFioBalance")
 
-            val balance = this.fioSdk!!.getFioBalance()
+            val balance = this.fioSdk!!.getFioBalance().balance
 
             Log.i(this.logTag, "GetFioBalance: " + balance.toString())
 
@@ -514,6 +521,189 @@ class ExampleInstrumentedTest {
         Log.i(this.logTag, "Finish recordSend")
 
         this.switchUser("alice")
+    }
+
+    @Test
+    fun listFioNames()
+    {
+        try
+        {
+            this.registerFioNameForUser()
+
+            Log.i(this.logTag, "Start listFioNames")
+
+            val response = this.fioSdk!!.getFioNames(this.alicePublicKey)
+
+            assertTrue(response.fioAddresses!!.isNotEmpty())
+
+            Log.i(this.logTag, "Found Fio Names for Alice: " + response.fioAddresses!!.isNotEmpty().toString())
+        }
+        catch (e: GetFIONamesError)
+        {
+            Log.e(this.logTag, e.toJson())
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("List Fio Names Failed: " + e.toJson())
+        }
+        catch (ex: Exception)
+        {
+            throw AssertionError("List Fio Names Failed: " + ex.message)
+        }
+
+        Log.i(this.logTag, "Finish listFioNames")
+    }
+
+    @Test
+    fun isFioAddressAvailable()
+    {
+        try
+        {
+            this.registerFioNameForUser()
+
+            Log.i(this.logTag, "Start isFioAddressAvailable")
+
+            val response = this.fioSdk!!.isFioAddressAvailable(this.aliceFioAddress)
+
+            Log.i(this.logTag, "Is Fio Address, " + this.aliceFioAddress + ", Available: " + response.isAvailable.toString())
+
+            assertTrue(true)
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("isFioAddressAvailable Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("isFioAddressAvailable Failed: " + generalException.message)
+        }
+
+        Log.i(this.logTag, "Finish isFioAddressAvailable")
+    }
+
+    @Test
+    fun getFee()
+    {
+        try
+        {
+            this.registerFioNameForUser()
+
+            Log.i(this.logTag, "Start getFee")
+
+            val response = this.fioSdk!!.getFee(this.aliceFioAddress,endPointNameForGetFee)
+
+            Log.i(this.logTag, endPointNameForGetFee + " Fee: " + response.fee)
+
+            assertTrue(true)
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("getFee Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("getFee Failed: " + generalException.message)
+        }
+
+        Log.i(this.logTag, "Finish getFee")
+    }
+
+    @Test
+    fun getInfo()
+    {
+        try
+        {
+            this.initializeFIOSDK()
+
+            Log.i(this.logTag, "Start getInfo")
+
+            val response = this.fioSdk!!.getInfo()
+
+            Log.i(this.logTag, "Get Info - ChainId: " + response.chainId)
+            Log.i(this.logTag, "Get Info - headBlockNumber: " + response.headBlockNumber)
+
+            assertTrue(response.chainId == chainId)
+
+            this.blockNumber = response.headBlockNumber!!
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("getInfo Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("getInfo Failed: " + generalException.message)
+        }
+
+        Log.i(this.logTag, "Finish getInfo")
+    }
+
+    @Test
+    fun getBlock()
+    {
+        try
+        {
+            this.getInfo()
+
+            Log.i(this.logTag, "Start getBlock")
+
+            val response = this.fioSdk!!.getBlock(this.blockNumber.toString())
+
+            Log.i(this.logTag, "Get Block - BlockNumber: " + response.blockNumber)
+
+            assertTrue(response.blockNumber == this.blockNumber)
+
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("getBlock Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("getBlock Failed: " + generalException.message)
+        }
+
+        Log.i(this.logTag, "Finish getBlock")
+    }
+
+    @Test
+    fun getRawAbi()
+    {
+        try
+        {
+            this.initializeFIOSDK()
+
+            Log.i(this.logTag, "Start getRawAbi")
+
+            val response = this.fioSdk!!.getRawAbi(getRawAbiAccountName)
+
+            Log.i(this.logTag, "Get Raw Abi: " + response.abi)
+
+            assertTrue(response.accountName == this.getRawAbiAccountName)
+
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("getRawAbi Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("getRawAbi Failed: " + generalException.message)
+        }
+
+        Log.i(this.logTag, "Finish getRawAbi")
     }
 
     //Private Methods
