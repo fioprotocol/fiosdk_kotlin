@@ -26,18 +26,16 @@ import fiofoundation.io.fiosdk.utilities.PrivateKeyUtils
 import java.math.BigInteger
 
 /**
- * FIOSDK
- *
- * Kotlin SDK for FI Foundation API integration
+ * Kotlin SDK for FIO Foundation API
  *
  * @param privateKey the fio private key of the client sending requests to FIO API.
  * @param publicKey the fio public key of the client sending requests to FIO API.
  * @param serializationProvider the serialization provider used for abi serialization and deserialization.
  * @param signatureProvider the signature provider used to sign block chain transactions.
  * @param networkBaseUrl the url to the FIO API.
- * @param mockServerBaseUrl the url to the Mock Server.
+ * @param mockServerBaseUrl (optional) the url to the Mock Server.
  */
-class FIOSDK(val privateKey: String, val publicKey: String,
+class FIOSDK(private val privateKey: String, private val publicKey: String,
              val serializationProvider: ISerializationProvider,
              val signatureProvider: ISignatureProvider, networkBaseUrl:String,mockServerBaseUrl:String="") {
 
@@ -50,6 +48,11 @@ class FIOSDK(val privateKey: String, val publicKey: String,
 
         private const val ISLEGACY_KEY_FORMAT = true
 
+        /**
+         * Create a FIO private key.
+         *
+         * @param mnemonic mnemonic used to generate a random unique private key.
+         */
         @Throws(FIOFormatterError::class)
         fun createPrivateKey(mnemonic: String): String {
             return FIOFormatter.convertPEMFormattedPrivateKeyToFIOFormat(
@@ -57,6 +60,11 @@ class FIOSDK(val privateKey: String, val publicKey: String,
             )
         }
 
+        /**
+         * Create a FIO public key.
+         *
+         * @param fioPrivateKey FIO private key.
+         */
         @Throws(FIOFormatterError::class)
         fun derivePublicKey(fioPrivateKey: String): String {
             return FIOFormatter.convertPEMFormattedPublicKeyToFIOFormat(
@@ -66,22 +74,39 @@ class FIOSDK(val privateKey: String, val publicKey: String,
             )
         }
 
-        fun getInstance(privateKey: String,publickey: String,
+        /**
+         * Initialize a static instance of the FIO SDK.  If an instance already exists,
+         * it will be returned.
+         *
+         * @param privateKey the fio private key of the client sending requests to FIO API.
+         * @param publicKey the fio public key of the client sending requests to FIO API.
+         * @param serializationProvider the serialization provider used for abi serialization and deserialization.
+         * @param signatureProvider the signature provider used to sign block chain transactions.
+         * @param networkBaseUrl the url to the FIO API.
+         * @param mockServerBaseUrl (optional) the url to the Mock Server.
+         */
+        fun getInstance(privateKey: String,publicKey: String,
                         serializationProvider: ISerializationProvider,
                         signatureProvider: ISignatureProvider,networkBaseUrl:String
                         ,mockServerBaseUrl:String=""): FIOSDK
         {
             if(fioSdk == null)
-             fioSdk = FIOSDK(privateKey,publickey,serializationProvider, signatureProvider,networkBaseUrl,mockServerBaseUrl)
+             fioSdk = FIOSDK(privateKey,publicKey,serializationProvider, signatureProvider,networkBaseUrl,mockServerBaseUrl)
 
             return fioSdk!!
         }
 
+        /**
+         * Return a previously initialized instance of the FIO SDK.
+         */
         fun getInstance(): FIOSDK
         {
             return fioSdk!!
         }
 
+        /**
+         * Set the FIO SDK instance to null
+         */
         fun destroyInstance()
         {
             fioSdk = null
@@ -600,11 +625,93 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         }
     }
 
+    /**
+     * Polls for any pending requests sent to the requestee.
+     *
+     * @param requesteeFioPublicKey FIO public key of the requestee.
+     */
+    @Throws(FIOError::class)
+    fun getPendingFioRequests(requesteeFioPublicKey:String): List<FIORequestContent>
+    {
+        try
+        {
+            val request = GetPendingFIORequestsRequest(requesteeFioPublicKey)
+            val response = this.networkProvider.getPendingFIORequests(request)
+
+            for (item in response.requests)
+            {
+                try
+                {
+                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.privateKey, item.payeeFioPublicKey)
+                    item.deserializeRequestContent(sharedSecretKey,this.serializationProvider)
+                }
+                catch(deserializationError: DeserializeTransactionError)
+                {
+                    //eat this error.  We do not want this error to stop the process.
+                }
+            }
+
+            return response.requests
+        }
+        catch(getPendingFIORequestsError: GetPendingFIORequestsError)
+        {
+            throw FIOError(getPendingFIORequestsError.message!!,getPendingFIORequestsError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Polls for any pending requests sent to public key associated with the FIO SDK instance.
+     */
     fun getPendingFioRequests(): List<FIORequestContent>
     {
         return this.getPendingFioRequests(this.publicKey)
     }
 
+    /**
+     * Polls for any requests sent by owner.
+     *
+     * @param senderFioPublicKey FIO public key of the owner who sent the request.
+     */
+    @Throws(FIOError::class)
+    fun getSentFioRequests(senderFioPublicKey:String): List<FIORequestContent>
+    {
+        try
+        {
+            val request = GetSentFIORequestsRequest(senderFioPublicKey)
+            val response = this.networkProvider.getSentFIORequests(request)
+
+            for (item in response.requests)
+            {
+                try
+                {
+                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.privateKey, item.payerFioPublicKey)
+                    item.deserializeRequestContent(sharedSecretKey,this.serializationProvider)
+                }
+                catch(deserializationError: DeserializeTransactionError)
+                {
+                    //eat this error.  We do not want this error to stop the process.
+                }
+            }
+
+            return response.requests
+        }
+        catch(getSentFIORequestsError: GetSentFIORequestsError)
+        {
+            throw FIOError(getSentFIORequestsError.message!!,getSentFIORequestsError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Polls for any sent requests sent by public key associated with the FIO SDK instance.
+     */
     @Throws(FIOError::class)
     fun getSentFioRequests(): List<FIORequestContent>
     {
@@ -635,12 +742,29 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         }
     }
 
+    /**
+     * Returns the FIO public address (fio public key) for specified FIO Address.
+     *
+     * @param fioAddress FIO Address for which public address is to be returned.
+     */
     @Throws(FIOError::class)
     fun getPublicAddress(fioAddress:String): GetPublicAddressResponse
     {
+        return getPublicAddress(fioAddress,"FIO")
+    }
+
+    /**
+     * Returns a public address for specified token code and FIO Address.
+     *
+     * @param fioAddress FIO Address for which public address is to be returned.
+     * @param tokenCode Token code for which public address is to be returned.
+     */
+    @Throws(FIOError::class)
+    fun getPublicAddress(fioAddress:String, tokenCode:String): GetPublicAddressResponse
+    {
         try
         {
-            val request = GetPublicAddressRequest(fioAddress,"FIO")
+            val request = GetPublicAddressRequest(fioAddress,tokenCode)
 
             return this.networkProvider.getPublicAddress(request)
         }
@@ -742,6 +866,15 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         }
     }
 
+    /**
+     *  Get ABI for specific account name.
+     *  Each signed call uses one of 3 account names:
+     *      fio.system,
+     *      fio.reqobt,
+     *      fio.token
+     *
+     * @param accountName Account name. Check request definition for specific call above.
+     */
     @Throws(FIOError::class)
     fun getRawAbi(accountName:String): GetRawAbiResponse
     {
@@ -798,71 +931,4 @@ class FIOSDK(val privateKey: String, val publicKey: String,
         }
 
     }
-
-    @Throws(FIOError::class)
-    private fun getSentFioRequests(requesteeFioPublicKey:String): List<FIORequestContent>
-    {
-        try
-        {
-            val request = GetSentFIORequestsRequest(requesteeFioPublicKey)
-            val response = this.networkProvider.getSentFIORequests(request)
-
-            for (item in response.requests)
-            {
-                try
-                {
-                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.privateKey, item.payerFioPublicKey)
-                    item.deserializeRequestContent(sharedSecretKey,this.serializationProvider)
-                }
-                catch(deserializationError: DeserializeTransactionError)
-                {
-                    //eat this error.  We do not want this error to stop the process.
-                }
-            }
-
-            return response.requests
-        }
-        catch(getSentFIORequestsError: GetSentFIORequestsError)
-        {
-            throw FIOError(getSentFIORequestsError.message!!,getSentFIORequestsError)
-        }
-        catch(e:Exception)
-        {
-            throw FIOError(e.message!!,e)
-        }
-    }
-
-    @Throws(FIOError::class)
-    private fun getPendingFioRequests(requesteeFioPublicKey:String): List<FIORequestContent>
-    {
-        try
-        {
-            val request = GetPendingFIORequestsRequest(requesteeFioPublicKey)
-            val response = this.networkProvider.getPendingFIORequests(request)
-
-            for (item in response.requests)
-            {
-                try
-                {
-                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.privateKey, item.payeeFioPublicKey)
-                    item.deserializeRequestContent(sharedSecretKey,this.serializationProvider)
-                }
-                catch(deserializationError: DeserializeTransactionError)
-                {
-                    //eat this error.  We do not want this error to stop the process.
-                }
-            }
-
-            return response.requests
-        }
-        catch(getPendingFIORequestsError: GetPendingFIORequestsError)
-        {
-            throw FIOError(getPendingFIORequestsError.message!!,getPendingFIORequestsError)
-        }
-        catch(e:Exception)
-        {
-            throw FIOError(e.message!!,e)
-        }
-    }
-
 }
