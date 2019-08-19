@@ -163,7 +163,8 @@ open class TransactionProcessor(val serializationProvider: ISerializationProvide
                 transactionJSON = this.serializationProvider
                     .deserializeTransaction(fioTransactionSignatureResponse.serializedTransaction)
 
-                if (transactionJSON == null || transactionJSON.isEmpty())
+
+                if (transactionJSON.isEmpty())
                 {
                     throw DeserializeTransactionError(
                         ErrorConstants.TRANSACTION_PROCESSOR_GET_SIGN_DESERIALIZE_TRANS_EMPTY_ERROR)
@@ -406,7 +407,7 @@ open class TransactionProcessor(val serializationProvider: ISerializationProvide
             _serializedTransaction = this.serializationProvider
                 .serializeTransaction(clonedTransactionToJSON)
 
-            if (_serializedTransaction == null || _serializedTransaction.isEmpty())
+            if (_serializedTransaction.isEmpty())
             {
                 throw TransactionCreateSignatureRequestSerializationError(
                     ErrorConstants.TRANSACTION_PROCESSOR_SERIALIZE_TRANSACTION_WORKED_BUT_EMPTY_RESULT
@@ -427,9 +428,9 @@ open class TransactionProcessor(val serializationProvider: ISerializationProvide
     //public methods
 
     @Throws(TransactionPrepareError::class)
-    fun prepare(actions: ArrayList<IAction>, contextFreeActions: ArrayList<IAction>)
+    fun prepare(actions: ArrayList<IAction>?, contextFreeActions: ArrayList<IAction>?)
     {
-        if (actions.isEmpty()) {
+        if (actions == null || actions.isEmpty()) {
             throw TransactionPrepareInputError(ErrorConstants.TRANSACTION_PROCESSOR_ACTIONS_EMPTY_ERROR_MSG)
         }
 
@@ -531,8 +532,9 @@ open class TransactionProcessor(val serializationProvider: ISerializationProvide
     }
 
     @Throws(TransactionPrepareError::class)
-    fun prepare(actions: ArrayList<IAction>) {
-        this.prepare(actions, ArrayList())
+    fun prepare(actions: ArrayList<IAction>?)
+    {
+        this.prepare(actions,null)
     }
 
     @Throws(TransactionSignError::class)

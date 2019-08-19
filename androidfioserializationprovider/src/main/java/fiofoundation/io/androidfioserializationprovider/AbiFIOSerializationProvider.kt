@@ -101,7 +101,7 @@ class AbiFIOSerializationProvider: ISerializationProvider {
 
             if (!result)
             {
-                val err: String = error()
+                val err: String? = error()
                 val errMsg: String = String.format("Json to hex == Unable to set ABI. %s", if (err == null)  "" else err)
                 throw SerializeError(errMsg)
             }

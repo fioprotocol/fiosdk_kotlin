@@ -48,7 +48,7 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
         val httpClient = OkHttpClient.Builder()
 
         this.retrofit = Retrofit.Builder()
-            .baseUrl(this.baseURL)
+            .baseUrl(this.baseURL + "chain/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(httpClient.build())
             .build()
@@ -75,6 +75,7 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
             }
         }
 
+        @Suppress("UNCHECKED_CAST")
         return response.body() as O
     }
 

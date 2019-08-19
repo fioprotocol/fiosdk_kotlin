@@ -14,16 +14,18 @@ open class FIORequestContent {
     @field:SerializedName("payer_fio_public_key") var payerFioPublicKey:String = ""
     @field:SerializedName("payee_fio_public_key") var payeeFioPublicKey:String = ""
     @field:SerializedName("content") private var content:String = ""
-    @field:SerializedName("time_stamp") var time_stamp:Int = 0
+    @field:SerializedName("time_stamp") var timeStamp:Int = 0
 
     var requestContent : FundsRequestContent? = null
 
-    fun deserializeRequestContent(sharedSecretKey: ByteArray, serializationProvider: ISerializationProvider)
+    fun deserializeRequestContent(sharedSecretKey: ByteArray, serializationProvider: ISerializationProvider):FundsRequestContent
     {
         val decryptedMessage = CryptoUtils.decryptSharedMessage(this.content,sharedSecretKey)
         val deserializedMessage = serializationProvider.deserializeNewFundsContent(decryptedMessage)
         
         this.requestContent = Gson().fromJson(deserializedMessage, FundsRequestContent::class.java)
+
+        return this.requestContent!!
     }
 
     fun toJson(): String {

@@ -3,9 +3,21 @@ package fiofoundation.io.fiosdk.models.fionetworkprovider
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 
+/**
+ *
+ * @param payerTokenPublicAddress Public address on other blockchain of user sending funds.
+ * @param payeeTokenPublicAddress Public address on other blockchain of user receiving funds.
+ * @param amount Amount sent.
+ * @param tokenCode Code of the token represented in Amount requested, i.e. BTC.
+ * @param obtId Other Blockchain Transaction ID (OBT ID), i.e Bitcoin transaction ID.
+ * @param status Status of this OBT. Allowed statuses are: sent_to_blockchain
+ * @param memo
+ * @param hash
+ * @param offlineUrl
+ */
 class RecordSendContent(
-    @field:SerializedName("payer_public_address") var payerTokenPublicKey:String,
-    @field:SerializedName("payee_public_address") var payeeTokenPublicKey:String,
+    @field:SerializedName("payer_public_address") var payerTokenPublicAddress:String,
+    @field:SerializedName("payee_public_address") var payeeTokenPublicAddress:String,
     @field:SerializedName("amount") var amount:String,
     @field:SerializedName("token_code") var tokenCode: String,
     @field:SerializedName("obt_id") var obtId:String,

@@ -113,6 +113,9 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
         }
     }
 
+    /**
+     * @suppress
+     */
     @Throws(FIOError::class)
     fun registerFioNameOnBehalfOfUser(fioName:String): RegisterFIONameForUserResponse
     {
@@ -121,6 +124,9 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
         return this.networkProvider.registerFioNameOnBehalfOfUser(request)
     }
 
+    /**
+     * @suppress
+     */
     @Throws(FIOError::class)
     fun registerFioNameOnBehalfOfUser(fioName:String,ownerPublicKey:String): RegisterFIONameForUserResponse
     {
@@ -140,6 +146,14 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
         }
     }
 
+    /**
+     * Registers a FIO Address on the FIO blockchain.
+     *
+     * @param fioAddress FIO Address to register.
+     * @param ownerPublicKey Public key which will own the FIO Address after registration. Set to empty if same as sender.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     */
     @Throws(FIOError::class)
     fun registerFioAddress(fioAddress:String,ownerPublicKey:String, maxFee:BigInteger,
                            walletFioAddress:String): PushTransactionResponse
@@ -165,6 +179,7 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
             var actionList = ArrayList<RegisterFIOAddressAction>()
             actionList.add(registerFioAddressAction)
 
+            @Suppress("UNCHECKED_CAST")
             transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
             transactionProcessor.sign()
@@ -193,12 +208,27 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
         }
     }
 
+    /**
+     * Registers a FIO Address on the FIO blockchain.  The owner will be the public key associated with the FIO SDK instance.
+     *
+     * @param fioAddress FIO Address to register.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     */
     @Throws(FIOError::class)
     fun registerFioAddress(fioAddress:String, maxFee:BigInteger, walletFioAddress:String): PushTransactionResponse
     {
-        return registerFioAddress(fioAddress,this.publicKey,maxFee,walletFioAddress)
+        return registerFioAddress(fioAddress,"",maxFee,walletFioAddress)
     }
 
+    /**
+     * Registers a FIO Domain on the FIO blockchain.
+     *
+     * @param fioDomain FIO Domain to register.
+     * @param ownerPublicKey Public key which will own the FIO Domain after registration. Set to empty if same as sender.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     */
     @Throws(FIOError::class)
     fun registerFioDomain(fioDomain:String,ownerPublicKey:String, maxFee:BigInteger,
                           walletFioAddress:String): PushTransactionResponse
@@ -223,6 +253,7 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
             var actionList = ArrayList<RegisterFIODomainAction>()
             actionList.add(registerFioDomainAction)
 
+            @Suppress("UNCHECKED_CAST")
             transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
             transactionProcessor.sign()
@@ -251,13 +282,27 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
         }
     }
 
+    /**
+     * Registers a FIO Domain on the FIO blockchain.
+     *
+     * @param fioDomain FIO Domain to register. The owner will be the public key associated with the FIO SDK instance.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     */
     @Throws(FIOError::class)
     fun registerFioDomain(fioDomain:String, maxFee:BigInteger,
                           walletFioAddress:String): PushTransactionResponse
     {
-        return registerFioDomain(fioDomain,this.publicKey,maxFee,walletFioAddress)
+        return registerFioDomain(fioDomain,"",maxFee,walletFioAddress)
     }
 
+    /**
+     * Renew a FIO Domain on the FIO blockchain.
+     *
+     * @param fioDomain FIO Domain to renew.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     */
     @Throws(FIOError::class)
     fun renewFioDomain(fioDomain:String, maxFee:BigInteger,
                           walletFioAddress:String): PushTransactionResponse
@@ -281,6 +326,7 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
             var actionList = ArrayList<RenewFIODomainAction>()
             actionList.add(renewFioDomainAction)
 
+            @Suppress("UNCHECKED_CAST")
             transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
             transactionProcessor.sign()
@@ -309,6 +355,13 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
         }
     }
 
+    /**
+     * Renew a FIO Address on the FIO blockchain.
+     *
+     * @param fioDomain FIO Address to renew.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     */
     @Throws(FIOError::class)
     fun renewFioAddress(fioAddress:String, maxFee:BigInteger,
                            walletFioAddress:String): PushTransactionResponse
@@ -333,6 +386,7 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
             var actionList = ArrayList<RenewFIOAddressAction>()
             actionList.add(renewFioAddressAction)
 
+            @Suppress("UNCHECKED_CAST")
             transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
             transactionProcessor.sign()
@@ -361,6 +415,16 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
         }
     }
 
+    /**
+     *
+     * Transfers FIO tokens from public key associated with the FIO SDK instance to
+     * the payeePublicKey.
+     *
+     * @param payeePublicKey FIO public Address of the one receiving the tokens.
+     * @param amount Amount sent in SUFs.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     */
     @Throws(FIOError::class)
     fun transferTokensToPublicKey(payeePublicKey:String,amount:String, maxFee:BigInteger,
                                   walletFioAddress:String): PushTransactionResponse
@@ -385,6 +449,7 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
             var actionList = ArrayList<TransferTokensPubKeyAction>()
             actionList.add(transferTokensToPublickey)
 
+            @Suppress("UNCHECKED_CAST")
             transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
             transactionProcessor.sign()
@@ -424,7 +489,6 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
         return this.getFioBalance(this.publicKey)
     }
 
-
     /**
      * Retrieves balance of FIO tokens
      *
@@ -449,8 +513,18 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
         }
     }
 
+    /**
+     * Create a new funds request on the FIO chain.
+     *
+     * @param payerFioAddress FIO Address of the payer. This address will receive the request and will initiate payment.
+     * @param payeeFioAddress FIO Address of the payee. This address is sending the request and will receive payment.
+     * @param fundsRequestContent [FundsRequestContent]
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
+     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     */
     @Throws(FIOError::class)
-    fun requestNewFunds(payerfioAddress:String,payeefioAddress:String,
+    @ExperimentalUnsignedTypes
+    fun requestNewFunds(payerFioAddress:String,payeeFioAddress:String,
                         fundsRequestContent: FundsRequestContent,maxFee:BigInteger,
                           walletFioAddress:String): PushTransactionResponse
     {
@@ -463,13 +537,13 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
 
         try
         {
-            val payerPublicKey = this.getPublicAddress(payerfioAddress).publicAddress
+            val payerPublicKey = this.getPublicAddress(payerFioAddress).publicAddress
 
             val encryptedContent = serializeAndEncryptNewFundsContent(fundsRequestContent,payerPublicKey)
 
             var newFundsRequestAction = NewFundsRequestAction(
-                payerfioAddress,
-                payeefioAddress,
+                payerFioAddress,
+                payeeFioAddress,
                 encryptedContent,
                 maxFee,
                 walletFioAddress,
@@ -480,6 +554,7 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
             var actionList = ArrayList<NewFundsRequestAction>()
             actionList.add(newFundsRequestAction)
 
+            @Suppress("UNCHECKED_CAST")
             transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
             transactionProcessor.sign()
@@ -508,6 +583,13 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
         }
     }
 
+    /**
+     * Reject funds request.
+     *
+     * @param fioRequestId Existing funds request Id
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
+     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     */
     @Throws(FIOError::class)
     fun rejectFundsRequest(fioRequestId: String, maxFee: BigInteger,
                         walletFioAddress:String): PushTransactionResponse
@@ -529,10 +611,10 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
                 this.publicKey
             )
 
-
             var actionList = ArrayList<RejectFundsRequestAction>()
             actionList.add(rejectFundsRequestAction)
 
+            @Suppress("UNCHECKED_CAST")
             transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
             transactionProcessor.sign()
@@ -561,7 +643,20 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
         }
     }
 
+    /**
+     *
+     * This call is made to record information on the FIO blockchain about a transaction that occurred on other blockchain, i.e. 1 BTC was sent on Bitcoin Blockchain, and both
+     * sender and receiver have FIO Addresses. OBT stands for Other Blockchain Transaction
+     *
+     * @param payerFioAddress FIO Address of the payer. This address initiated payment.
+     * @param payeeFioAddress FIO Address of the payee. This address is receiving payment.
+     * @param recordSendContent [RecordSendContent]
+     * @param fioRequestId ID of funds request, if this Record Send transaction is in response to a previously received funds request.  Send empty if no FIO Request ID
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     */
     @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
     fun recordSend(payerFioAddress:String,payeeFioAddress:String,
                         recordSendContent: RecordSendContent, fioRequestId: String,
                    maxFee:BigInteger, walletFioAddress:String): PushTransactionResponse
@@ -597,6 +692,7 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
             var actionList = ArrayList<RecordSendAction>()
             actionList.add(recordSendAction)
 
+            @Suppress("UNCHECKED_CAST")
             transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
             transactionProcessor.sign()
@@ -743,9 +839,9 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
     }
 
     /**
-     * Returns the FIO public address (fio public key) for specified FIO Address.
+     * Returns the FIO token public address for specified FIO Address.
      *
-     * @param fioAddress FIO Address for which public address is to be returned.
+     * @param fioAddress FIO Address for which fio token public address is to be returned.
      */
     @Throws(FIOError::class)
     fun getPublicAddress(fioAddress:String): GetPublicAddressResponse
@@ -754,9 +850,9 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
     }
 
     /**
-     * Returns a public address for specified token code and FIO Address.
+     * Returns a token public address for specified token code and FIO Address.
      *
-     * @param fioAddress FIO Address for which public address is to be returned.
+     * @param fioAddress FIO Address for which the token public address is to be returned.
      * @param tokenCode Token code for which public address is to be returned.
      */
     @Throws(FIOError::class)
@@ -778,12 +874,17 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
         }
     }
 
+    /**
+     * Checks if a FIO Address or FIO Domain is available for registration.
+     *
+     * @param fioName FIO Address or FIO Domain to check.
+     */
     @Throws(FIOError::class)
-    fun isFioAddressAvailable(fioAddress:String): FIONameAvailabilityCheckResponse
+    fun isFioAddressAvailable(fioName:String): FIONameAvailabilityCheckResponse
     {
         try
         {
-            val request = FIONameAvailabilityCheckRequest(fioAddress)
+            val request = FIONameAvailabilityCheckRequest(fioName)
 
             return this.networkProvider.isFIONameAvailable(request)
         }
@@ -845,7 +946,7 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
     /**
      * Get FIO block information
      *
-     * @param blockIdentifier last_irreversible_block_num or last_irreversible_block_id from /get_info.
+     * @param blockIdentifier last_irreversible_block_num or last_irreversible_block_id from [getInfo].
      */
     @Throws(FIOError::class)
     fun getBlock(blockIdentifier:String): GetBlockResponse
@@ -897,6 +998,7 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
     //Private Methods
 
     @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
     private fun serializeAndEncryptNewFundsContent(fundsRequestContent: FundsRequestContent,payerPublickey: String): String
     {
         try
@@ -904,6 +1006,7 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
             val serializedNewFundsContent = this.serializationProvider.serializeNewFundsContent(fundsRequestContent.toJson())
 
             val secretKey = CryptoUtils.generateSharedSecret(this.privateKey,payerPublickey)
+
 
             return CryptoUtils.encryptSharedMessage(serializedNewFundsContent,secretKey)
         }
@@ -915,6 +1018,7 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
     }
 
     @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
     private fun serializeAndEncryptRecordSendContent(recordSendContent: RecordSendContent,payerPublickey: String): String
     {
         try

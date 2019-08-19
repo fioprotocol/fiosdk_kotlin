@@ -53,6 +53,7 @@ class Cryptography(val key:ByteArray,var iv:ByteArray?)
     }
 
     @Throws(Exception::class)
+    @ExperimentalUnsignedTypes
     fun encrypt(data: UByteArray): ByteArray
     {
         val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")

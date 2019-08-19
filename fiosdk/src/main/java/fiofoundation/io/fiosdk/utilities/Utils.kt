@@ -7,14 +7,19 @@ import java.io.*
 
 
 class Utils {
-    companion object Static {
+    companion object Static
+    {
         @Throws(IOException::class, ClassNotFoundException::class)
         fun <T : Serializable> clone(`object`: T): T {
             val byteArrayOutputStream = ByteArrayOutputStream()
             val objectOutputStream = ObjectOutputStream(byteArrayOutputStream)
+
             objectOutputStream.writeObject(`object`)  // Could clone only the Transaction (i.e. this.transaction)
+
             val byteArrayInputStream = ByteArrayInputStream(byteArrayOutputStream.toByteArray())
             val objectInputStream = ObjectInputStream(byteArrayInputStream)
+
+            @Suppress("UNCHECKED_CAST")
             return objectInputStream.readObject() as T
         }
 

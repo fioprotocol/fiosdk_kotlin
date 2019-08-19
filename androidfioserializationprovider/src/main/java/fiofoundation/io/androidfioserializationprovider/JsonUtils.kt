@@ -29,6 +29,7 @@ object JsonUtils {
         {
             var value = map[key]
             if (value is Map<*, *>) {
+                @Suppress("UNCHECKED_CAST")
                 value = getJsonFromMap((value as Map<String, Any>?)!!)
             }
 

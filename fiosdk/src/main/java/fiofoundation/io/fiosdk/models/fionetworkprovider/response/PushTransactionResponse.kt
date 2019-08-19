@@ -17,10 +17,13 @@ class PushTransactionResponse(@SerializedName("transaction_id") val transactionI
 
             if(actionTracesData.size>0)
             {
-                var actionTraceData:LinkedTreeMap<String,Any> = actionTracesData[0] as LinkedTreeMap<String,Any>
-                var actionTraceReceipt = actionTraceData["receipt"] as LinkedTreeMap<String,Any>
+                @Suppress("UNCHECKED_CAST")
+                var actionTraceData:LinkedTreeMap<String,Any>? = if(actionTracesData[0]!=null) actionTracesData[0] as LinkedTreeMap<String,Any> else null
 
-                if(actionTraceReceipt["response"]!=null)
+                @Suppress("UNCHECKED_CAST")
+                var actionTraceReceipt:LinkedTreeMap<String,Any>? = if(actionTraceData!=null && actionTraceData["receipt"]!=null) actionTraceData["receipt"] as LinkedTreeMap<String,Any> else null
+
+                if(actionTraceReceipt!=null && actionTraceReceipt["response"]!=null)
                 {
                     val actionTraceResponse = actionTraceReceipt["response"].toString()
 

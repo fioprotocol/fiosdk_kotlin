@@ -60,6 +60,7 @@ object CryptoUtils
     }
 
     @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
     fun encryptSharedMessage(messageAsHexString: String, sharedKey: ByteArray, iv: ByteArray?=null): String
     {
         try

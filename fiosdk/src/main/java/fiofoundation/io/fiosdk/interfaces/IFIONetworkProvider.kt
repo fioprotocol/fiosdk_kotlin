@@ -18,15 +18,15 @@ interface IFIONetworkProvider {
     fun getRawAbi(getRawAbiRequest: GetRawAbiRequest): GetRawAbiResponse
     fun getPendingFIORequests(getPendingFioRequests: GetPendingFIORequestsRequest): GetPendingFIORequestsResponse
     fun getSentFIORequests(getSentFioRequests: GetSentFIORequestsRequest): GetSentFIORequestsResponse
-    fun pushTransaction(pushTransaction: PushTransactionRequest): PushTransactionResponse
+    fun pushTransaction(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun getRequiredKeys(getRequiredKeysRequest: GetRequiredKeysRequest): GetRequiredKeysResponse
-    fun registerFioAddress(pushTransaction: PushTransactionRequest): PushTransactionResponse
-    fun registerFioDomain(pushTransaction: PushTransactionRequest): PushTransactionResponse
-    fun renewFioDomain(pushTransaction: PushTransactionRequest): PushTransactionResponse
-    fun renewFioAddress(pushTransaction: PushTransactionRequest): PushTransactionResponse
-    fun transferTokensToPublicKey(pushTransaction: PushTransactionRequest): PushTransactionResponse
+    fun registerFioAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun registerFioDomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun renewFioDomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun renewFioAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun transferTokensToPublicKey(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun registerFioNameOnBehalfOfUser(request: RegisterFIONameForUserRequest): RegisterFIONameForUserResponse
-    fun requestNewFunds(pushTransaction: PushTransactionRequest): PushTransactionResponse
-    fun rejectNewFunds(pushTransaction: PushTransactionRequest): PushTransactionResponse
-    fun recordSend(pushTransaction: PushTransactionRequest): PushTransactionResponse
+    fun requestNewFunds(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun rejectNewFunds(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun recordSend(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
 }

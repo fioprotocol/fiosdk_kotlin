@@ -28,7 +28,7 @@ android {
     dokka {
         moduleName = 'data'
         outputFormat = 'html'
-        outputDirectory = "$buildDir/javadoc"
+        outputDirectory = "$buildDir/documentation"
 
         skipDeprecated = true
 
@@ -59,6 +59,7 @@ dependencies {
 
 
 }
+
 repositories {
     mavenCentral()
 }
