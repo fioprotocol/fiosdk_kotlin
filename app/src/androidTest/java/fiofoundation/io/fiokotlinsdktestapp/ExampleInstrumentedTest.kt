@@ -2,7 +2,6 @@ package fiofoundation.io.fiokotlinsdktestapp
 
 import android.support.test.runner.AndroidJUnit4
 import android.util.Log
-import fiofoundation.io.androidfioserializationprovider.AbiFIOSerializationProvider
 import fiofoundation.io.fiosdk.FIOSDK
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetFIONamesError
@@ -731,12 +730,10 @@ class ExampleInstrumentedTest {
         {
             FIOSDK.destroyInstance()
 
-            val serializationProvider = AbiFIOSerializationProvider()
-//            val signatureProvider = SoftKeySignatureProvider()
-//            signatureProvider.importKey(this.alicePrivateKey)
-
             this.fioSdk = FIOSDK.getInstance(this.alicePrivateKey,this.alicePublicKey,
-                serializationProvider,baseUrl,baseMockUrl)
+                baseUrl)
+
+            this.fioSdk!!.mockServerBaseUrl = this.baseMockUrl
 
             Log.i(this.logTag,"Alice Private Key: " + this.alicePrivateKey)
             Log.i(this.logTag,"Alice Public Key: " + this.alicePublicKey)
@@ -745,12 +742,11 @@ class ExampleInstrumentedTest {
         {
             FIOSDK.destroyInstance()
 
-            val serializationProvider = AbiFIOSerializationProvider()
-//            val signatureProvider = SoftKeySignatureProvider()
-//            signatureProvider.importKey(this.bobPrivateKey)
 
             this.fioSdk = FIOSDK.getInstance(this.bobPrivateKey,this.bobPublicKey,
-                serializationProvider,baseUrl,baseMockUrl)
+                baseUrl)
+
+            this.fioSdk!!.mockServerBaseUrl = this.baseMockUrl
 
             Log.i(this.logTag,"Bob Private Key: " + this.bobPrivateKey)
             Log.i(this.logTag,"Bob Public Key: " + this.bobPublicKey)

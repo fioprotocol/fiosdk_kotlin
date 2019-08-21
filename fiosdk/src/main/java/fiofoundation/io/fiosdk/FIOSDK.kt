@@ -10,6 +10,7 @@ import fiofoundation.io.fiosdk.errors.session.TransactionPrepareError
 import fiofoundation.io.fiosdk.errors.session.TransactionSignError
 import fiofoundation.io.fiosdk.formatters.FIOFormatter
 import fiofoundation.io.fiosdk.implementations.ABIProvider
+import fiofoundation.io.fiosdk.implementations.AbiFIOSerializationProvider
 import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
@@ -38,9 +39,10 @@ import java.math.BigInteger
  */
 class FIOSDK(private var privateKey: String, var publicKey: String,
              var serializationProvider: ISerializationProvider,
-             var signatureProvider: ISignatureProvider, private val networkBaseUrl:String,private val mockServerBaseUrl:String="") {
+             var signatureProvider: ISignatureProvider, private val networkBaseUrl:String)
+{
 
-    private val networkProvider:FIONetworkProvider = FIONetworkProvider(networkBaseUrl,mockServerBaseUrl)
+    private var networkProvider:FIONetworkProvider = FIONetworkProvider(networkBaseUrl,"")
 
     private val abiProvider:ABIProvider = ABIProvider(networkProvider,this.serializationProvider)
 
@@ -84,35 +86,42 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
          * @param serializationProvider the serialization provider used for abi serialization and deserialization.
          * @param signatureProvider the signature provider used to sign block chain transactions.
          * @param networkBaseUrl the url to the FIO API.
-         * @param mockServerBaseUrl (optional) the url to the Mock Server.
          */
         fun getInstance(privateKey: String,publicKey: String,
                         serializationProvider: ISerializationProvider,
-                        signatureProvider: ISignatureProvider,networkBaseUrl:String
-                        ,mockServerBaseUrl:String=""): FIOSDK
+                        signatureProvider: ISignatureProvider,networkBaseUrl:String): FIOSDK
         {
             if(fioSdk == null)
-             fioSdk = FIOSDK(privateKey,publicKey,serializationProvider, signatureProvider,networkBaseUrl,mockServerBaseUrl)
+             fioSdk = FIOSDK(privateKey,publicKey,serializationProvider,
+                 signatureProvider,networkBaseUrl)
 
             return fioSdk!!
         }
 
-        fun getInstance(privateKey: String,publicKey: String,
-                        serializationProvider: ISerializationProvider,
-                        networkBaseUrl:String,mockServerBaseUrl:String=""): FIOSDK
+        /**
+         * Initialize a static instance of the FIO SDK using the default signature provider
+         * and default serialization provider.  If an instance already exists,
+         * it will be returned.
+         *
+         * @param privateKey the fio private key of the client sending requests to FIO API.
+         * @param publicKey the fio public key of the client sending requests to FIO API.
+         * @param networkBaseUrl the url to the FIO API.
+         */
+        fun getInstance(privateKey: String,publicKey: String, networkBaseUrl:String): FIOSDK
         {
             if(fioSdk == null)
             {
                 val signatureProvider = SoftKeySignatureProvider()
                 signatureProvider.importKey(privateKey)
 
+                val serializationProvider = AbiFIOSerializationProvider()
+
                 fioSdk = FIOSDK(
                     privateKey,
                     publicKey,
                     serializationProvider,
                     signatureProvider,
-                    networkBaseUrl,
-                    mockServerBaseUrl
+                    networkBaseUrl
                 )
             }
 
@@ -139,7 +148,16 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
         }
     }
 
-    fun setPrivateKey(privateKey:String)
+    var mockServerBaseUrl:String=""
+        set(value){
+            if(value.isNotEmpty())
+            {
+                this.networkProvider = FIONetworkProvider(this.networkBaseUrl,value)
+            }
+            field = value
+        }
+
+    open fun setPrivateKey(privateKey:String)
     {
         this.privateKey = privateKey
 
@@ -249,6 +267,19 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     }
 
     /**
+     * Registers a FIO Address on the FIO blockchain.
+     *
+     * @param fioAddress FIO Address to register.
+     * @param ownerPublicKey Public key which will own the FIO Address after registration. Set to empty if same as sender.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     */
+    @Throws(FIOError::class)
+    fun registerFioAddress(fioAddress:String,ownerPublicKey:String, maxFee:BigInteger): PushTransactionResponse
+    {
+        return registerFioAddress(fioAddress,ownerPublicKey,maxFee,"")
+    }
+
+    /**
      * Registers a FIO Address on the FIO blockchain.  The owner will be the public key associated with the FIO SDK instance.
      *
      * @param fioAddress FIO Address to register.
@@ -259,6 +290,18 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     fun registerFioAddress(fioAddress:String, maxFee:BigInteger, walletFioAddress:String): PushTransactionResponse
     {
         return registerFioAddress(fioAddress,"",maxFee,walletFioAddress)
+    }
+
+    /**
+     * Registers a FIO Address on the FIO blockchain.  The owner will be the public key associated with the FIO SDK instance.
+     *
+     * @param fioAddress FIO Address to register.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     */
+    @Throws(FIOError::class)
+    fun registerFioAddress(fioAddress:String, maxFee:BigInteger): PushTransactionResponse
+    {
+        return registerFioAddress(fioAddress,"",maxFee)
     }
 
     /**
@@ -325,6 +368,19 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     /**
      * Registers a FIO Domain on the FIO blockchain.
      *
+     * @param fioDomain FIO Domain to register.
+     * @param ownerPublicKey Public key which will own the FIO Domain after registration. Set to empty if same as sender.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     */
+    @Throws(FIOError::class)
+    fun registerFioDomain(fioDomain:String,ownerPublicKey:String, maxFee:BigInteger): PushTransactionResponse
+    {
+        return registerFioDomain(fioDomain,ownerPublicKey,maxFee,"")
+    }
+
+    /**
+     * Registers a FIO Domain on the FIO blockchain.
+     *
      * @param fioDomain FIO Domain to register. The owner will be the public key associated with the FIO SDK instance.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
      * @param walletFioAddress FIO Address of the wallet which generates this transaction.
@@ -334,6 +390,18 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
                           walletFioAddress:String): PushTransactionResponse
     {
         return registerFioDomain(fioDomain,"",maxFee,walletFioAddress)
+    }
+
+    /**
+     * Registers a FIO Domain on the FIO blockchain.
+     *
+     * @param fioDomain FIO Domain to register. The owner will be the public key associated with the FIO SDK instance.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     */
+    @Throws(FIOError::class)
+    fun registerFioDomain(fioDomain:String, maxFee:BigInteger): PushTransactionResponse
+    {
+        return registerFioDomain(fioDomain,maxFee,"")
     }
 
     /**
@@ -398,7 +466,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     /**
      * Renew a FIO Address on the FIO blockchain.
      *
-     * @param fioDomain FIO Address to renew.
+     * @param fioAddress FIO Address to renew.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
      * @param walletFioAddress FIO Address of the wallet which generates this transaction.
      */
