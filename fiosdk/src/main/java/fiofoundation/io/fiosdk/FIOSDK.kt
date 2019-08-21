@@ -11,6 +11,7 @@ import fiofoundation.io.fiosdk.errors.session.TransactionSignError
 import fiofoundation.io.fiosdk.formatters.FIOFormatter
 import fiofoundation.io.fiosdk.implementations.ABIProvider
 import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
+import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIORequestContent
@@ -35,9 +36,9 @@ import java.math.BigInteger
  * @param networkBaseUrl the url to the FIO API.
  * @param mockServerBaseUrl (optional) the url to the Mock Server.
  */
-class FIOSDK(private val privateKey: String, private val publicKey: String,
-             val serializationProvider: ISerializationProvider,
-             val signatureProvider: ISignatureProvider, networkBaseUrl:String,mockServerBaseUrl:String="") {
+class FIOSDK(private var privateKey: String, var publicKey: String,
+             var serializationProvider: ISerializationProvider,
+             var signatureProvider: ISignatureProvider, private val networkBaseUrl:String,private val mockServerBaseUrl:String="") {
 
     private val networkProvider:FIONetworkProvider = FIONetworkProvider(networkBaseUrl,mockServerBaseUrl)
 
@@ -96,11 +97,36 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
             return fioSdk!!
         }
 
+        fun getInstance(privateKey: String,publicKey: String,
+                        serializationProvider: ISerializationProvider,
+                        networkBaseUrl:String,mockServerBaseUrl:String=""): FIOSDK
+        {
+            if(fioSdk == null)
+            {
+                val signatureProvider = SoftKeySignatureProvider()
+                signatureProvider.importKey(privateKey)
+
+                fioSdk = FIOSDK(
+                    privateKey,
+                    publicKey,
+                    serializationProvider,
+                    signatureProvider,
+                    networkBaseUrl,
+                    mockServerBaseUrl
+                )
+            }
+
+            return fioSdk!!
+        }
+
         /**
          * Return a previously initialized instance of the FIO SDK.
          */
         fun getInstance(): FIOSDK
         {
+            if(this.fioSdk == null)
+                throw FIOError("The instance has not been previously initialized.")
+
             return fioSdk!!
         }
 
@@ -111,6 +137,20 @@ class FIOSDK(private val privateKey: String, private val publicKey: String,
         {
             fioSdk = null
         }
+    }
+
+    fun setPrivateKey(privateKey:String)
+    {
+        this.privateKey = privateKey
+
+        //If the signature provider is the default provider, then import the private key
+        if(this.signatureProvider is SoftKeySignatureProvider)
+            (this.signatureProvider as SoftKeySignatureProvider).importKey(privateKey)
+    }
+
+    fun getPrivateKey():String
+    {
+        return this.privateKey
     }
 
     /**

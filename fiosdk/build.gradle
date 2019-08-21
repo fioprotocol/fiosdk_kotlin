@@ -56,8 +56,6 @@ dependencies {
     api 'com.google.guava:guava:27.1-android'
     api 'org.bitcoinj:bitcoinj-core:0.15.2'
 
-
-
 }
 
 repositories {

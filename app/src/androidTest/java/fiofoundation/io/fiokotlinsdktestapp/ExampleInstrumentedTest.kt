@@ -1,30 +1,20 @@
 package fiofoundation.io.fiokotlinsdktestapp
 
-import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import android.util.Log
 import fiofoundation.io.androidfioserializationprovider.AbiFIOSerializationProvider
-import fiofoundation.io.androidfiosoftkeysignatureprovider.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.FIOSDK
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetFIONamesError
-import fiofoundation.io.fiosdk.errors.fionetworkprovider.RegisterFIONameForUserError
-import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
-import fiofoundation.io.fiosdk.models.fionetworkprovider.FIORequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
-import fiofoundation.io.fiosdk.models.fionetworkprovider.request.GetFIONamesRequest
-import fiofoundation.io.fiosdk.models.fionetworkprovider.request.RegisterFIONameForUserRequest
-import fiofoundation.io.fiosdk.models.fionetworkprovider.response.PushTransactionResponse
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
 import org.bitcoinj.crypto.MnemonicCode
-import org.bitcoinj.crypto.MnemonicException
 
 import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.junit.Assert.*
-import java.io.IOException
 import java.lang.AssertionError
 import java.lang.Exception
 import java.math.BigInteger
@@ -81,8 +71,8 @@ class ExampleInstrumentedTest {
 
         this.generatePrivateAndPublicKeys()
 
-        aliceFioAddress = "test-alice" + (0..10000).random().toString() + ":brd"
-        bobFioAddress = "test-bob" + (0..10000).random().toString() + ":brd"
+        aliceFioAddress = "test-alice" + (10000..50000).random().toString() + ":brd"
+        bobFioAddress = "test-bob" + (10000..50000).random().toString() + ":brd"
 
         Log.i(this.logTag,"Alice FIO Address: " + this.aliceFioAddress)
         Log.i(this.logTag,"Bob FIO Address: " + this.bobFioAddress)
@@ -742,11 +732,11 @@ class ExampleInstrumentedTest {
             FIOSDK.destroyInstance()
 
             val serializationProvider = AbiFIOSerializationProvider()
-            val signatureProvider = SoftKeySignatureProvider()
-            signatureProvider.importKey(this.alicePrivateKey)
+//            val signatureProvider = SoftKeySignatureProvider()
+//            signatureProvider.importKey(this.alicePrivateKey)
 
             this.fioSdk = FIOSDK.getInstance(this.alicePrivateKey,this.alicePublicKey,
-                serializationProvider,signatureProvider,baseUrl,baseMockUrl)
+                serializationProvider,baseUrl,baseMockUrl)
 
             Log.i(this.logTag,"Alice Private Key: " + this.alicePrivateKey)
             Log.i(this.logTag,"Alice Public Key: " + this.alicePublicKey)
@@ -756,11 +746,11 @@ class ExampleInstrumentedTest {
             FIOSDK.destroyInstance()
 
             val serializationProvider = AbiFIOSerializationProvider()
-            val signatureProvider = SoftKeySignatureProvider()
-            signatureProvider.importKey(this.bobPrivateKey)
+//            val signatureProvider = SoftKeySignatureProvider()
+//            signatureProvider.importKey(this.bobPrivateKey)
 
             this.fioSdk = FIOSDK.getInstance(this.bobPrivateKey,this.bobPublicKey,
-                serializationProvider,signatureProvider,baseUrl,baseMockUrl)
+                serializationProvider,baseUrl,baseMockUrl)
 
             Log.i(this.logTag,"Bob Private Key: " + this.bobPrivateKey)
             Log.i(this.logTag,"Bob Public Key: " + this.bobPublicKey)

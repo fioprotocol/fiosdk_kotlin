@@ -385,7 +385,7 @@ open class TransactionProcessor(val serializationProvider: ISerializationProvide
             action.data = actionAbiFioSerializationObject.hex
         }
 
-        if (clonedTransaction.contextFreeActions!!.isNotEmpty()) {
+        if (clonedTransaction.contextFreeActions!=null && clonedTransaction.contextFreeActions!!.isNotEmpty()) {
             for (contextFreeAction in clonedTransaction.contextFreeActions!!)
             {
                 val actionAbiEosSerializationObject = this.serializeAction(contextFreeAction,
@@ -428,9 +428,9 @@ open class TransactionProcessor(val serializationProvider: ISerializationProvide
     //public methods
 
     @Throws(TransactionPrepareError::class)
-    fun prepare(actions: ArrayList<IAction>?, contextFreeActions: ArrayList<IAction>?)
+    fun prepare(actions: ArrayList<IAction>, contextFreeActions: ArrayList<IAction>)
     {
-        if (actions == null || actions.isEmpty()) {
+        if (actions.isEmpty()) {
             throw TransactionPrepareInputError(ErrorConstants.TRANSACTION_PROCESSOR_ACTIONS_EMPTY_ERROR_MSG)
         }
 
@@ -497,18 +497,6 @@ open class TransactionProcessor(val serializationProvider: ISerializationProvide
             preparingTransaction.expiration = DateFormatter.convertMilliSecondToBackendTimeString(expirationTimeInMilliseconds)
         }
 
-//        val headBlockNum: BigInteger
-//
-//        val blockBehindConfig = this.transactionConfig.blocksBehind
-//
-//        if (getInfoResponse.headBlockNumber?.compareTo(BigInteger.valueOf(blockBehindConfig.toLong()))!! > 0) {
-//            headBlockNum = getInfoResponse.headBlockNumber.subtract(BigInteger.valueOf(blockBehindConfig.toLong()))
-//        }
-//        else
-//        {
-//            headBlockNum = BigInteger.valueOf(blockBehindConfig.toLong())
-//        }
-
         val getBlockResponse: GetBlockResponse
         try
         {
@@ -532,9 +520,9 @@ open class TransactionProcessor(val serializationProvider: ISerializationProvide
     }
 
     @Throws(TransactionPrepareError::class)
-    fun prepare(actions: ArrayList<IAction>?)
+    fun prepare(actions: ArrayList<IAction>)
     {
-        this.prepare(actions,null)
+        this.prepare(actions,ArrayList())
     }
 
     @Throws(TransactionSignError::class)
