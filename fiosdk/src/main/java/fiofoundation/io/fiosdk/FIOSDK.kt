@@ -8,6 +8,7 @@ import fiofoundation.io.fiosdk.errors.serializationprovider.SerializeTransaction
 import fiofoundation.io.fiosdk.errors.session.TransactionBroadCastError
 import fiofoundation.io.fiosdk.errors.session.TransactionPrepareError
 import fiofoundation.io.fiosdk.errors.session.TransactionSignError
+import fiofoundation.io.fiosdk.errors.signatureprovider.ImportKeyError
 import fiofoundation.io.fiosdk.formatters.FIOFormatter
 import fiofoundation.io.fiosdk.implementations.ABIProvider
 import fiofoundation.io.fiosdk.implementations.AbiFIOSerializationProvider
@@ -35,7 +36,6 @@ import java.math.BigInteger
  * @param serializationProvider the serialization provider used for abi serialization and deserialization.
  * @param signatureProvider the signature provider used to sign block chain transactions.
  * @param networkBaseUrl the url to the FIO API.
- * @param mockServerBaseUrl (optional) the url to the Mock Server.
  */
 class FIOSDK(private var privateKey: String, var publicKey: String,
              var serializationProvider: ISerializationProvider,
@@ -148,6 +148,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
         }
     }
 
+    /**
+     * @suppress
+     */
     var mockServerBaseUrl:String=""
         set(value){
             if(value.isNotEmpty())
@@ -157,13 +160,30 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
             field = value
         }
 
+    /**
+     * @param privateKey set private key.  If using the default signature provider, a new instance
+     * of the provider will be created automatically.
+     * @throws [FIOError]
+     * */
+    @Throws(FIOError::class)
     open fun setPrivateKey(privateKey:String)
     {
         this.privateKey = privateKey
 
         //If the signature provider is the default provider, then import the private key
-        if(this.signatureProvider is SoftKeySignatureProvider)
-            (this.signatureProvider as SoftKeySignatureProvider).importKey(privateKey)
+        try {
+            if(this.signatureProvider is SoftKeySignatureProvider)
+                (this.signatureProvider as SoftKeySignatureProvider).importKey(privateKey)
+        }
+        catch(e:ImportKeyError)
+        {
+            throw FIOError(e.message!!,e)
+        }
+        catch(ex:Exception)
+        {
+            throw FIOError(ex.message!!,ex)
+        }
+
     }
 
     fun getPrivateKey():String
@@ -211,6 +231,8 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @param ownerPublicKey Public key which will own the FIO Address after registration. Set to empty if same as sender.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
      * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun registerFioAddress(fioAddress:String,ownerPublicKey:String, maxFee:BigInteger,
@@ -272,6 +294,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @param fioAddress FIO Address to register.
      * @param ownerPublicKey Public key which will own the FIO Address after registration. Set to empty if same as sender.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     * @return
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun registerFioAddress(fioAddress:String,ownerPublicKey:String, maxFee:BigInteger): PushTransactionResponse
@@ -285,6 +310,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @param fioAddress FIO Address to register.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
      * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun registerFioAddress(fioAddress:String, maxFee:BigInteger, walletFioAddress:String): PushTransactionResponse
@@ -297,6 +325,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      *
      * @param fioAddress FIO Address to register.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun registerFioAddress(fioAddress:String, maxFee:BigInteger): PushTransactionResponse
@@ -311,6 +342,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @param ownerPublicKey Public key which will own the FIO Domain after registration. Set to empty if same as sender.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
      * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun registerFioDomain(fioDomain:String,ownerPublicKey:String, maxFee:BigInteger,
@@ -371,6 +405,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @param fioDomain FIO Domain to register.
      * @param ownerPublicKey Public key which will own the FIO Domain after registration. Set to empty if same as sender.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun registerFioDomain(fioDomain:String,ownerPublicKey:String, maxFee:BigInteger): PushTransactionResponse
@@ -384,6 +421,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @param fioDomain FIO Domain to register. The owner will be the public key associated with the FIO SDK instance.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
      * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun registerFioDomain(fioDomain:String, maxFee:BigInteger,
@@ -397,6 +437,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      *
      * @param fioDomain FIO Domain to register. The owner will be the public key associated with the FIO SDK instance.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun registerFioDomain(fioDomain:String, maxFee:BigInteger): PushTransactionResponse
@@ -410,6 +453,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @param fioDomain FIO Domain to renew.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
      * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun renewFioDomain(fioDomain:String, maxFee:BigInteger,
@@ -464,11 +510,29 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     }
 
     /**
+     * Renew a FIO Domain on the FIO blockchain.
+     *
+     * @param fioDomain FIO Domain to renew.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun renewFioDomain(fioDomain:String, maxFee:BigInteger): PushTransactionResponse
+    {
+        return renewFioDomain(fioDomain, maxFee,"")
+    }
+
+    /**
      * Renew a FIO Address on the FIO blockchain.
      *
      * @param fioAddress FIO Address to renew.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
      * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun renewFioAddress(fioAddress:String, maxFee:BigInteger,
@@ -524,6 +588,21 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     }
 
     /**
+     * Renew a FIO Address on the FIO blockchain.
+     *
+     * @param fioAddress FIO Address to renew.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun renewFioAddress(fioAddress:String, maxFee:BigInteger): PushTransactionResponse
+    {
+        return renewFioAddress(fioAddress,maxFee)
+    }
+
+    /**
      *
      * Transfers FIO tokens from public key associated with the FIO SDK instance to
      * the payeePublicKey.
@@ -532,9 +611,12 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @param amount Amount sent in SUFs.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
      * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun transferTokensToPublicKey(payeePublicKey:String,amount:String, maxFee:BigInteger,
+    fun transferTokensToPublicKey(payeePublicKey:String,amount:BigInteger, maxFee:BigInteger,
                                   walletFioAddress:String): PushTransactionResponse
     {
         var transactionProcessor = TransTokensPubKeyTrxProcessor(
@@ -548,7 +630,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
         {
             var transferTokensToPublickey = TransferTokensPubKeyAction(
                 payeePublicKey,
-                amount,
+                amount.toString(),
                 maxFee,
                 walletFioAddress,
                 this.publicKey
@@ -588,8 +670,29 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     }
 
     /**
+     *
+     * Transfers FIO tokens from public key associated with the FIO SDK instance to
+     * the payeePublicKey.
+     *
+     * @param payeePublicKey FIO public Address of the one receiving the tokens.
+     * @param amount Amount sent in SUFs.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun transferTokensToPublicKey(payeePublicKey:String,amount:BigInteger, maxFee:BigInteger): PushTransactionResponse
+    {
+        return transferTokensToPublicKey(payeePublicKey,amount,maxFee,"")
+    }
+
+    /**
      * Retrieves balance of FIO tokens using the public key of the client
      * sending the request.
+     * @return [GetFIOBalanceResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun getFioBalance(): GetFIOBalanceResponse
@@ -601,6 +704,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * Retrieves balance of FIO tokens
      *
      * @param fioPublicKey FIO public key.
+     * @return [GetFIOBalanceResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun getFioBalance(fioPublicKey:String): GetFIOBalanceResponse
@@ -629,6 +735,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @param fundsRequestContent [FundsRequestContent]
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
      * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
@@ -692,11 +801,33 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     }
 
     /**
+     * Create a new funds request on the FIO chain.
+     *
+     * @param payerFioAddress FIO Address of the payer. This address will receive the request and will initiate payment.
+     * @param payeeFioAddress FIO Address of the payee. This address is sending the request and will receive payment.
+     * @param fundsRequestContent [FundsRequestContent]
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun requestNewFunds(payerFioAddress:String,payeeFioAddress:String,
+                        fundsRequestContent: FundsRequestContent,maxFee:BigInteger): PushTransactionResponse
+    {
+        return requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,"")
+    }
+
+    /**
      * Reject funds request.
      *
      * @param fioRequestId Existing funds request Id
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
      * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun rejectFundsRequest(fioRequestId: String, maxFee: BigInteger,
@@ -752,8 +883,23 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     }
 
     /**
+     * Reject funds request.
      *
-     * This call is made to record information on the FIO blockchain about a transaction that occurred on other blockchain, i.e. 1 BTC was sent on Bitcoin Blockchain, and both
+     * @param fioRequestId Existing funds request Id
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun rejectFundsRequest(fioRequestId: String, maxFee: BigInteger): PushTransactionResponse
+    {
+        return rejectFundsRequest(fioRequestId,maxFee,"")
+    }
+
+    /**
+     *
+     * Records information on the FIO blockchain about a transaction that occurred on other blockchain, i.e. 1 BTC was sent on Bitcoin Blockchain, and both
      * sender and receiver have FIO Addresses. OBT stands for Other Blockchain Transaction
      *
      * @param payerFioAddress FIO Address of the payer. This address initiated payment.
@@ -762,6 +908,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @param fioRequestId ID of funds request, if this Record Send transaction is in response to a previously received funds request.  Send empty if no FIO Request ID
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
      * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
@@ -780,9 +929,6 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
         {
             if(recordSendContent.status == "")
                 recordSendContent.status = "sent_to_blockchain"
-
-            //TODO: If the requestId is not blank, need to verify that the payeePublicKey, token_code
-            // and amount match the corresponding parameters of the funds request.
 
             val encryptedContent = serializeAndEncryptRecordSendContent(recordSendContent,this.publicKey)
 
@@ -830,9 +976,35 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     }
 
     /**
+     *
+     * Records information on the FIO blockchain about a transaction that occurred on other blockchain, i.e. 1 BTC was sent on Bitcoin Blockchain, and both
+     * sender and receiver have FIO Addresses. OBT stands for Other Blockchain Transaction
+     *
+     * @param payerFioAddress FIO Address of the payer. This address initiated payment.
+     * @param payeeFioAddress FIO Address of the payee. This address is receiving payment.
+     * @param recordSendContent [RecordSendContent]
+     * @param fioRequestId ID of funds request, if this Record Send transaction is in response to a previously received funds request.  Send empty if no FIO Request ID
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun recordSend(payerFioAddress:String,payeeFioAddress:String,
+                   recordSendContent: RecordSendContent, fioRequestId: String,
+                   maxFee:BigInteger): PushTransactionResponse
+    {
+        return recordSend(payerFioAddress,payeeFioAddress,recordSendContent,fioRequestId,maxFee,"")
+    }
+
+    /**
      * Polls for any pending requests sent to the requestee.
      *
      * @param requesteeFioPublicKey FIO public key of the requestee.
+     * @return [List<FIORequestContent>]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun getPendingFioRequests(requesteeFioPublicKey:String): List<FIORequestContent>
@@ -869,7 +1041,11 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
     /**
      * Polls for any pending requests sent to public key associated with the FIO SDK instance.
+     * @return [List<FIORequestContent>]
+     *
+     * @throws [FIOError]
      */
+    @Throws(FIOError::class)
     fun getPendingFioRequests(): List<FIORequestContent>
     {
         return this.getPendingFioRequests(this.publicKey)
@@ -879,6 +1055,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * Polls for any requests sent by owner.
      *
      * @param senderFioPublicKey FIO public key of the owner who sent the request.
+     * @return [List<FIORequestContent>]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun getSentFioRequests(senderFioPublicKey:String): List<FIORequestContent>
@@ -915,6 +1094,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
     /**
      * Polls for any sent requests sent by public key associated with the FIO SDK instance.
+     * @return [List<FIORequestContent>]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun getSentFioRequests(): List<FIORequestContent>
@@ -926,6 +1108,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * Returns FIO Addresses and FIO Domains owned by this public key.
      *
      * @param fioPublicKey FIO public key of owner.
+     * @return [GetFIONamesResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun getFioNames(fioPublicKey:String): GetFIONamesResponse
@@ -950,6 +1135,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * Returns the FIO token public address for specified FIO Address.
      *
      * @param fioAddress FIO Address for which fio token public address is to be returned.
+     * @return [GetPublicAddressResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun getPublicAddress(fioAddress:String): GetPublicAddressResponse
@@ -962,6 +1150,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      *
      * @param fioAddress FIO Address for which the token public address is to be returned.
      * @param tokenCode Token code for which public address is to be returned.
+     * @return [GetPublicAddressResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun getPublicAddress(fioAddress:String, tokenCode:String): GetPublicAddressResponse
@@ -986,6 +1177,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * Checks if a FIO Address or FIO Domain is available for registration.
      *
      * @param fioName FIO Address or FIO Domain to check.
+     * @return [FIONameAvailabilityCheckResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun isFioAddressAvailable(fioName:String): FIONameAvailabilityCheckResponse
@@ -1011,6 +1205,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      *
      * @param fioAddress FIO Address incurring the fee and owned by signer.
      * @param endPointName Name of API call end point, e.g. add_pub_address.
+     * @return [GetFeeResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun getFee(fioAddress:String,endPointName:String): GetFeeResponse
@@ -1033,6 +1230,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
     /**
      * Get FIO blockchain information
+     * @return [GetInfoResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun getInfo(): GetInfoResponse
@@ -1055,6 +1255,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * Get FIO block information
      *
      * @param blockIdentifier last_irreversible_block_num or last_irreversible_block_id from [getInfo].
+     * @return [GetBlockResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun getBlock(blockIdentifier:String): GetBlockResponse
@@ -1083,6 +1286,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      *      fio.token
      *
      * @param accountName Account name. Check request definition for specific call above.
+     * @return [GetRawAbiResponse]
+     *
+     * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun getRawAbi(accountName:String): GetRawAbiResponse
