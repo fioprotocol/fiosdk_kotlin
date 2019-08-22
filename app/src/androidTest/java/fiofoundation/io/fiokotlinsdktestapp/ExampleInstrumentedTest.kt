@@ -256,7 +256,8 @@ class ExampleInstrumentedTest {
             val newFundsContent = FundsRequestContent(payeeBTCAddress,"4.2","BTC")
 
             val response = this.fioSdk!!.requestNewFunds(this.bobFioAddress,
-                this.aliceFioAddress,newFundsContent,this.testMaxFee,this.walletFioAddress)
+                this.aliceFioAddress,payeeBTCAddress,"4.2","BTC",
+                this.testMaxFee,this.walletFioAddress)
 
             val actionTraceResponse = response.getActionTraceResponse()
             if (actionTraceResponse != null) {
@@ -474,9 +475,10 @@ class ExampleInstrumentedTest {
                             firstPendingRequest.requestContent!!.amount,
                             firstPendingRequest.requestContent!!.tokenCode,this.otherBlockChainId)
 
-                        val response = this.fioSdk!!.recordSend(this.bobFioAddress,this.aliceFioAddress,
-                            recordSendContent,firstPendingRequest.fioRequestId,
-                            testMaxFee,walletFioAddress)
+                        val response = this.fioSdk!!.recordSend(firstPendingRequest.fioRequestId,
+                            this.bobFioAddress,this.aliceFioAddress,payerBTCAddress,firstPendingRequest.requestContent!!.payeeTokenPublicAddress,
+                            firstPendingRequest.requestContent!!.amount,firstPendingRequest.requestContent!!.tokenCode,"sent_to_blockchain",
+                            this.otherBlockChainId, testMaxFee,walletFioAddress)
 
                         val actionTraceResponse = response.getActionTraceResponse()
 
@@ -546,7 +548,7 @@ class ExampleInstrumentedTest {
     }
 
     @Test
-    fun isFioAddressAvailable()
+    fun isFioNameAvailable()
     {
         try
         {
@@ -554,7 +556,7 @@ class ExampleInstrumentedTest {
 
             Log.i(this.logTag, "Start isFioAddressAvailable")
 
-            val response = this.fioSdk!!.isFioAddressAvailable(this.aliceFioAddress)
+            val response = this.fioSdk!!.isAvailable(this.aliceFioAddress)
 
             Log.i(this.logTag, "Is Fio Address, " + this.aliceFioAddress + ", Available: " + response.isAvailable.toString())
 
@@ -601,98 +603,6 @@ class ExampleInstrumentedTest {
         }
 
         Log.i(this.logTag, "Finish getFee")
-    }
-
-    @Test
-    fun getInfo()
-    {
-        try
-        {
-            this.initializeFIOSDK()
-
-            Log.i(this.logTag, "Start getInfo")
-
-            val response = this.fioSdk!!.getInfo()
-
-            Log.i(this.logTag, "Get Info - ChainId: " + response.chainId)
-            Log.i(this.logTag, "Get Info - headBlockNumber: " + response.headBlockNumber)
-
-            assertTrue(response.chainId == chainId)
-
-            this.blockNumber = response.headBlockNumber!!
-        }
-        catch (e: FIOError)
-        {
-            Log.e(this.logTag, e.toJson())
-
-            throw AssertionError("getInfo Failed: " + e.toJson())
-        }
-        catch(generalException:Exception)
-        {
-            throw AssertionError("getInfo Failed: " + generalException.message)
-        }
-
-        Log.i(this.logTag, "Finish getInfo")
-    }
-
-    @Test
-    fun getBlock()
-    {
-        try
-        {
-            this.getInfo()
-
-            Log.i(this.logTag, "Start getBlock")
-
-            val response = this.fioSdk!!.getBlock(this.blockNumber.toString())
-
-            Log.i(this.logTag, "Get Block - BlockNumber: " + response.blockNumber)
-
-            assertTrue(response.blockNumber == this.blockNumber)
-
-        }
-        catch (e: FIOError)
-        {
-            Log.e(this.logTag, e.toJson())
-
-            throw AssertionError("getBlock Failed: " + e.toJson())
-        }
-        catch(generalException:Exception)
-        {
-            throw AssertionError("getBlock Failed: " + generalException.message)
-        }
-
-        Log.i(this.logTag, "Finish getBlock")
-    }
-
-    @Test
-    fun getRawAbi()
-    {
-        try
-        {
-            this.initializeFIOSDK()
-
-            Log.i(this.logTag, "Start getRawAbi")
-
-            val response = this.fioSdk!!.getRawAbi(getRawAbiAccountName)
-
-            Log.i(this.logTag, "Get Raw Abi: " + response.abi)
-
-            assertTrue(response.accountName == this.getRawAbiAccountName)
-
-        }
-        catch (e: FIOError)
-        {
-            Log.e(this.logTag, e.toJson())
-
-            throw AssertionError("getRawAbi Failed: " + e.toJson())
-        }
-        catch(generalException:Exception)
-        {
-            throw AssertionError("getRawAbi Failed: " + generalException.message)
-        }
-
-        Log.i(this.logTag, "Finish getRawAbi")
     }
 
     //Private Methods
