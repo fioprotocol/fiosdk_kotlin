@@ -1161,7 +1161,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
             throw FIOError(e.message!!,e)
         }
     }
-    
+
     fun getMultiplier(): Int
     {
         return Constants.multiplier
