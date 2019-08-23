@@ -5,6 +5,7 @@ import android.util.Log
 import fiofoundation.io.fiosdk.FIOSDK
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetFIONamesError
+import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
@@ -475,10 +476,9 @@ class ExampleInstrumentedTest {
                             firstPendingRequest.requestContent!!.amount,
                             firstPendingRequest.requestContent!!.tokenCode,this.otherBlockChainId)
 
-                        val response = this.fioSdk!!.recordSend(firstPendingRequest.fioRequestId,
-                            this.bobFioAddress,this.aliceFioAddress,payerBTCAddress,firstPendingRequest.requestContent!!.payeeTokenPublicAddress,
-                            firstPendingRequest.requestContent!!.amount,firstPendingRequest.requestContent!!.tokenCode,"sent_to_blockchain",
-                            this.otherBlockChainId, testMaxFee,walletFioAddress)
+                        val response = this.fioSdk!!.recordSend(firstPendingRequest.fioRequestId,firstPendingRequest.payerFioAddress
+                        ,firstPendingRequest.payeeFioAddress,payerBTCAddress,recordSendContent.payeeTokenPublicAddress,recordSendContent.amount.toDouble()
+                        ,recordSendContent.tokenCode,"",recordSendContent.obtId,testMaxFee,"")
 
                         val actionTraceResponse = response.getActionTraceResponse()
 
@@ -585,9 +585,9 @@ class ExampleInstrumentedTest {
 
             Log.i(this.logTag, "Start getFee")
 
-            val response = this.fioSdk!!.getFee(this.aliceFioAddress,endPointNameForGetFee)
+            val response = this.fioSdk!!.getFee(FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress)
 
-            Log.i(this.logTag, endPointNameForGetFee + " Fee: " + response.fee)
+            Log.i(this.logTag, FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress.endpoint + " Fee: " + response.fee)
 
             assertTrue(true)
         }
@@ -614,14 +614,14 @@ class ExampleInstrumentedTest {
         var mn = getRandomSeedWords().joinToString(" ")
 
         alicePrivateKey = FIOSDK.createPrivateKey(mn)
-        alicePublicKey = FIOSDK.derivePublicKey(alicePrivateKey)
+        alicePublicKey = FIOSDK.derivedPublicKey(alicePrivateKey)
 
         //Bob Next
 
         mn = getRandomSeedWords().joinToString(" ")
 
         bobPrivateKey = FIOSDK.createPrivateKey(mn)
-        bobPublicKey = FIOSDK.derivePublicKey(bobPrivateKey)
+        bobPublicKey = FIOSDK.derivedPublicKey(bobPrivateKey)
     }
 
     private fun getRandomSeedWords(): List<String> {

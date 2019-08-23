@@ -1,7 +1,7 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider
 
-class FIOApiEndPoints {
-     companion object {
+object FIOApiEndPoints
+{
          const val get_public_address = "pub_address_lookup"
          const val get_fio_names = "get_fio_names"
          const val availability_check = "avail_check"
@@ -15,7 +15,7 @@ class FIOApiEndPoints {
          const val transfer_tokens_pub_key = "transfer_tokens_pub_key"
          const val renew_fio_domain = "renew_fio_domain"
          const val renew_fio_address = "renew_fio_address"
-         const val transfer_tokens_fio_address = "transfer_tokens_fio_address"
+         //const val transfer_tokens_fio_address = "transfer_tokens_fio_address"
          const val push_transaction = "push_transaction"
          const val get_required_keys = "get_required_keys"
          const val get_pending_fio_requests = "get_pending_fio_requests"
@@ -25,7 +25,17 @@ class FIOApiEndPoints {
          const val record_send = "record_send"
          const val register_fio_name_behalf_of_user = "register_fio_name"
 
-         val no_fioaddress_endpoints: List<String> = listOf(register_fio_domain,register_fio_address,transfer_tokens_pub_key,transfer_tokens_fio_address)
+         val no_fioaddress_endpoints: List<String> = listOf(register_fio_domain,register_fio_address,transfer_tokens_pub_key)
+
+    enum class EndPointsWithFees(val endpoint:String)
+    {
+        RecordSend(record_send),
+        RegisterFioDomain(register_fio_domain),
+        RegisterFioAddress(register_fio_address),
+        RenewFioDomain(renew_fio_domain),
+        RenewFioAddress(renew_fio_address),
+        TransferTokens(transfer_tokens_pub_key)
 
     }
 }
+

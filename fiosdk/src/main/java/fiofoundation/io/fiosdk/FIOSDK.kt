@@ -1,5 +1,6 @@
 package fiofoundation.io.fiosdk
 
+import android.provider.SyncStateContract
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.errors.fionetworkprovider.*
 import fiofoundation.io.fiosdk.errors.formatters.FIOFormatterError
@@ -16,6 +17,8 @@ import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
+import fiofoundation.io.fiosdk.models.Constants
+import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIORequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
@@ -41,7 +44,6 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
              var serializationProvider: ISerializationProvider,
              var signatureProvider: ISignatureProvider, private val networkBaseUrl:String)
 {
-
     private var networkProvider:FIONetworkProvider = FIONetworkProvider(networkBaseUrl,"")
 
     private val abiProvider:ABIProvider = ABIProvider(networkProvider,this.serializationProvider)
@@ -69,7 +71,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
          * @param fioPrivateKey FIO private key.
          */
         @Throws(FIOFormatterError::class)
-        fun derivePublicKey(fioPrivateKey: String): String {
+        fun derivedPublicKey(fioPrivateKey: String): String {
             return FIOFormatter.convertPEMFormattedPublicKeyToFIOFormat(
                 PrivateKeyUtils.extractPEMFormattedPublicKey(
                     FIOFormatter.convertFIOPrivateKeyToPEMFormat(fioPrivateKey)
@@ -879,11 +881,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @throws [FIOError]
      */
     fun recordSend(fioRequestId: String,payerFioAddress:String,payeeFioAddress:String,
-                   payerTokenPublicAddress: String,payeeTokenPublicAddress:String,amount:String,
-                   tokenCode:String,obtId:String,status:String="sent_to_blockchain",
-                           maxFee:BigInteger, walletFioAddress:String): PushTransactionResponse
+                   payerTokenPublicAddress: String,payeeTokenPublicAddress:String,amount:Double,
+                   tokenCode:String,status:String="sent_to_blockchain",obtId:String,maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
     {
-        val recordSendContent = RecordSendContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount,
+        val recordSendContent = RecordSendContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
             tokenCode,obtId,status)
 
         return this.recordSend(fioRequestId,payerFioAddress,payeeFioAddress,recordSendContent,maxFee,walletFioAddress)
@@ -913,15 +914,25 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @throws [FIOError]
      */
     fun recordSend(fioRequestId: String,payerFioAddress:String,payeeFioAddress:String,
-                   payerTokenPublicAddress: String,payeeTokenPublicAddress:String,amount:String,
-                   tokenCode:String,obtId:String,status:String="sent_to_blockchain",memo:String?=null,
-                   hash:String?=null,offlineUrl:String?=null, maxFee:BigInteger,
-                   walletFioAddress:String): PushTransactionResponse
+                   payerTokenPublicAddress: String,payeeTokenPublicAddress:String,amount:Double,
+                   tokenCode:String,status:String="sent_to_blockchain",obtId:String, maxFee:BigInteger,walletFioAddress:String="",
+                   memo:String?=null, hash:String?=null,offlineUrl:String?=null): PushTransactionResponse
     {
-        val recordSendContent = RecordSendContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount,
+        val recordSendContent = RecordSendContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
             tokenCode,obtId,status,memo,hash,offlineUrl)
 
         return this.recordSend(fioRequestId,payerFioAddress,payeeFioAddress,recordSendContent,maxFee,walletFioAddress)
+    }
+
+    fun recordSend(fioRequestId: String,payerFioAddress:String,payeeFioAddress:String,
+                   payerTokenPublicAddress: String,payeeTokenPublicAddress:String,amount:Double,
+                   tokenCode:String,obtId:String,status:String="sent_to_blockchain",
+                   maxFee:BigInteger): PushTransactionResponse
+    {
+        val recordSendContent = RecordSendContent(payerTokenPublicAddress,
+            payeeTokenPublicAddress,amount.toString(),tokenCode,obtId,status)
+
+        return this.recordSend(fioRequestId,payerFioAddress,payeeFioAddress,recordSendContent,maxFee,"")
     }
 
     /**
@@ -1047,18 +1058,45 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     /**
      * Compute and return fee amount for specific call and specific user
      *
-     * @param fioAddress FIO Address incurring the fee and owned by signer.
+     * @param fioName
+     *        if endPointName is RenewFioAddress, FIO Address incurring the fee and owned by signer.
+     *        if endPointName is RenewFioDomain, FIO Domain incurring the fee and owned by signer.
+     *        if endPointName is RecordSend, Payee FIO Address incurring the fee and owned by signer.
      * @param endPointName Name of API call end point, e.g. add_pub_address.
      * @return [GetFeeResponse]
      *
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun getFee(fioAddress:String,endPointName:String): GetFeeResponse
+    fun getFee(endPointName:FIOApiEndPoints.EndPointsWithFees,fioName:String=""): GetFeeResponse
     {
         try
         {
-            val request = GetFeeRequest(endPointName,fioAddress)
+            if(endPointName == FIOApiEndPoints.EndPointsWithFees.RenewFioAddress
+                && fioName.isEmpty())
+            {
+                throw FIOError("FioName must be set to the FioAddress you want to renew.")
+            }
+            else if(endPointName == FIOApiEndPoints.EndPointsWithFees.RenewFioDomain
+                && fioName.isEmpty())
+            {
+                throw FIOError("FioName must be set to the FioDomain you want to renew.")
+            }
+            else if(endPointName == FIOApiEndPoints.EndPointsWithFees.RecordSend
+                && fioName.isEmpty())
+            {
+                throw FIOError("FioName must be set to the Payer FioAddress for the record.")
+            }
+
+            val fioAddressToUse = (when (endPointName)
+            {
+                FIOApiEndPoints.EndPointsWithFees.RenewFioAddress -> fioName
+                FIOApiEndPoints.EndPointsWithFees.RenewFioDomain -> fioName
+                FIOApiEndPoints.EndPointsWithFees.RecordSend -> fioName
+                else -> ""
+            })
+
+            val request = GetFeeRequest(endPointName.endpoint,fioAddressToUse)
 
             return this.networkProvider.getFee(request)
         }
@@ -1070,6 +1108,63 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
         {
             throw FIOError(e.message!!,e)
         }
+    }
+
+    /**
+     * Compute and return fee amount for New Funds Request
+     *
+     * @return [GetFeeResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFeeForNewFundsRequest(): GetFeeResponse
+    {
+        try
+        {
+            val request = GetFeeRequest(FIOApiEndPoints.new_funds_request,this.publicKey)
+
+            return this.networkProvider.getFee(request)
+        }
+        catch(getFeeError: GetFeeError)
+        {
+            throw FIOError(getFeeError.message!!,getFeeError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Compute and return fee amount for Reject Funds Request
+     *
+     * @return [GetFeeResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFeeForRejectFundsRequest(): GetFeeResponse
+    {
+        try
+        {
+            val request = GetFeeRequest(FIOApiEndPoints.reject_funds_request,this.publicKey)
+
+            return this.networkProvider.getFee(request)
+        }
+        catch(getFeeError: GetFeeError)
+        {
+            throw FIOError(getFeeError.message!!,getFeeError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+    
+    fun getMultiplier(): Int
+    {
+        return Constants.multiplier
     }
 
     //Private Methods
