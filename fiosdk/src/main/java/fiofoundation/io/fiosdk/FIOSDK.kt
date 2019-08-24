@@ -1,6 +1,5 @@
 package fiofoundation.io.fiosdk
 
-import android.provider.SyncStateContract
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.errors.fionetworkprovider.*
 import fiofoundation.io.fiosdk.errors.formatters.FIOFormatterError
@@ -1068,35 +1067,11 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun getFee(endPointName:FIOApiEndPoints.EndPointsWithFees,fioName:String=""): GetFeeResponse
+    fun getFee(endPointName:FIOApiEndPoints.EndPointsWithFees): GetFeeResponse
     {
         try
         {
-            if(endPointName == FIOApiEndPoints.EndPointsWithFees.RenewFioAddress
-                && fioName.isEmpty())
-            {
-                throw FIOError("FioName must be set to the FioAddress you want to renew.")
-            }
-            else if(endPointName == FIOApiEndPoints.EndPointsWithFees.RenewFioDomain
-                && fioName.isEmpty())
-            {
-                throw FIOError("FioName must be set to the FioDomain you want to renew.")
-            }
-            else if(endPointName == FIOApiEndPoints.EndPointsWithFees.RecordSend
-                && fioName.isEmpty())
-            {
-                throw FIOError("FioName must be set to the Payer FioAddress for the record.")
-            }
-
-            val fioAddressToUse = (when (endPointName)
-            {
-                FIOApiEndPoints.EndPointsWithFees.RenewFioAddress -> fioName
-                FIOApiEndPoints.EndPointsWithFees.RenewFioDomain -> fioName
-                FIOApiEndPoints.EndPointsWithFees.RecordSend -> fioName
-                else -> ""
-            })
-
-            val request = GetFeeRequest(endPointName.endpoint,fioAddressToUse)
+            val request = GetFeeRequest(endPointName.endpoint,"")
 
             return this.networkProvider.getFee(request)
         }
@@ -1149,6 +1124,33 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
         try
         {
             val request = GetFeeRequest(FIOApiEndPoints.reject_funds_request,this.publicKey)
+
+            return this.networkProvider.getFee(request)
+        }
+        catch(getFeeError: GetFeeError)
+        {
+            throw FIOError(getFeeError.message!!,getFeeError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Compute and return fee amount for RecordSend
+     *
+     * @param payerFioAddress The FIO Address of the payer whose transaction is being recorded by the RecordSend call
+     * @return [GetFeeResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFeeForRecordSend(payerFioAddress:String): GetFeeResponse
+    {
+        try
+        {
+            val request = GetFeeRequest(FIOApiEndPoints.record_send,payerFioAddress)
 
             return this.networkProvider.getFee(request)
         }
