@@ -31,7 +31,7 @@ android {
     }
 
     dokka {
-        moduleName = 'data'
+        moduleName = 'fiosdk'
         outputFormat = 'html'
         outputDirectory = "documentation"
 

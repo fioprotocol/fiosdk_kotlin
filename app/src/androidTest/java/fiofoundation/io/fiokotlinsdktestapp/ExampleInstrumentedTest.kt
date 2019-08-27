@@ -33,8 +33,8 @@ class ExampleInstrumentedTest {
     private var bobPrivateKey = "5JAExdhmQw8F1siD7uzLrhmzfjW97hubw7ZNxjAiAu6p7Xq9wqG"
     private var bobPublicKey = "FIO8LKt4DBzXKzDGjFcZo5x82Nv5ahmbZ8AUNXBv2vMfm6smiHst3"
 
-    private var aliceFioAddress = "test-alice:brd"
-    private var bobFioAddress = "test-bob:brd"
+    private var aliceFioAddress = ""
+    private var bobFioAddress = ""
 
     private var testFioDomain = "sm"
 
@@ -103,6 +103,7 @@ class ExampleInstrumentedTest {
         this.initializeFIOSDK()
 
         Log.i(this.logTag,"Start registerFioNameForUser")
+        Log.i(this.logTag,"Register " + this.aliceFioAddress)
 
         var response = this.fioSdk!!.registerFioNameOnBehalfOfUser(this.aliceFioAddress)
 
@@ -112,6 +113,7 @@ class ExampleInstrumentedTest {
 
         this.switchUser("bob")
 
+        Log.i(this.logTag,"Register " + this.bobFioAddress)
         response = this.fioSdk!!.registerFioNameOnBehalfOfUser(this.bobFioAddress)
 
         Log.i(this.logTag,"Register FioName For Bob: " + response.status)

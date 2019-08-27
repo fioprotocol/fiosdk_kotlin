@@ -1,5 +1,4 @@
-# fiosdk_kotlin
-Kotlin SDK
+#Kotlin SDK
 
 #Build
 
@@ -11,7 +10,7 @@ To build the Kotlin SDK project, select "Build" from the Android Studio menu and
 
 #Documentation
 
-To create the documentation, open a terminal and run ./gradlew dokka
+To create the documentation, open a terminal in the root of the project and run ./gradlew dokka
 
 The documentation files will be located in the "documentation" folder in the root of the project.
 
