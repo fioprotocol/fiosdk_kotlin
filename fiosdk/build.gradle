@@ -33,7 +33,7 @@ android {
     dokka {
         moduleName = 'data'
         outputFormat = 'html'
-        outputDirectory = "../documentation"
+        outputDirectory = "documentation"
 
         skipDeprecated = true
 
