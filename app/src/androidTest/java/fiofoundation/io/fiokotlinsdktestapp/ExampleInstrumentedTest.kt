@@ -71,8 +71,8 @@ class ExampleInstrumentedTest {
 
         this.generatePrivateAndPublicKeys()
 
-        aliceFioAddress = "test-alice" + (10000..50000).random().toString() + ":brd"
-        bobFioAddress = "test-bob" + (10000..50000).random().toString() + ":brd"
+        aliceFioAddress = "kot-alice" + System.currentTimeMillis().toString() + ":brd"
+        bobFioAddress = "kot-bob" + System.currentTimeMillis().toString() + ":brd"
 
         Log.i(this.logTag,"Alice FIO Address: " + this.aliceFioAddress)
         Log.i(this.logTag,"Bob FIO Address: " + this.bobFioAddress)
