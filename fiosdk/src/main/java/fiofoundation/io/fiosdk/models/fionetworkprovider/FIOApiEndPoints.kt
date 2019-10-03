@@ -15,7 +15,6 @@ object FIOApiEndPoints
          const val transfer_tokens_pub_key = "transfer_tokens_pub_key"
          const val renew_fio_domain = "renew_fio_domain"
          const val renew_fio_address = "renew_fio_address"
-         //const val transfer_tokens_fio_address = "transfer_tokens_fio_address"
          const val push_transaction = "push_transaction"
          const val get_required_keys = "get_required_keys"
          const val get_pending_fio_requests = "get_pending_fio_requests"
@@ -24,6 +23,7 @@ object FIOApiEndPoints
          const val reject_funds_request = "reject_funds_request"
          const val record_send = "record_send"
          const val register_fio_name_behalf_of_user = "register_fio_name"
+         const val add_public_address = "add_pub_address"
 
          val no_fioaddress_endpoints: List<String> = listOf(register_fio_domain,register_fio_address,transfer_tokens_pub_key)
 
@@ -34,7 +34,8 @@ object FIOApiEndPoints
         RegisterFioAddress(register_fio_address),
         RenewFioDomain(renew_fio_domain),
         RenewFioAddress(renew_fio_address),
-        TransferTokens(transfer_tokens_pub_key)
+        TransferTokens(transfer_tokens_pub_key),
+        AddPublicAddess(add_public_address)
 
     }
 }

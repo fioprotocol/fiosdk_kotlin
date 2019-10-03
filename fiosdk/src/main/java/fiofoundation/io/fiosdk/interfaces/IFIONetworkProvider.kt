@@ -29,4 +29,5 @@ interface IFIONetworkProvider {
     fun requestNewFunds(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun rejectNewFunds(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun recordSend(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun addPublicAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
 }

@@ -73,5 +73,8 @@ interface IFIONetworkProviderApi {
     @POST(FIOApiEndPoints.record_send)
     fun recordSend(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
 
+    @POST(FIOApiEndPoints.add_public_address)
+    fun addPublicAddress(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
+
 
 }

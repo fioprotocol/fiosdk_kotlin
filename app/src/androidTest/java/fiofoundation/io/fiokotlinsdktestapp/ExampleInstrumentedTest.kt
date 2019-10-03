@@ -43,6 +43,7 @@ class ExampleInstrumentedTest {
 
     private var payeeBTCAddress = "1AkZGXsnyDfp4faMmVfTWsN1nNRRvEZJk8"  //bob
     private var payerBTCAddress = "1PzCN3cBkTL72GPeJmpcueU4wQi9guiLa6" //alice
+    private var publicBTCAddress = "1PzCN3cBkTL72GPeJmpcueU4wQi9guiLa6" //alice
     private var otherBlockChainId = "123456789"
     private var endPointNameForGetFee = FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress
     private var chainId = "cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f"
@@ -605,6 +606,75 @@ class ExampleInstrumentedTest {
         }
 
         Log.i(this.logTag, "Finish getFee")
+    }
+
+    @Test
+    fun addPublicAddress() {
+
+        try {
+            this.registerFioNameForUser()
+
+            Log.i(this.logTag, "Start addPublicAddress")
+
+            val response = this.fioSdk!!.addPublicAddress(this.aliceFioAddress, "BTC",
+                this.publicBTCAddress, testMaxFee, walletFioAddress)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            if (actionTraceResponse != null)
+            {
+                Log.i(
+                    this.logTag,
+                    "Add Public Address for Alice: " + (actionTraceResponse.status == "OK").toString()
+                )
+
+                assertTrue(actionTraceResponse.status == "OK")
+            }
+            else
+                Log.i(this.logTag, "Add Public Address for Alice: failed")
+
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("Add Public Address for Alice Failed: " + e.toJson())
+        }
+        catch (generalException: Exception) {
+            throw AssertionError("Add Public Address for Alice: " + generalException.message)
+        }
+
+        Log.i(this.logTag, "Finish addPublicAddress")
+
+    }
+
+    @Test
+    fun getPublicAddress()
+    {
+        try
+        {
+            this.addPublicAddress()
+
+            Log.i(this.logTag, "Start getPublicAddress")
+
+            val response = this.fioSdk!!.getPublicAddress(this.aliceFioAddress,"BTC")
+
+            Log.i(this.logTag, "Alice BTC Public Address: " + response.publicAddress)
+
+            assertTrue(true)
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("getFee Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("getFee Failed: " + generalException.message)
+        }
+
+        Log.i(this.logTag, "Finish getPublicAddress")
     }
 
     //Private Methods

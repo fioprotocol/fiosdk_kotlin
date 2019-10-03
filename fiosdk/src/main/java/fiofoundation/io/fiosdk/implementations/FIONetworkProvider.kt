@@ -17,9 +17,6 @@ import okhttp3.OkHttpClient
 import com.google.gson.Gson
 import fiofoundation.io.fiosdk.interfaces.IFIOMockNetworkProviderApi
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.FIONameAvailabilityCheckRequest
-import com.google.gson.GsonBuilder
-
-
 
 
 class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
@@ -337,6 +334,19 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
         try
         {
             val syncCall = this.networkProviderApi.recordSend(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
+    @Throws(PushTransactionError::class)
+    override fun addPublicAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.addPublicAddress(pushTransactionRequest)
             return processCall(syncCall)
         }
         catch(e: FIONetworkProviderCallError){
