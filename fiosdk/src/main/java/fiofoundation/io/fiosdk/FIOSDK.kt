@@ -1234,11 +1234,11 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     }
 
     /**
-     * Adds a public address of the specific blockchain type to the FIO Address.
+     * By default all FIO Domains are non-public, meaning only the owner can register FIO Addresses on that domain.
+     * Setting them to public allows anyone to register a FIO Address on that domain.
      *
-     * @param fioAddress FIO Address to add the public address to.
-     * @param tokenCode Token code to be used with that public address.
-     * @param tokenPublicAddress The public address to be added to the FIO Address for the specified token.
+     * @param fioDomain FIO Domain to make public or private.  Default is private.
+     * @param visibility [FioDomainVisiblity]
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
      * @param walletFioAddress (optional) FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
