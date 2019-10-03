@@ -61,6 +61,7 @@ class ExampleInstrumentedTest {
 
     private val skipRegisterFioAddress = true
     private val skipRegisterFioDomain = true
+    private val skipSetFioDomainVisibility = true
 
     @Test
     fun setupTestVariable()
@@ -679,40 +680,44 @@ class ExampleInstrumentedTest {
     @Test
     fun setFioDomainVisibility() {
 
-        try {
-            this.registerFioNameForUser()
-
-            Log.i(this.logTag, "Start setFioDomainVisibility")
-
-            val response = this.fioSdk!!.setFioDomainVisibility(this.aliceFioAddress, FioDomainVisiblity.PUBLIC,
-                testMaxFee, walletFioAddress)
-
-            val actionTraceResponse = response.getActionTraceResponse()
-
-            if (actionTraceResponse != null)
-            {
-                Log.i(
-                    this.logTag,
-                    "Set Alice's Domain public: " + (actionTraceResponse.status == "OK").toString()
-                )
-
-                assertTrue(actionTraceResponse.status == "OK")
-            }
-            else
-                Log.i(this.logTag, "Set Alice's Domain Public: failed")
-
-        }
-        catch (e: FIOError)
+        if(skipSetFioDomainVisibility == false)
         {
-            Log.e(this.logTag, e.toJson())
+            try {
+                this.registerFioNameForUser()
 
-            throw AssertionError("Set Alice's Domain Public Failed: " + e.toJson())
-        }
-        catch (generalException: Exception) {
-            throw AssertionError("Set Alice's Domain Public: " + generalException.message)
+                Log.i(this.logTag, "Start setFioDomainVisibility")
+
+                val response = this.fioSdk!!.setFioDomainVisibility(this.aliceFioAddress, FioDomainVisiblity.PUBLIC,
+                    testMaxFee, walletFioAddress)
+
+                val actionTraceResponse = response.getActionTraceResponse()
+
+                if (actionTraceResponse != null)
+                {
+                    Log.i(
+                        this.logTag,
+                        "Set Alice's Domain public: " + (actionTraceResponse.status == "OK").toString()
+                    )
+
+                    assertTrue(actionTraceResponse.status == "OK")
+                }
+                else
+                    Log.i(this.logTag, "Set Alice's Domain Public: failed")
+
+            }
+            catch (e: FIOError)
+            {
+                Log.e(this.logTag, e.toJson())
+
+                throw AssertionError("Set Alice's Domain Public Failed: " + e.toJson())
+            }
+            catch (generalException: Exception) {
+                throw AssertionError("Set Alice's Domain Public: " + generalException.message)
+            }
+
+            Log.i(this.logTag, "Finish setFioDomainVisibility")
         }
 
-        Log.i(this.logTag, "Finish setFioDomainVisibility")
 
     }
 
