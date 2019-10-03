@@ -14,7 +14,7 @@ open class FIORequestContent {
     @field:SerializedName("payer_fio_public_key") var payerFioPublicKey:String = ""
     @field:SerializedName("payee_fio_public_key") var payeeFioPublicKey:String = ""
     @field:SerializedName("content") private var content:String = ""
-    @field:SerializedName("time_stamp") var timeStamp:Int = 0
+    @field:SerializedName("time_stamp") var timeStamp:String = ""
 
     var requestContent : FundsRequestContent? = null
 

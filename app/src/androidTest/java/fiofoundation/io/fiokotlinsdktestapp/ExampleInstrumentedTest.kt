@@ -53,8 +53,8 @@ class ExampleInstrumentedTest {
 
     private var sharedSecretKey:ByteArray? = null
 
-    private var baseUrl = "http://54.184.39.43:8889/v1/"
-    private var baseMockUrl = "http://mock.dapix.io/mockd/DEV4/"
+    private var baseUrl = "http://dev1.fio.dev:8889/v1/"
+    private var baseMockUrl = "http://mock.dapix.io/mockd/DEV1/"
     private var fioSdk:FIOSDK? = null
 
     private var logTag = "FIOSDK-TEST"

@@ -17,6 +17,9 @@ import okhttp3.OkHttpClient
 import com.google.gson.Gson
 import fiofoundation.io.fiosdk.interfaces.IFIOMockNetworkProviderApi
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.FIONameAvailabilityCheckRequest
+import com.google.gson.GsonBuilder
+
+
 
 
 class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
