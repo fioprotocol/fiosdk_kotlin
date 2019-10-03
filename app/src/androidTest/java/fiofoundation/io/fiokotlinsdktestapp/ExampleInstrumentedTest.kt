@@ -3,6 +3,7 @@ package fiofoundation.io.fiokotlinsdktestapp
 import android.support.test.runner.AndroidJUnit4
 import android.util.Log
 import fiofoundation.io.fiosdk.FIOSDK
+import fiofoundation.io.fiosdk.enums.FioDomainVisiblity
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetFIONamesError
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
@@ -36,7 +37,7 @@ class ExampleInstrumentedTest {
     private var aliceFioAddress = ""
     private var bobFioAddress = ""
 
-    private var testFioDomain = "sm"
+    private var testFioDomain = "brd"
 
     private var walletFioAddress = "rewards:wallet"
     private var testMaxFee = BigInteger("4000000000000000000")
@@ -47,8 +48,6 @@ class ExampleInstrumentedTest {
     private var otherBlockChainId = "123456789"
     private var endPointNameForGetFee = FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress
     private var chainId = "cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f"
-    private var blockNumber = BigInteger("1381533")
-    private var getRawAbiAccountName = "fio.token"
 
     private var newFundsRequestId = ""
 
@@ -72,8 +71,8 @@ class ExampleInstrumentedTest {
 
         this.generatePrivateAndPublicKeys()
 
-        aliceFioAddress = "kot-alice" + System.currentTimeMillis().toString() + ":brd"
-        bobFioAddress = "kot-bob" + System.currentTimeMillis().toString() + ":brd"
+        aliceFioAddress = "kot-alice" + System.currentTimeMillis().toString() + ":" + this.testFioDomain//":brd"
+        bobFioAddress = "kot-bob" + System.currentTimeMillis().toString() + ":" + this.testFioDomain//":brd"
 
         Log.i(this.logTag,"Alice FIO Address: " + this.aliceFioAddress)
         Log.i(this.logTag,"Bob FIO Address: " + this.bobFioAddress)
@@ -676,6 +675,47 @@ class ExampleInstrumentedTest {
 
         Log.i(this.logTag, "Finish getPublicAddress")
     }
+
+    @Test
+    fun setFioDomainVisibility() {
+
+        try {
+            this.registerFioNameForUser()
+
+            Log.i(this.logTag, "Start setFioDomainVisibility")
+
+            val response = this.fioSdk!!.setFioDomainVisibility(this.aliceFioAddress, FioDomainVisiblity.PUBLIC,
+                testMaxFee, walletFioAddress)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            if (actionTraceResponse != null)
+            {
+                Log.i(
+                    this.logTag,
+                    "Set Alice's Domain public: " + (actionTraceResponse.status == "OK").toString()
+                )
+
+                assertTrue(actionTraceResponse.status == "OK")
+            }
+            else
+                Log.i(this.logTag, "Set Alice's Domain Public: failed")
+
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("Set Alice's Domain Public Failed: " + e.toJson())
+        }
+        catch (generalException: Exception) {
+            throw AssertionError("Set Alice's Domain Public: " + generalException.message)
+        }
+
+        Log.i(this.logTag, "Finish setFioDomainVisibility")
+
+    }
+
 
     //Private Methods
 

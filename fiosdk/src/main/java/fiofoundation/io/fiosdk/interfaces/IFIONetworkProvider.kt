@@ -30,4 +30,5 @@ interface IFIONetworkProvider {
     fun rejectNewFunds(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun recordSend(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun addPublicAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun setFioDomainVisibility(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
 }

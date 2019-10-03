@@ -1,5 +1,6 @@
 package fiofoundation.io.fiosdk
 
+import fiofoundation.io.fiosdk.enums.FioDomainVisiblity
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.errors.fionetworkprovider.*
 import fiofoundation.io.fiosdk.errors.formatters.FIOFormatterError
@@ -1202,6 +1203,73 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
             var actionList = ArrayList<AddPublicAddressAction>()
             actionList.add(addPublicAddressAction)
+
+            @Suppress("UNCHECKED_CAST")
+            transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+            transactionProcessor.sign()
+
+            return transactionProcessor.broadcast()
+        }
+        catch(fioError:FIOError)
+        {
+            throw fioError
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Adds a public address of the specific blockchain type to the FIO Address.
+     *
+     * @param fioAddress FIO Address to add the public address to.
+     * @param tokenCode Token code to be used with that public address.
+     * @param tokenPublicAddress The public address to be added to the FIO Address for the specified token.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
+     * @param walletFioAddress (optional) FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun setFioDomainVisibility(fioDomain:String,visibility:FioDomainVisiblity,
+                         maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
+    {
+        var transactionProcessor = SetFioDomainVisibilityTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            var setFioDomainVisibilityAction = SetFioDomainVisibilityAction(
+                fioDomain,
+                visibility,
+                maxFee,
+                walletFioAddress,
+                this.publicKey
+            )
+
+
+            var actionList = ArrayList<SetFioDomainVisibilityAction>()
+            actionList.add(setFioDomainVisibilityAction)
 
             @Suppress("UNCHECKED_CAST")
             transactionProcessor.prepare(actionList as ArrayList<IAction>)
