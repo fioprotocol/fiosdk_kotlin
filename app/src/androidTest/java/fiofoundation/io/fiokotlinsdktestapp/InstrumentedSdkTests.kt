@@ -72,8 +72,8 @@ class InstrumentedSdkTests {
 
         this.generatePrivateAndPublicKeys()
 
-        aliceFioAddress = "kot-alice" + System.currentTimeMillis().toString()+ (0..100000).random().toString() + ":" + this.testFioDomain//":brd"
-        bobFioAddress = "kot-bob" + System.currentTimeMillis().toString()+ (0..100000).random().toString() + ":" + this.testFioDomain//":brd"
+        aliceFioAddress = System.currentTimeMillis().toString() + (0..100000).random().toString() + "g:" + this.testFioDomain//":brd"
+        bobFioAddress =  System.currentTimeMillis().toString() + (0..100000).random().toString() + "b:" + this.testFioDomain//":brd"
 
         Log.i(this.logTag,"Alice FIO Address: " + this.aliceFioAddress)
         Log.i(this.logTag,"Bob FIO Address: " + this.bobFioAddress)
