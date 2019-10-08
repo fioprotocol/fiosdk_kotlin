@@ -3,6 +3,7 @@
 /.gradle
 .DS_Store
 **/*/.externalNativeBuild
+**/*/.cxx
 documentation
 /local.properties
 /androidfioserializationprovider/.externalNativeBuild/cmake/debug/x86/rules.ninja

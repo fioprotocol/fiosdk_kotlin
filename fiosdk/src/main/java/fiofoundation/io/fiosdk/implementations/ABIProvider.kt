@@ -14,8 +14,6 @@ import java.util.concurrent.ConcurrentHashMap
 
 class ABIProvider(private val fioNetworkProvider:IFIONetworkProvider,private val serializationProvider: ISerializationProvider): IABIProvider
 {
-    //private val rpcProvider: IFIONetworkProvider = rpcProvider
-    //private val serializationProvider: ISerializationProvider? = null
     private val abiCache:ConcurrentHashMap<String,String> = ConcurrentHashMap()
 
     @Throws(GetAbiError::class)

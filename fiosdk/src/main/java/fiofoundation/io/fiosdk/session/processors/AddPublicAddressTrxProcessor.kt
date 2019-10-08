@@ -10,7 +10,7 @@ import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.PushTransactionRequest
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.PushTransactionResponse
 
-class AddPublicTrxProcessor(serializationProvider: ISerializationProvider,
+class AddPublicAddressTrxProcessor(serializationProvider: ISerializationProvider,
                                      fioNetworkProvider: IFIONetworkProvider,
                                      abiProvider: IABIProvider,
                                      signatureProvider: ISignatureProvider

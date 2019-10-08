@@ -129,7 +129,7 @@ class AbiFIOSerializationProvider: ISerializationProvider {
 
             val hex:String = getBinHex(context!!)
 
-            serializationObject.hex = hex//.toLowerCase()
+            serializationObject.hex = hex
 
         }
         catch (serializationProviderError:SerializationProviderError) {

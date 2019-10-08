@@ -1182,7 +1182,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     fun addPublicAddress(fioAddress:String,tokenCode:String, tokenPublicAddress:String,
                          maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
     {
-        var transactionProcessor = AddPublicTrxProcessor(
+        var transactionProcessor = AddPublicAddressTrxProcessor(
             this.serializationProvider,
             this.networkProvider,
             this.abiProvider,

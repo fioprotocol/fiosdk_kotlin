@@ -39,7 +39,7 @@ class SoftKeySignatureProvider: ISignatureProvider
 
     private val USING_K1_NON_LEGACY_FORMAT = false
 
-    private val DEFAULT_WHETHER_USING_K1_LEGACY_FORMAT = USING_K1_LEGACY_FORMAT//USING_K1_NON_LEGACY_FORMAT
+    private val DEFAULT_WHETHER_USING_K1_LEGACY_FORMAT = USING_K1_LEGACY_FORMAT
 
     @Throws(ImportKeyError::class)
     fun importKey(privateKey: String) {

@@ -37,7 +37,6 @@ object FIOApiEndPoints {
         TransferTokens(transfer_tokens_pub_key),
         AddPublicAddess(add_public_address),
         SetFioDomainVisibility(set_domain_visibility)
-
     }
 }
 

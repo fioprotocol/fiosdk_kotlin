@@ -252,33 +252,7 @@ open class TransactionProcessor(val serializationProvider: ISerializationProvide
             }
         }
 
-//        try
-//        {
-//            val getRequiredKeysResponse = this.fioNetworkProvider.getRequiredKeys(
-//                    GetRequiredKeysRequest(this.availableKeys, this.transaction))
-//
-//            if (getRequiredKeysResponse.requiredKeys == null || getRequiredKeysResponse.requiredKeys.isEmpty()) {
-//                throw TransactionCreateSignatureRequestRequiredKeysEmptyError(
-//                    ErrorConstants.GET_REQUIRED_KEY_RPC_EMPTY_RESULT)
-//            }
-//
-//            val backendRequiredKeys = getRequiredKeysResponse.requiredKeys
-//
-//            if (!this.availableKeys?.containsAll(backendRequiredKeys)!!) {
-//                throw TransactionCreateSignatureRequestRequiredKeysEmptyError(
-//                    ErrorConstants.TRANSACTION_PROCESSOR_REQUIRED_KEY_NOT_SUBSET)
-//            }
-//
-//            this.requiredKeys = backendRequiredKeys
-//        }
-//        catch (getRequiredKeysRpcError: GetRequiredKeysError)
-//        {
-//            throw TransactionCreateSignatureRequestRpcError(
-//                ErrorConstants.TRANSACTION_PROCESSOR_RPC_GET_REQUIRED_KEYS,
-//                getRequiredKeysRpcError)
-//        }
-
-        fioTransactionSignatureRequest.signingPublicKeys = this.availableKeys//this.requiredKeys
+        fioTransactionSignatureRequest.signingPublicKeys = this.availableKeys
 
         return fioTransactionSignatureRequest
     }
@@ -473,7 +447,6 @@ open class TransactionProcessor(val serializationProvider: ISerializationProvide
             )
         }
 
-        //TODO: Set expiration to 3 minutes from request time
         if (preparingTransaction.expiration.isEmpty())
         {
             val strHeadBlockTime = getInfoResponse.headBlockTime

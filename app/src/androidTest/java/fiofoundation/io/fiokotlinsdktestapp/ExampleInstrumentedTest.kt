@@ -66,14 +66,14 @@ class ExampleInstrumentedTest {
     @Test
     fun setupTestVariable()
     {
-        this.logTag = this.logTag + ": " + (0..10000).random().toString()
+        this.logTag = this.logTag + ": " + (0..100000).random().toString()
 
         Log.i(this.logTag,"Start setupTestVariable")
 
         this.generatePrivateAndPublicKeys()
 
-        aliceFioAddress = "kot-alice" + System.currentTimeMillis().toString() + ":" + this.testFioDomain//":brd"
-        bobFioAddress = "kot-bob" + System.currentTimeMillis().toString() + ":" + this.testFioDomain//":brd"
+        aliceFioAddress = "kot-alice" + System.currentTimeMillis().toString()+ (0..100000).random().toString() + ":" + this.testFioDomain//":brd"
+        bobFioAddress = "kot-bob" + System.currentTimeMillis().toString()+ (0..100000).random().toString() + ":" + this.testFioDomain//":brd"
 
         Log.i(this.logTag,"Alice FIO Address: " + this.aliceFioAddress)
         Log.i(this.logTag,"Bob FIO Address: " + this.bobFioAddress)
