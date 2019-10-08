@@ -27,7 +27,7 @@ import java.security.SecureRandom
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 @RunWith(AndroidJUnit4::class)
-class ExampleInstrumentedTest {
+class InstrumentedSdkTests {
 
     private var alicePrivateKey = "5JbcPK6qTpYxMXtfpGXagYbo3KFE3qqxv2tLXLMPR8dTWWeYCp9"
     private var alicePublicKey = "FIO7c8SVyAyu6cACCaUjmPFEUyW9p2owWHeqq2WSEZ18FFTgErE1K"
@@ -480,8 +480,8 @@ class ExampleInstrumentedTest {
                             firstPendingRequest.requestContent!!.tokenCode,this.otherBlockChainId)
 
                         val response = this.fioSdk!!.recordSend(firstPendingRequest.fioRequestId,firstPendingRequest.payerFioAddress
-                        ,firstPendingRequest.payeeFioAddress,payerBTCAddress,recordSendContent.payeeTokenPublicAddress,recordSendContent.amount.toDouble()
-                        ,recordSendContent.tokenCode,"",recordSendContent.obtId,testMaxFee,"")
+                            ,firstPendingRequest.payeeFioAddress,payerBTCAddress,recordSendContent.payeeTokenPublicAddress,recordSendContent.amount.toDouble()
+                            ,recordSendContent.tokenCode,"",recordSendContent.obtId,testMaxFee,"")
 
                         val actionTraceResponse = response.getActionTraceResponse()
 
@@ -744,9 +744,9 @@ class ExampleInstrumentedTest {
     private fun getRandomSeedWords(): List<String> {
         val seedWords: List<String>
 
-            val mnemonicCode = MnemonicCode()
+        val mnemonicCode = MnemonicCode()
 
-            seedWords = mnemonicCode.toMnemonic(SecureRandom().generateSeed(16))
+        seedWords = mnemonicCode.toMnemonic(SecureRandom().generateSeed(16))
 
         return seedWords
     }

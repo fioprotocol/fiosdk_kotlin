@@ -208,7 +208,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @suppress
      */
     @Throws(FIOError::class)
-    fun registerFioNameOnBehalfOfUser(fioName:String,ownerPublicKey:String): RegisterFIONameForUserResponse
+    fun registerFioNameOnBehalfOfUser(fioName:String, ownerPublicKey:String): RegisterFIONameForUserResponse
     {
         try
         {
@@ -237,7 +237,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun registerFioAddress(fioAddress:String,ownerPublicKey:String, maxFee:BigInteger,
+    fun registerFioAddress(fioAddress:String ,ownerPublicKey:String, maxFee:BigInteger,
                            walletFioAddress:String): PushTransactionResponse
     {
         var transactionProcessor = RegisterFIOAddressTrxProcessor(
@@ -301,7 +301,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun registerFioAddress(fioAddress:String,ownerPublicKey:String, maxFee:BigInteger): PushTransactionResponse
+    fun registerFioAddress(fioAddress:String, ownerPublicKey:String, maxFee:BigInteger): PushTransactionResponse
     {
         return registerFioAddress(fioAddress,ownerPublicKey,maxFee,"")
     }
@@ -319,7 +319,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     @Throws(FIOError::class)
     fun registerFioAddress(fioAddress:String, maxFee:BigInteger, walletFioAddress:String): PushTransactionResponse
     {
-        return registerFioAddress(fioAddress,"",maxFee,walletFioAddress)
+        return registerFioAddress(fioAddress,"", maxFee, walletFioAddress)
     }
 
     /**
@@ -349,7 +349,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun registerFioDomain(fioDomain:String,ownerPublicKey:String, maxFee:BigInteger,
+    fun registerFioDomain(fioDomain:String, ownerPublicKey:String, maxFee:BigInteger,
                           walletFioAddress:String): PushTransactionResponse
     {
         var transactionProcessor = RegisterFIODomainTrxProcessor(
@@ -412,9 +412,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun registerFioDomain(fioDomain:String,ownerPublicKey:String, maxFee:BigInteger): PushTransactionResponse
+    fun registerFioDomain(fioDomain:String, ownerPublicKey:String, maxFee:BigInteger): PushTransactionResponse
     {
-        return registerFioDomain(fioDomain,ownerPublicKey,maxFee,"")
+        return registerFioDomain(fioDomain, ownerPublicKey, maxFee,"")
     }
 
     /**
@@ -618,7 +618,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun transferTokens(payeeFioPublicKey:String,amount:BigInteger, maxFee:BigInteger,
+    fun transferTokens(payeeFioPublicKey:String, amount:BigInteger, maxFee:BigInteger,
                                   walletFioAddress:String): PushTransactionResponse
     {
         var transactionProcessor = TransTokensPubKeyTrxProcessor(
@@ -684,9 +684,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun transferTokens(payeeFioPublicKey:String,amount:BigInteger, maxFee:BigInteger): PushTransactionResponse
+    fun transferTokens(payeeFioPublicKey:String, amount:BigInteger, maxFee:BigInteger): PushTransactionResponse
     {
-        return transferTokens(payeeFioPublicKey,amount,maxFee,"")
+        return transferTokens(payeeFioPublicKey, amount, maxFee,"")
     }
 
     /**
@@ -745,8 +745,8 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    fun requestNewFunds(payerFioAddress:String,payeeFioAddress:String,
-                        payeeTokenPublicAddress:String,amount:String,tokenCode:String,
+    fun requestNewFunds(payerFioAddress:String, payeeFioAddress:String,
+                        payeeTokenPublicAddress:String, amount:String, tokenCode:String,
                         maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
     {
         val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount,tokenCode)
@@ -773,9 +773,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    fun requestNewFunds(payerFioAddress:String,payeeFioAddress:String,
-                        payeeTokenPublicAddress:String,amount:String,tokenCode:String,
-                        memo: String?=null, hash: String?=null,offlineUrl:String?=null,
+    fun requestNewFunds(payerFioAddress:String, payeeFioAddress:String,
+                        payeeTokenPublicAddress:String, amount:String, tokenCode:String,
+                        memo: String?=null, hash: String?=null, offlineUrl:String?=null,
                         maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
     {
         val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount,tokenCode,memo,hash,offlineUrl)
@@ -880,9 +880,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      *
      * @throws [FIOError]
      */
-    fun recordSend(fioRequestId: String,payerFioAddress:String,payeeFioAddress:String,
-                   payerTokenPublicAddress: String,payeeTokenPublicAddress:String,amount:Double,
-                   tokenCode:String,status:String="sent_to_blockchain",obtId:String,maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
+    fun recordSend(fioRequestId: String, payerFioAddress:String, payeeFioAddress:String,
+                   payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
+                   tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
     {
         val recordSendContent = RecordSendContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
             tokenCode,obtId,status)
@@ -913,10 +913,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      *
      * @throws [FIOError]
      */
-    fun recordSend(fioRequestId: String,payerFioAddress:String,payeeFioAddress:String,
-                   payerTokenPublicAddress: String,payeeTokenPublicAddress:String,amount:Double,
-                   tokenCode:String,status:String="sent_to_blockchain",obtId:String, maxFee:BigInteger,walletFioAddress:String="",
-                   memo:String?=null, hash:String?=null,offlineUrl:String?=null): PushTransactionResponse
+    fun recordSend(fioRequestId: String, payerFioAddress:String, payeeFioAddress:String,
+                   payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
+                   tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String="",
+                   memo:String?=null, hash:String?=null, offlineUrl:String?=null): PushTransactionResponse
     {
         val recordSendContent = RecordSendContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
             tokenCode,obtId,status,memo,hash,offlineUrl)
@@ -924,15 +924,15 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
         return this.recordSend(fioRequestId,payerFioAddress,payeeFioAddress,recordSendContent,maxFee,walletFioAddress)
     }
 
-    fun recordSend(fioRequestId: String,payerFioAddress:String,payeeFioAddress:String,
-                   payerTokenPublicAddress: String,payeeTokenPublicAddress:String,amount:Double,
-                   tokenCode:String,obtId:String,status:String="sent_to_blockchain",
+    fun recordSend(fioRequestId: String, payerFioAddress:String, payeeFioAddress:String,
+                   payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
+                   tokenCode:String, obtId:String, status:String="sent_to_blockchain",
                    maxFee:BigInteger): PushTransactionResponse
     {
         val recordSendContent = RecordSendContent(payerTokenPublicAddress,
-            payeeTokenPublicAddress,amount.toString(),tokenCode,obtId,status)
+            payeeTokenPublicAddress, amount.toString(),tokenCode,obtId,status)
 
-        return this.recordSend(fioRequestId,payerFioAddress,payeeFioAddress,recordSendContent,maxFee,"")
+        return this.recordSend(fioRequestId, payerFioAddress, payeeFioAddress, recordSendContent, maxFee,"")
     }
 
     /**
@@ -1179,7 +1179,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    fun addPublicAddress(fioAddress:String,tokenCode:String, tokenPublicAddress:String,
+    fun addPublicAddress(fioAddress:String, tokenCode:String, tokenPublicAddress:String,
                          maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
     {
         var transactionProcessor = AddPublicAddressTrxProcessor(
@@ -1247,7 +1247,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    fun setFioDomainVisibility(fioDomain:String,visibility:FioDomainVisiblity,
+    fun setFioDomainVisibility(fioDomain:String, visibility:FioDomainVisiblity,
                          maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
     {
         var transactionProcessor = SetFioDomainVisibilityTrxProcessor(
@@ -1309,7 +1309,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun serializeAndEncryptNewFundsContent(fundsRequestContent: FundsRequestContent,payerPublickey: String): String
+    private fun serializeAndEncryptNewFundsContent(fundsRequestContent: FundsRequestContent, payerPublickey: String): String
     {
         try
         {
@@ -1329,7 +1329,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun serializeAndEncryptRecordSendContent(recordSendContent: RecordSendContent,payerPublickey: String): String
+    private fun serializeAndEncryptRecordSendContent(recordSendContent: RecordSendContent, payerPublickey: String): String
     {
         try
         {
@@ -1360,8 +1360,8 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun requestNewFunds(payerFioAddress:String,payeeFioAddress:String,
-                        fundsRequestContent: FundsRequestContent,maxFee:BigInteger,
+    private fun requestNewFunds(payerFioAddress:String, payeeFioAddress:String,
+                        fundsRequestContent: FundsRequestContent, maxFee:BigInteger,
                         walletFioAddress:String): PushTransactionResponse
     {
         var transactionProcessor = NewFundsRequestTrxProcessor(
@@ -1432,10 +1432,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun requestNewFunds(payerFioAddress:String,payeeFioAddress:String,
-                        fundsRequestContent: FundsRequestContent,maxFee:BigInteger): PushTransactionResponse
+    private fun requestNewFunds(payerFioAddress:String, payeeFioAddress:String,
+                        fundsRequestContent: FundsRequestContent, maxFee:BigInteger): PushTransactionResponse
     {
-        return requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,"")
+        return requestNewFunds(payerFioAddress, payeeFioAddress, fundsRequestContent, maxFee,"")
     }
 
     /**
@@ -1454,7 +1454,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun recordSend(fioRequestId: String,payerFioAddress:String,payeeFioAddress:String,
+    private fun recordSend(fioRequestId: String, payerFioAddress:String, payeeFioAddress:String,
                    recordSendContent: RecordSendContent,
                    maxFee:BigInteger): PushTransactionResponse
     {
@@ -1478,7 +1478,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun recordSend(fioRequestId: String,payerFioAddress:String,payeeFioAddress:String,
+    private fun recordSend(fioRequestId: String, payerFioAddress:String, payeeFioAddress:String,
                    recordSendContent: RecordSendContent,
                    maxFee:BigInteger, walletFioAddress:String): PushTransactionResponse
     {

@@ -110,7 +110,7 @@ public class ExampleKeyGenTests {
         try
         {
             String privateKey = FIOSDK.Static.createPrivateKey(mn);
-            String publicKey = FIOSDK.Static.derivePublicKey(privateKey);
+            String publicKey = FIOSDK.Static.derivedPublicKey(privateKey);
 
             System.out.println("FIO Private: " + privateKey);
             System.out.println("FIO Public: " + publicKey);
