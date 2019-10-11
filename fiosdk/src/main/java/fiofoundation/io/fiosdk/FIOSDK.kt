@@ -12,7 +12,7 @@ import fiofoundation.io.fiosdk.errors.session.TransactionSignError
 import fiofoundation.io.fiosdk.errors.signatureprovider.ImportKeyError
 import fiofoundation.io.fiosdk.formatters.FIOFormatter
 import fiofoundation.io.fiosdk.implementations.ABIProvider
-import fiofoundation.io.fiosdk.implementations.AbiFIOSerializationProvider
+//import fiofoundation.io.fiosdk.implementations.AbiFIOSerializationProvider
 import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
@@ -109,14 +109,14 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
          * @param publicKey the fio public key of the client sending requests to FIO API.
          * @param networkBaseUrl the url to the FIO API.
          */
-        fun getInstance(privateKey: String,publicKey: String, networkBaseUrl:String): FIOSDK
+        fun getInstance(privateKey: String,publicKey: String,
+                        serializationProvider: ISerializationProvider,
+                        networkBaseUrl:String): FIOSDK
         {
             if(fioSdk == null)
             {
                 val signatureProvider = SoftKeySignatureProvider()
                 signatureProvider.importKey(privateKey)
-
-                val serializationProvider = AbiFIOSerializationProvider()
 
                 fioSdk = FIOSDK(
                     privateKey,

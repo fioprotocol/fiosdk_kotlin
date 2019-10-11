@@ -14,12 +14,12 @@ class AbiFIOSerializationProvider: ISerializationProvider {
     private val TAG = "SerializationProvider"
 
     init
-        {
-            context = create()
-            if (null == context) {
-                throw AbiFIOContextNullError(CANNOT_CREATE_CONTEXT_ERR_MSG)
-            }
+    {
+        context = create()
+        if (null == context) {
+            throw AbiFIOContextNullError(CANNOT_CREATE_CONTEXT_ERR_MSG)
         }
+    }
 
     companion object {
 
@@ -94,7 +94,7 @@ class AbiFIOSerializationProvider: ISerializationProvider {
             if (serializationObject.abi.isEmpty()) {
                 throw SerializeError(String.format("serialize -- No ABI provided for %s %s",
                     if (serializationObject.contract == null)  serializationObject.contract else "",
-                        serializationObject.name))
+                    serializationObject.name))
             }
 
             val result: Boolean = setAbi(context!!, contract64, serializationObject.abi)
@@ -128,7 +128,7 @@ class AbiFIOSerializationProvider: ISerializationProvider {
 
             val hex:String = getBinHex(context!!)
 
-            serializationObject.hex = hex//.toLowerCase()
+            serializationObject.hex = hex
 
         }
         catch (serializationProviderError:SerializationProviderError) {
@@ -186,7 +186,7 @@ class AbiFIOSerializationProvider: ISerializationProvider {
 
             if (deserilizationObject.abi.isEmpty()) {
                 throw DeserializeError(String.format("deserialize -- No ABI provided for %s %s",
-                        if(deserilizationObject.contract == null) deserilizationObject.contract else "", deserilizationObject.name))
+                    if(deserilizationObject.contract == null) deserilizationObject.contract else "", deserilizationObject.name))
             }
 
             val result:Boolean = setAbi(context!!, contract64, deserilizationObject.abi)

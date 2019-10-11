@@ -10,6 +10,7 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
+import fiofoundation.io.androidfioserializationprovider.*
 import org.bitcoinj.crypto.MnemonicCode
 
 import org.junit.Test
@@ -72,7 +73,7 @@ class InstrumentedSdkTests {
 
         this.generatePrivateAndPublicKeys()
 
-        aliceFioAddress = System.currentTimeMillis().toString() + (0..100000).random().toString() + "g:" + this.testFioDomain//":brd"
+        aliceFioAddress = System.currentTimeMillis().toString() + (0..100000).random().toString() + "a:" + this.testFioDomain//":brd"
         bobFioAddress =  System.currentTimeMillis().toString() + (0..100000).random().toString() + "b:" + this.testFioDomain//":brd"
 
         Log.i(this.logTag,"Alice FIO Address: " + this.aliceFioAddress)
@@ -757,8 +758,10 @@ class InstrumentedSdkTests {
         {
             FIOSDK.destroyInstance()
 
+            val serializer = AbiFIOSerializationProvider()
+
             this.fioSdk = FIOSDK.getInstance(this.alicePrivateKey,this.alicePublicKey,
-                baseUrl)
+                serializer, baseUrl)
 
             this.fioSdk!!.mockServerBaseUrl = this.baseMockUrl
 
@@ -769,9 +772,10 @@ class InstrumentedSdkTests {
         {
             FIOSDK.destroyInstance()
 
+            val serializer = AbiFIOSerializationProvider()
 
             this.fioSdk = FIOSDK.getInstance(this.bobPrivateKey,this.bobPublicKey,
-                baseUrl)
+                serializer,baseUrl)
 
             this.fioSdk!!.mockServerBaseUrl = this.baseMockUrl
 
