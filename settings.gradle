@@ -1,2 +1,2 @@
-include ':app', ':fiosdk', ':androidfioserializationprovider', ':androidfiosoftkeysignatureprovider'
+include ':app', ':fiosdk', ':androidfioserializationprovider'
 
