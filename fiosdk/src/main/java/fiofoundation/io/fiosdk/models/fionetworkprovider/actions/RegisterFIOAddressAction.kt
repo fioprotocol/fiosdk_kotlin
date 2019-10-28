@@ -12,7 +12,7 @@ class RegisterFIOAddressAction(fioAddress: String,
                                actorPublicKey: String) :
     IAction
 {
-    override var account = "fio.system"
+    override var account = "fio.address"
     override var name = "regaddress"
     override var authorization = ArrayList<Authorization>()
     override var data = ""

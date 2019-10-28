@@ -9,7 +9,7 @@ class RenewFIOAddressAction(fioAddress: String, maxFee: BigInteger, walletFioAdd
                                actorPublicKey: String) :
     IAction
 {
-    override var account = "fio.system"
+    override var account = "fio.address"
     override var name = "renewaddress"
     override var authorization = ArrayList<Authorization>()
     override var data = ""

@@ -13,7 +13,7 @@ class SetFioDomainVisibilityAction(fioDomain: String,
                              actorPublicKey: String) :
     IAction
 {
-    override var account = "fio.system"
+    override var account = "fio.address"
     override var name = "setdomainpub"
     override var authorization = ArrayList<Authorization>()
     override var data = ""
