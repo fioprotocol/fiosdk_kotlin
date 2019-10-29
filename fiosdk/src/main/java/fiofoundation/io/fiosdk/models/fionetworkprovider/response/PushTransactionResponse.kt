@@ -41,8 +41,8 @@ class PushTransactionResponse(@SerializedName("transaction_id") val transactionI
         @SerializedName("status")
         val status: String =""
 
-//        @SerializedName("expiration")
-//        val expiration: String =""
+        @SerializedName("expiration")
+        val expiration: String =""
 
         @SerializedName("fee_collected")
         val feeCollected: BigInteger = BigInteger("0")
