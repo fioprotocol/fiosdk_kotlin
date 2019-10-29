@@ -252,44 +252,7 @@ class InstrumentedSdkTests {
     @Test
     fun newFundsRequest()
     {
-        try
-        {
-            this.registerFioNameForUser()
-
-            Log.i(this.logTag, "Start newFundsRequest")
-
-            val newFundsContent = FundsRequestContent(payeeBTCAddress,"4.2","BTC")
-
-            val response = this.fioSdk!!.requestNewFunds(this.bobFioAddress,
-                this.aliceFioAddress,payeeBTCAddress,"4.2","BTC",
-                this.testMaxFee,this.walletFioAddress)
-
-            val actionTraceResponse = response.getActionTraceResponse()
-            if (actionTraceResponse != null) {
-                Log.i(this.logTag,
-                    "New Funds Requested by Alice: " + (actionTraceResponse.status == "requested").toString()
-                )
-
-                this.newFundsRequestId = actionTraceResponse.fioRequestId
-
-                assertTrue(actionTraceResponse.status == "requested")
-            }
-            else
-                Log.i(this.logTag, "New Funds Requested by Alice: failed")
-
-        }
-        catch (e: FIOError)
-        {
-            Log.e(this.logTag, e.toJson())
-
-            throw AssertionError("New Funds Request Failed: " + e.toJson())
-        }
-        catch(generalException:Exception)
-        {
-            throw AssertionError("New Funds Request Failed: " + generalException.message)
-        }
-
-        Log.i(this.logTag, "Finish newFundsRequest")
+        this.requestFunds(false,"4.1","BTC")
     }
 
     @Test
@@ -335,6 +298,61 @@ class InstrumentedSdkTests {
         }
 
         Log.i(this.logTag, "Finish sentRequests")
+
+    }
+
+    @Test
+    fun multipleSentRequests()
+    {
+        try
+        {
+            this.newFundsRequest()
+
+            for (i in 1..3)
+            {
+                this.requestFunds(true,"3.".plus(i))
+            }
+
+            Log.i(this.logTag, "Start multipleSentRequests")
+
+            this.sharedSecretKey = CryptoUtils.generateSharedSecret(this.alicePrivateKey,this.bobPublicKey)
+
+            val sentRequests = this.fioSdk!!.getSentFioRequests(3,1)
+
+            if(sentRequests.isNotEmpty())
+            {
+                Log.i(this.logTag, "multipleSentRequests available: " + (sentRequests.count() == 3))
+
+                assertTrue("multipleSentRequests available!",sentRequests.count() == 3)
+
+                for (req in sentRequests)
+                {
+                    req.deserializeRequestContent(this.sharedSecretKey!!,this.fioSdk!!.serializationProvider)
+
+                    if(req.requestContent!=null)
+                    {
+                        Log.i(this.logTag, "Request Content: " + req.requestContent!!.toJson())
+
+                        assertTrue(req.requestContent != null)
+                    }
+                }
+
+                assertTrue(sentRequests.isNotEmpty())
+            }
+
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("multipleSentRequests Request Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("multipleSentRequests Request Failed: " + generalException.message)
+        }
+
+        Log.i(this.logTag, "Finish multipleSentRequests")
 
     }
 
@@ -385,6 +403,64 @@ class InstrumentedSdkTests {
 
         Log.i(this.logTag, "Finish pendingRequests")
     }
+
+    @Test
+    fun multiplePendingRequests()
+    {
+        try
+        {
+            this.newFundsRequest()
+
+            for (i in 1..3)
+            {
+                this.requestFunds(true,"3.".plus(i))
+            }
+
+            Log.i(this.logTag, "Start multiplePendingRequests")
+
+            this.switchUser("bob")
+
+            this.sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,this.alicePublicKey)
+
+            val pendingRequests = this.fioSdk!!.getPendingFioRequests(3,1)
+
+            if(pendingRequests.isNotEmpty())
+            {
+                Log.i(this.logTag, "Funds available: " + (pendingRequests.count() == 3))
+
+                assertTrue("Funds available!",pendingRequests.count() == 3)
+
+                for (req in pendingRequests)
+                {
+                    req.deserializeRequestContent(this.sharedSecretKey!!,this.fioSdk!!.serializationProvider)
+
+                    if(req.requestContent!=null)
+                    {
+                        Log.i(this.logTag, "Request Content: " + req.requestContent!!.toJson())
+
+                        assertTrue(req.requestContent != null)
+                    }
+                }
+
+                assertTrue(pendingRequests.isNotEmpty())
+            }
+
+            this.switchUser("alice")
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("multiplePendingRequests Funds Request Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("multiplePendingRequests Funds Request Failed: " + generalException.message)
+        }
+
+        Log.i(this.logTag, "Finish multiplePendingRequests")
+    }
+
 
     @Test
     fun rejectFundsRequest()
@@ -784,4 +860,46 @@ class InstrumentedSdkTests {
         }
     }
 
+    private fun requestFunds(skipUserRegistration:Boolean = false,requestAmount:String="4.1",tokenCode:String="BTC")
+    {
+        try
+        {
+            if(!skipUserRegistration)
+                this.registerFioNameForUser()
+
+            Log.i(this.logTag, "Start newFundsRequest")
+
+            val newFundsContent = FundsRequestContent(payeeBTCAddress,requestAmount,tokenCode)
+
+            val response = this.fioSdk!!.requestNewFunds(this.bobFioAddress,
+                this.aliceFioAddress,payeeBTCAddress,requestAmount,tokenCode,
+                this.testMaxFee,this.walletFioAddress)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+            if (actionTraceResponse != null) {
+                Log.i(this.logTag,
+                    "New Funds Requested by Alice: " + (actionTraceResponse.status == "requested").toString()
+                )
+
+                this.newFundsRequestId = actionTraceResponse.fioRequestId
+
+                assertTrue(actionTraceResponse.status == "requested")
+            }
+            else
+                Log.i(this.logTag, "New Funds Requested by Alice: failed")
+
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("New Funds Request Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("New Funds Request Failed: " + generalException.message)
+        }
+
+        Log.i(this.logTag, "Finish newFundsRequest")
+    }
 }
