@@ -942,9 +942,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun getPendingFioRequests(): List<FIORequestContent>
+    fun getPendingFioRequests(limit:Int?=null,offset:Int?=null): List<FIORequestContent>
     {
-        return this.getPendingFioRequests(this.publicKey)
+        return this.getPendingFioRequests(this.publicKey,limit,offset)
     }
 
     /**
@@ -954,9 +954,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun getSentFioRequests(): List<FIORequestContent>
+    fun getSentFioRequests(limit:Int?=null,offset:Int?=null): List<FIORequestContent>
     {
-        return this.getSentFioRequests(this.publicKey)
+        return this.getSentFioRequests(this.publicKey,limit,offset)
     }
 
     /**
@@ -1540,11 +1540,11 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     }
 
     @Throws(FIOError::class)
-    private fun getPendingFioRequests(requesteeFioPublicKey:String): List<FIORequestContent>
+    private fun getPendingFioRequests(requesteeFioPublicKey:String,limit:Int?=null,offset:Int?=null): List<FIORequestContent>
     {
         try
         {
-            val request = GetPendingFIORequestsRequest(requesteeFioPublicKey)
+            val request = GetPendingFIORequestsRequest(requesteeFioPublicKey,limit,offset)
             val response = this.networkProvider.getPendingFIORequests(request)
 
             for (item in response.requests)
@@ -1573,11 +1573,11 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     }
 
     @Throws(FIOError::class)
-    private fun getSentFioRequests(senderFioPublicKey:String): List<FIORequestContent>
+    private fun getSentFioRequests(senderFioPublicKey:String,limit:Int?=null,offset:Int?=null): List<FIORequestContent>
     {
         try
         {
-            val request = GetSentFIORequestsRequest(senderFioPublicKey)
+            val request = GetSentFIORequestsRequest(senderFioPublicKey,limit,offset)
             val response = this.networkProvider.getSentFIORequests(request)
 
             for (item in response.requests)
