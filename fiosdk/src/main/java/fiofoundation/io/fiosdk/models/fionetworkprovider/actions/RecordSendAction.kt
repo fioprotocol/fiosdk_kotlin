@@ -1,15 +1,17 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider.actions
 
 import com.google.gson.annotations.SerializedName
+import fiofoundation.io.fiosdk.models.Validator
 import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
+import fiofoundation.io.fiosdk.models.fionetworkprovider.request.FIORequestData
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.FIOResponse
 import java.math.BigInteger
 
 class RecordSendAction(payerFioAddress:String,
                         payeeFioAddress: String,
                         content: String,
-                        fioRequestId: String,
+                        fioRequestId: BigInteger,
                         maxFee: BigInteger,
                         walletFioAddress: String,
                         actorPublicKey: String) : IAction
@@ -35,7 +37,7 @@ class RecordSendAction(payerFioAddress:String,
         @field:SerializedName("payee_fio_address") var payeeFioAddress:String,
         @field:SerializedName("content") var content:String,
         @field:SerializedName("max_fee") var maxFee:BigInteger,
-        @field:SerializedName("fio_request_id") var fioRequestId:String,
+        @field:SerializedName("fio_request_id") var fioRequestId:BigInteger,
         @field:SerializedName("actor") var actor:String,
-        @field:SerializedName("tpid") var walletFioAddress:String): FIOResponse()
+        @field:SerializedName("tpid") var walletFioAddress:String): FIORequestData()
 }

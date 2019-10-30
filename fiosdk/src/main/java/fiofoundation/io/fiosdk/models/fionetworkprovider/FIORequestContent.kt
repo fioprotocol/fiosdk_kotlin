@@ -5,10 +5,11 @@ import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
+import java.math.BigInteger
 
 open class FIORequestContent {
 
-    @field:SerializedName("fio_request_id") var fioRequestId:String = ""
+    @field:SerializedName("fio_request_id") var fioRequestId:BigInteger= BigInteger.ZERO
     @field:SerializedName("payer_fio_address") var payerFioAddress:String = ""
     @field:SerializedName("payee_fio_address") var payeeFioAddress:String = ""
     @field:SerializedName("payer_fio_public_key") var payerFioPublicKey:String = ""

@@ -36,3 +36,72 @@ fun String.hexStringToByteArray(returnUnsignedIntegers:Boolean=false) : ByteArra
     else
         return result
 }
+
+fun String.isFioAddress(): Boolean
+{
+    if(this.isNotEmpty())
+    {
+        if(this.length in 3..64)
+        {
+            val fioRegEx = Regex("^(?:(?=.{3,64}\$)[a-zA-Z0-9]{1}(?:(?!-{2,}))[a-zA-Z0-9-]*(?:(?<!-)):[a-zA-Z0-9]{1}(?:(?!-{2,}))[a-zA-Z0-9-]*(?:(?<!-))\$)",RegexOption.IGNORE_CASE)
+            if(fioRegEx.matchEntire(this)!=null)
+                return true
+        }
+    }
+
+    return false
+}
+
+fun String.isFioDomain(): Boolean
+{
+    if(this.isNotEmpty())
+    {
+        if(this.length in 1..62)
+        {
+            val fioRegEx = Regex("^[a-z0-9\\\\-]+\$")
+            if(fioRegEx.matchEntire(this)!=null)
+                return true
+        }
+    }
+
+    return false
+}
+
+fun String.isTokenCode(): Boolean
+{
+    if(this.isNotEmpty())
+    {
+        if(this.length in 1..10)
+        {
+            val fioRegEx = Regex("^[a-z0-9]+\$")
+            if(fioRegEx.matchEntire(this)!=null)
+                return true
+        }
+    }
+
+    return false
+}
+
+fun String.isFioPublicKey(): Boolean
+{
+    if(this.isNotEmpty())
+    {
+        val fioRegEx = Regex("^FIO.+\$")
+        if(fioRegEx.matchEntire(this)!=null)
+            return true
+    }
+
+    return false
+}
+
+fun String.isNativeBlockChainPublicAddress(): Boolean
+{
+    if(this.isNotEmpty())
+    {
+        if(this.length in 1..128) {
+            return true
+        }
+    }
+
+    return false
+}
