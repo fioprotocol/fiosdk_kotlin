@@ -252,7 +252,7 @@ class InstrumentedSdkTests {
     @Test
     fun newFundsRequest()
     {
-        this.requestFunds(false,"4.1","BTC")
+        this.requestFunds(false,"4.1","btc")
     }
 
     @Test

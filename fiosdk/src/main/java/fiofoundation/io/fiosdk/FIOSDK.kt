@@ -12,12 +12,12 @@ import fiofoundation.io.fiosdk.errors.session.TransactionSignError
 import fiofoundation.io.fiosdk.errors.signatureprovider.ImportKeyError
 import fiofoundation.io.fiosdk.formatters.FIOFormatter
 import fiofoundation.io.fiosdk.implementations.ABIProvider
-//import fiofoundation.io.fiosdk.implementations.AbiFIOSerializationProvider
 import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
 import fiofoundation.io.fiosdk.models.Constants
+import fiofoundation.io.fiosdk.models.Validator
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIORequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
@@ -249,24 +249,31 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            var registerFioAddressAction =
-                RegisterFIOAddressAction(
-                    fioAddress,
-                    ownerPublicKey,
-                    walletFioAddress,
-                    maxFee,
-                    this.publicKey
-                )
+            val validator = validateRegisterFioAddress(fioAddress,ownerPublicKey,walletFioAddress)
 
-            var actionList = ArrayList<RegisterFIOAddressAction>()
-            actionList.add(registerFioAddressAction)
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                var registerFioAddressAction =
+                    RegisterFIOAddressAction(
+                        fioAddress,
+                        ownerPublicKey,
+                        walletFioAddress,
+                        maxFee,
+                        this.publicKey
+                    )
 
-            @Suppress("UNCHECKED_CAST")
-            transactionProcessor.prepare(actionList as ArrayList<IAction>)
+                var actionList = ArrayList<RegisterFIOAddressAction>()
+                actionList.add(registerFioAddressAction)
 
-            transactionProcessor.sign()
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
-            return transactionProcessor.broadcast()
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
         }
         catch(fioError:FIOError)
         {
@@ -361,23 +368,30 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            var registerFioDomainAction = RegisterFIODomainAction(
-                fioDomain,
-                ownerPublicKey,
-                walletFioAddress,
-                maxFee,
-                this.publicKey
-            )
+            val validator = validateRegisterFioDomain(fioDomain,ownerPublicKey,walletFioAddress)
 
-            var actionList = ArrayList<RegisterFIODomainAction>()
-            actionList.add(registerFioDomainAction)
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                var registerFioDomainAction = RegisterFIODomainAction(
+                    fioDomain,
+                    ownerPublicKey,
+                    walletFioAddress,
+                    maxFee,
+                    this.publicKey
+                )
 
-            @Suppress("UNCHECKED_CAST")
-            transactionProcessor.prepare(actionList as ArrayList<IAction>)
+                var actionList = ArrayList<RegisterFIODomainAction>()
+                actionList.add(registerFioDomainAction)
 
-            transactionProcessor.sign()
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
-            return transactionProcessor.broadcast()
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
         }
         catch(fioError:FIOError)
         {
@@ -472,22 +486,29 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            var renewFioDomainAction = RenewFIODomainAction(
-                fioDomain,
-                maxFee,
-                walletFioAddress,
-                this.publicKey
-            )
+            val validator = validateRenewFioDomain(fioDomain,walletFioAddress)
 
-            var actionList = ArrayList<RenewFIODomainAction>()
-            actionList.add(renewFioDomainAction)
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                var renewFioDomainAction = RenewFIODomainAction(
+                    fioDomain,
+                    maxFee,
+                    walletFioAddress,
+                    this.publicKey
+                )
 
-            @Suppress("UNCHECKED_CAST")
-            transactionProcessor.prepare(actionList as ArrayList<IAction>)
+                var actionList = ArrayList<RenewFIODomainAction>()
+                actionList.add(renewFioDomainAction)
 
-            transactionProcessor.sign()
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
-            return transactionProcessor.broadcast()
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
         }
         catch(fioError:FIOError)
         {
@@ -549,23 +570,30 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            var renewFioAddressAction =
-                RenewFIOAddressAction(
-                    fioAddress,
-                    maxFee,
-                    walletFioAddress,
-                    this.publicKey
-                )
+            val validator = validateRenewFioAddress(fioAddress,walletFioAddress)
 
-            var actionList = ArrayList<RenewFIOAddressAction>()
-            actionList.add(renewFioAddressAction)
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                var renewFioAddressAction =
+                    RenewFIOAddressAction(
+                        fioAddress,
+                        maxFee,
+                        walletFioAddress,
+                        this.publicKey
+                    )
 
-            @Suppress("UNCHECKED_CAST")
-            transactionProcessor.prepare(actionList as ArrayList<IAction>)
+                var actionList = ArrayList<RenewFIOAddressAction>()
+                actionList.add(renewFioAddressAction)
 
-            transactionProcessor.sign()
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
-            return transactionProcessor.broadcast()
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
         }
         catch(fioError:FIOError)
         {
@@ -630,24 +658,30 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            var transferTokensToPublickey = TransferTokensPubKeyAction(
-                payeeFioPublicKey,
-                amount.toString(),
-                maxFee,
-                walletFioAddress,
-                this.publicKey
-            )
+            val validator = validateTransferPublicTokens(payeeFioPublicKey,walletFioAddress)
 
-            var actionList = ArrayList<TransferTokensPubKeyAction>()
-            actionList.add(transferTokensToPublickey)
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                var transferTokensToPublickey = TransferTokensPubKeyAction(
+                    payeeFioPublicKey,
+                    amount.toString(),
+                    maxFee,
+                    walletFioAddress,
+                    this.publicKey
+                )
 
-            @Suppress("UNCHECKED_CAST")
-            transactionProcessor.prepare(actionList as ArrayList<IAction>)
+                var actionList = ArrayList<TransferTokensPubKeyAction>()
+                actionList.add(transferTokensToPublickey)
 
-            transactionProcessor.sign()
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
-            return transactionProcessor.broadcast()
+                transactionProcessor.sign()
 
+                return transactionProcessor.broadcast()
+            }
         }
         catch(fioError:FIOError)
         {
@@ -794,7 +828,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun rejectFundsRequest(fioRequestId: String, maxFee: BigInteger, walletFioAddress:String): PushTransactionResponse
+    fun rejectFundsRequest(fioRequestId:BigInteger, maxFee: BigInteger, walletFioAddress:String): PushTransactionResponse
     {
         var transactionProcessor = RejectFundsRequestTrxProcessor(
             this.serializationProvider,
@@ -805,23 +839,29 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
+            val validator = validateRejectFundsRequest(fioRequestId,walletFioAddress)
 
-            var rejectFundsRequestAction = RejectFundsRequestAction(
-                fioRequestId,
-                maxFee,
-                walletFioAddress,
-                this.publicKey
-            )
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                var rejectFundsRequestAction = RejectFundsRequestAction(
+                    fioRequestId,
+                    maxFee,
+                    walletFioAddress,
+                    this.publicKey
+                )
 
-            var actionList = ArrayList<RejectFundsRequestAction>()
-            actionList.add(rejectFundsRequestAction)
+                var actionList = ArrayList<RejectFundsRequestAction>()
+                actionList.add(rejectFundsRequestAction)
 
-            @Suppress("UNCHECKED_CAST")
-            transactionProcessor.prepare(actionList as ArrayList<IAction>)
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
-            transactionProcessor.sign()
+                transactionProcessor.sign()
 
-            return transactionProcessor.broadcast()
+                return transactionProcessor.broadcast()
+            }
         }
         catch(fioError:FIOError)
         {
@@ -855,7 +895,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun rejectFundsRequest(fioRequestId: String, maxFee: BigInteger): PushTransactionResponse
+    fun rejectFundsRequest(fioRequestId: BigInteger, maxFee: BigInteger): PushTransactionResponse
     {
         return rejectFundsRequest(fioRequestId,maxFee,"")
     }
@@ -880,7 +920,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      *
      * @throws [FIOError]
      */
-    fun recordSend(fioRequestId: String, payerFioAddress:String, payeeFioAddress:String,
+    fun recordSend(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
                    payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
                    tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
     {
@@ -913,7 +953,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      *
      * @throws [FIOError]
      */
-    fun recordSend(fioRequestId: String, payerFioAddress:String, payeeFioAddress:String,
+    fun recordSend(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
                    payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
                    tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String="",
                    memo:String?=null, hash:String?=null, offlineUrl:String?=null): PushTransactionResponse
@@ -924,7 +964,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
         return this.recordSend(fioRequestId,payerFioAddress,payeeFioAddress,recordSendContent,maxFee,walletFioAddress)
     }
 
-    fun recordSend(fioRequestId: String, payerFioAddress:String, payeeFioAddress:String,
+    fun recordSend(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
                    payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
                    tokenCode:String, obtId:String, status:String="sent_to_blockchain",
                    maxFee:BigInteger): PushTransactionResponse
@@ -937,6 +977,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
     /**
      * Polls for any pending requests sent to public key associated with the FIO SDK instance.
+     *
+     * @param limit Number of request to return. If omitted, all requests will be returned.
+     * @param offset First request from list to return. If omitted, 0 is assumed.
+     *
      * @return [List<FIORequestContent>]
      *
      * @throws [FIOError]
@@ -949,6 +993,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
     /**
      * Polls for any sent requests sent by public key associated with the FIO SDK instance.
+     *
+     * @param limit Number of request to return. If omitted, all requests will be returned.
+     * @param offset First request from list to return. If omitted, 0 is assumed.
+     *
      * @return [List<FIORequestContent>]
      *
      * @throws [FIOError]
@@ -1098,9 +1146,13 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     {
         try
         {
-            val request = GetFeeRequest(FIOApiEndPoints.new_funds_request,this.publicKey)
+            if(this.publicKey.isFioPublicKey()) {
+                val request = GetFeeRequest(FIOApiEndPoints.new_funds_request, this.publicKey)
 
-            return this.networkProvider.getFee(request)
+                return this.networkProvider.getFee(request)
+            }
+            else
+                throw Exception("Invalid FIO Public Key")
         }
         catch(getFeeError: GetFeeError)
         {
@@ -1124,9 +1176,13 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     {
         try
         {
-            val request = GetFeeRequest(FIOApiEndPoints.reject_funds_request,this.publicKey)
+            if(this.publicKey.isFioPublicKey()) {
+                val request = GetFeeRequest(FIOApiEndPoints.reject_funds_request, this.publicKey)
 
-            return this.networkProvider.getFee(request)
+                return this.networkProvider.getFee(request)
+            }
+            else
+                throw Exception("Invalid FIO Public Key")
         }
         catch(getFeeError: GetFeeError)
         {
@@ -1151,9 +1207,13 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     {
         try
         {
-            val request = GetFeeRequest(FIOApiEndPoints.record_send,payerFioAddress)
+            if(payerFioAddress.isFioAddress()) {
+                val request = GetFeeRequest(FIOApiEndPoints.record_send, payerFioAddress)
 
-            return this.networkProvider.getFee(request)
+                return this.networkProvider.getFee(request)
+            }
+            else
+                throw Exception("Invalid FIO Address")
         }
         catch(getFeeError: GetFeeError)
         {
@@ -1191,25 +1251,31 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            var addPublicAddressAction = AddPublicAddressAction(
-                fioAddress,
-                tokenCode,
-                tokenPublicAddress,
-                maxFee,
-                walletFioAddress,
-                this.publicKey
-            )
+            val validator = validateAddPublicAddress(fioAddress,tokenCode,tokenPublicAddress,walletFioAddress)
 
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                var addPublicAddressAction = AddPublicAddressAction(
+                    fioAddress,
+                    tokenCode,
+                    tokenPublicAddress,
+                    maxFee,
+                    walletFioAddress,
+                    this.publicKey
+                )
 
-            var actionList = ArrayList<AddPublicAddressAction>()
-            actionList.add(addPublicAddressAction)
+                var actionList = ArrayList<AddPublicAddressAction>()
+                actionList.add(addPublicAddressAction)
 
-            @Suppress("UNCHECKED_CAST")
-            transactionProcessor.prepare(actionList as ArrayList<IAction>)
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
-            transactionProcessor.sign()
+                transactionProcessor.sign()
 
-            return transactionProcessor.broadcast()
+                return transactionProcessor.broadcast()
+            }
         }
         catch(fioError:FIOError)
         {
@@ -1259,24 +1325,31 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            var setFioDomainVisibilityAction = SetFioDomainVisibilityAction(
-                fioDomain,
-                visibility,
-                maxFee,
-                walletFioAddress,
-                this.publicKey
-            )
+            val validator = validateSetFioDomainVisibility(fioDomain,walletFioAddress)
+
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                var setFioDomainVisibilityAction = SetFioDomainVisibilityAction(
+                    fioDomain,
+                    visibility,
+                    maxFee,
+                    walletFioAddress,
+                    this.publicKey
+                )
 
 
-            var actionList = ArrayList<SetFioDomainVisibilityAction>()
-            actionList.add(setFioDomainVisibilityAction)
+                var actionList = ArrayList<SetFioDomainVisibilityAction>()
+                actionList.add(setFioDomainVisibilityAction)
 
-            @Suppress("UNCHECKED_CAST")
-            transactionProcessor.prepare(actionList as ArrayList<IAction>)
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
-            transactionProcessor.sign()
+                transactionProcessor.sign()
 
-            return transactionProcessor.broadcast()
+                return transactionProcessor.broadcast()
+            }
         }
         catch(fioError:FIOError)
         {
@@ -1373,29 +1446,36 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            val payerPublicKey = this.getFioPublicAddress(payerFioAddress).publicAddress
+            val validator = validateNewFundsRequest(payerFioAddress,payeeFioAddress,fundsRequestContent,walletFioAddress)
 
-            val encryptedContent = serializeAndEncryptNewFundsContent(fundsRequestContent,payerPublicKey)
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                val payerPublicKey = this.getFioPublicAddress(payerFioAddress).publicAddress
 
-            var newFundsRequestAction = NewFundsRequestAction(
-                payerFioAddress,
-                payeeFioAddress,
-                encryptedContent,
-                maxFee,
-                walletFioAddress,
-                this.publicKey
-            )
+                val encryptedContent = serializeAndEncryptNewFundsContent(fundsRequestContent,payerPublicKey)
+
+                var newFundsRequestAction = NewFundsRequestAction(
+                    payerFioAddress,
+                    payeeFioAddress,
+                    encryptedContent,
+                    maxFee,
+                    walletFioAddress,
+                    this.publicKey
+                )
 
 
-            var actionList = ArrayList<NewFundsRequestAction>()
-            actionList.add(newFundsRequestAction)
+                var actionList = ArrayList<NewFundsRequestAction>()
+                actionList.add(newFundsRequestAction)
 
-            @Suppress("UNCHECKED_CAST")
-            transactionProcessor.prepare(actionList as ArrayList<IAction>)
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
-            transactionProcessor.sign()
+                transactionProcessor.sign()
 
-            return transactionProcessor.broadcast()
+                return transactionProcessor.broadcast()
+            }
         }
         catch(fioError:FIOError)
         {
@@ -1454,7 +1534,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun recordSend(fioRequestId: String, payerFioAddress:String, payeeFioAddress:String,
+    private fun recordSend(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
                    recordSendContent: RecordSendContent,
                    maxFee:BigInteger): PushTransactionResponse
     {
@@ -1478,8 +1558,8 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun recordSend(fioRequestId: String, payerFioAddress:String, payeeFioAddress:String,
-                   recordSendContent: RecordSendContent,
+    private fun recordSend(fioRequestId: BigInteger, payerFioAddress:String,
+                           payeeFioAddress:String, recordSendContent: RecordSendContent,
                    maxFee:BigInteger, walletFioAddress:String): PushTransactionResponse
     {
         var transactionProcessor = RecordSendTrxProcessor(
@@ -1491,31 +1571,39 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            if(recordSendContent.status == "")
-                recordSendContent.status = "sent_to_blockchain"
+            val validator = validateRecordSendRequest(fioRequestId,payerFioAddress,
+                payeeFioAddress,recordSendContent,walletFioAddress)
 
-            val encryptedContent = serializeAndEncryptRecordSendContent(recordSendContent,this.publicKey)
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                if(recordSendContent.status == "")
+                    recordSendContent.status = "sent_to_blockchain"
 
-            var recordSendAction = RecordSendAction(
-                payerFioAddress,
-                payeeFioAddress,
-                encryptedContent,
-                fioRequestId,
-                maxFee,
-                walletFioAddress,
-                this.publicKey
-            )
+                val encryptedContent = serializeAndEncryptRecordSendContent(recordSendContent,this.publicKey)
+
+                var recordSendAction = RecordSendAction(
+                    payerFioAddress,
+                    payeeFioAddress,
+                    encryptedContent,
+                    fioRequestId,
+                    maxFee,
+                    walletFioAddress,
+                    this.publicKey
+                )
 
 
-            var actionList = ArrayList<RecordSendAction>()
-            actionList.add(recordSendAction)
+                var actionList = ArrayList<RecordSendAction>()
+                actionList.add(recordSendAction)
 
-            @Suppress("UNCHECKED_CAST")
-            transactionProcessor.prepare(actionList as ArrayList<IAction>)
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
 
-            transactionProcessor.sign()
+                transactionProcessor.sign()
 
-            return transactionProcessor.broadcast()
+                return transactionProcessor.broadcast()
+            }
         }
         catch(fioError:FIOError)
         {
@@ -1603,5 +1691,126 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
         {
             throw FIOError(e.message!!,e)
         }
+    }
+
+    private fun validateNewFundsRequest(payerFioAddress:String, payeeFioAddress:String,
+                                        fundsRequestContent: FundsRequestContent,walletFioAddress:String): Validator
+    {
+        var isValid = (payerFioAddress.isFioAddress() && payeeFioAddress.isFioAddress()
+                && fundsRequestContent.tokenCode.isTokenCode())
+
+        if(walletFioAddress.isNotEmpty())
+            isValid = isValid && walletFioAddress.isFioAddress()
+
+        return Validator(isValid,if(!isValid) "Invalid New Funds Request" else "")
+    }
+
+    private fun validateAddPublicAddress(fioAddress:String, tokenCode:String,
+                                         tokenPublicAddress:String,
+                                        walletFioAddress:String=""): Validator
+    {
+        var isValid = (fioAddress.isFioAddress()
+                && tokenPublicAddress.isNativeBlockChainPublicAddress()
+                && tokenCode.isTokenCode())
+
+        if(walletFioAddress.isNotEmpty())
+            isValid = isValid && walletFioAddress.isFioAddress()
+
+        return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")
+    }
+
+    private fun validateRegisterFioAddress(fioAddress:String ,ownerPublicKey:String,
+                                           walletFioAddress:String): Validator
+    {
+        var isValid = fioAddress.isFioAddress()
+
+        if(walletFioAddress.isNotEmpty())
+            isValid = isValid && walletFioAddress.isFioAddress()
+
+        if(ownerPublicKey.isNotEmpty())
+            isValid = isValid && ownerPublicKey.isFioPublicKey()
+
+        return Validator(isValid,if(!isValid) "Invalid Register FIO Address Request" else "")
+    }
+
+    private fun validateRegisterFioDomain(fioDomain:String ,ownerPublicKey:String,
+                                           walletFioAddress:String): Validator
+    {
+        var isValid = fioDomain.isFioDomain()
+
+        if(walletFioAddress.isNotEmpty())
+            isValid = isValid && walletFioAddress.isFioAddress()
+
+        if(ownerPublicKey.isNotEmpty())
+            isValid = isValid && ownerPublicKey.isFioPublicKey()
+
+        return Validator(isValid,if(!isValid) "Invalid Register FIO Domain Request" else "")
+    }
+
+    private fun validateRenewFioAddress(fioAddress:String, walletFioAddress:String): Validator
+    {
+        try {
+            return this.validateRegisterFioAddress(fioAddress,"",walletFioAddress)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError("Invalid Renew FIO Address Request")
+        }
+    }
+
+    private fun validateRenewFioDomain(fioDomain:String, walletFioAddress:String): Validator
+    {
+        try {
+            return this.validateRegisterFioDomain(fioDomain,"",walletFioAddress)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError("Invalid Renew FIO Domain Request")
+        }
+    }
+
+    private fun validateSetFioDomainVisibility(fioDomain:String, walletFioAddress:String): Validator
+    {
+        var isValid = fioDomain.isFioDomain()
+
+        if(walletFioAddress.isNotEmpty())
+            isValid = isValid && walletFioAddress.isFioAddress()
+
+        return Validator(isValid,if(!isValid) "Invalid Set FIO Domain Visibility Request" else "")
+    }
+
+    private fun validateRejectFundsRequest(fioRequestId:BigInteger,walletFioAddress:String): Validator
+    {
+        var isValid = fioRequestId > BigInteger.ZERO
+
+        if(walletFioAddress.isNotEmpty())
+            isValid = isValid && walletFioAddress.isFioAddress()
+
+        return Validator(isValid,if(!isValid) "Invalid Reject Funds Request" else "")
+    }
+
+    private fun validateRecordSendRequest(fioRequestId: BigInteger, payerFioAddress:String,
+                                          payeeFioAddress:String, recordSendContent: RecordSendContent,
+                                          walletFioAddress:String): Validator
+    {
+        var isValid = fioRequestId > BigInteger.ZERO
+
+        isValid = isValid && (payerFioAddress.isFioAddress() && payeeFioAddress.isFioAddress()
+                && recordSendContent.tokenCode.isTokenCode())
+
+        if(walletFioAddress.isNotEmpty())
+            isValid = isValid && walletFioAddress.isFioAddress()
+
+        return Validator(isValid,if(!isValid) "Invalid Send Record Request" else "")
+    }
+
+    private fun validateTransferPublicTokens(payeeFioPublicKey:String, walletFioAddress:String=""): Validator
+    {
+        var isValid = payeeFioPublicKey.isFioPublicKey()
+
+        if(walletFioAddress.isNotEmpty())
+            isValid = isValid && walletFioAddress.isFioAddress()
+
+        return Validator(isValid,if(!isValid) "Invalid Transfer Public Tokens Request" else "")
     }
 }
