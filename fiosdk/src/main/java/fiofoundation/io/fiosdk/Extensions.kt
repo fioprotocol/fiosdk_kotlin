@@ -58,7 +58,7 @@ fun String.isFioDomain(): Boolean
     {
         if(this.length in 1..62)
         {
-            val fioRegEx = Regex("^[a-z0-9\\\\-]+\$")
+            val fioRegEx = Regex("^[a-zA-Z0-9\\\\-]+\$")
             if(fioRegEx.matchEntire(this)!=null)
                 return true
         }
@@ -73,7 +73,7 @@ fun String.isTokenCode(): Boolean
     {
         if(this.length in 1..10)
         {
-            val fioRegEx = Regex("^[a-z0-9]+\$")
+            val fioRegEx = Regex("^[a-zA-Z0-9]+\$")
             if(fioRegEx.matchEntire(this)!=null)
                 return true
         }
