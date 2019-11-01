@@ -39,6 +39,7 @@ class InstrumentedSdkTests {
     private var bobFioAddress = ""
 
     private var testFioDomain = "brd"
+    private var testRenewDomain = ""
 
     private var walletFioAddress = "rewards:wallet"
     private var testMaxFee = BigInteger("4000000000000000000")
@@ -128,17 +129,18 @@ class InstrumentedSdkTests {
     }
 
     @Test
-    fun registerFioDomain()
-    {
+    fun registerFioDomain() {
 
-        if(skipRegisterFioDomain == false)
-        {
-            try {
-                this.registerFioNameForUser()
+        try {
+            this.registerFioNameForUser()
 
-                Log.i(this.logTag, "Start registerFioDomain")
+            Log.i(this.logTag, "Start registerFioDomain")
 
-                val fioDomainToRegister = testFioDomain + (0..8).random().toString()
+            var funds_available  = this.requestFaucetFunds("25.0")
+
+            if(funds_available)
+            {
+                val fioDomainToRegister = testFioDomain + (0..10000).random().toString()
 
                 val response = this.fioSdk!!.registerFioDomain(
                     fioDomainToRegister, this.alicePublicKey,
@@ -152,55 +154,120 @@ class InstrumentedSdkTests {
                         "Register Fio Domain, " + fioDomainToRegister + ", for Alice: " + actionTraceResponse.status
                     )
 
-
                     assertTrue(actionTraceResponse.status == "OK")
                 } else
-                    Log.i(this.logTag, "Register Fio Domain, " + fioDomainToRegister + ", for Alice: failed")
+                    Log.i(this.logTag,
+                        "Register Fio Domain, " + fioDomainToRegister + ", for Alice: failed")
 
             }
-            catch (e: FIOError) {
-                Log.e(this.logTag, e.toJson())
+            else
+                Log.i(this.logTag, "Finish registerFioDomain - No Funds Available.  Method not tested.")
 
-                throw AssertionError("Register Fio Domain Failed: " + e.toJson())
-            }
-            catch(generalException:Exception)
-            {
-                throw AssertionError("Register Fio Domain Failed: " + generalException.message)
-            }
+        } catch (e: FIOError) {
+            Log.e(this.logTag, e.toJson())
 
-            Log.i(this.logTag, "Finish registerFioDomain")
+            throw AssertionError("Register Fio Domain Failed: " + e.toJson())
+        } catch (generalException: Exception) {
+            throw AssertionError("Register Fio Domain Failed: " + generalException.message)
         }
-        else
-            Log.i(this.logTag, "Skipped registerFioDomain")
+
+        Log.i(this.logTag, "Finish registerFioDomain")
 
     }
 
     @Test
+    fun renewFioDomain() {
+
+        try {
+            this.registerFioNameForUser()
+
+            Log.i(this.logTag, "Start renewFioDomain")
+
+            var funds_available  = this.requestFaucetFunds("50.0")
+
+            if(funds_available)
+            {
+                val fioDomainToRegister = testFioDomain + (0..10000).random().toString()
+
+                var response = this.fioSdk!!.registerFioDomain(
+                    fioDomainToRegister, this.alicePublicKey,
+                    testMaxFee, walletFioAddress
+                )
+
+                var actionTraceResponse = response.getActionTraceResponse()
+                if (actionTraceResponse != null) {
+
+                    response = this.fioSdk!!.registerFioDomain(fioDomainToRegister,testMaxFee)
+
+                    actionTraceResponse = response.getActionTraceResponse()
+                    if (actionTraceResponse != null) {
+                        Log.i(this.logTag,
+                            "Renew Fio Domain, " + fioDomainToRegister + ", for Alice: " + actionTraceResponse.status)
+
+                        assertTrue(actionTraceResponse.status == "OK")
+                    }
+                    else
+                    {
+                        Log.i(this.logTag,
+                            "Renew Fio Domain, " + fioDomainToRegister + ", for Alice: failed")
+
+                        throw FIOError("Renew Fio Domain, " + fioDomainToRegister + ", for Alice: failed")
+                    }
+
+                } else
+                    Log.i(this.logTag,
+                        "Renew Fio Domain, " + fioDomainToRegister + ", for Alice: failed")
+
+            }
+            else
+                Log.i(this.logTag, "Finish renewFioDomain - No Funds Available.  Method not tested.")
+
+        } catch (e: FIOError) {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("Renew Fio Domain Failed: " + e.toJson())
+        } catch (generalException: Exception) {
+            throw AssertionError("Renew Fio Domain Failed: " + generalException.message)
+        }
+
+        Log.i(this.logTag, "Finish renewFioDomain")
+
+    }
+
+
+    @Test
     fun registerFioAddress() {
 
-        if(skipRegisterFioAddress == false) {
             try {
                 this.registerFioNameForUser()
 
                 Log.i(this.logTag, "Start registerFioAddress")
 
-                val fioAddressToRegister = "test-shawn" + (0..10000).random().toString() + ":brd"
+                var funds_available  = this.requestFaucetFunds("3.0")
 
-                val response = this.fioSdk!!.registerFioAddress(
-                    fioAddressToRegister, this.alicePublicKey,
-                    testMaxFee, walletFioAddress
-                )
+                if(funds_available)
+                {
+                    val fioAddressToRegister = "test-shawn" + (0..10000).random().toString() + ":brd"
 
-                val actionTraceResponse = response.getActionTraceResponse()
-                if (actionTraceResponse != null) {
-                    Log.i(
-                        this.logTag,
-                        "Register Fio Address for Alice: " + (actionTraceResponse.status == "OK").toString()
+                    val response = this.fioSdk!!.registerFioAddress(
+                        fioAddressToRegister, this.alicePublicKey,
+                        testMaxFee, walletFioAddress
                     )
 
-                    assertTrue(actionTraceResponse.status == "OK")
-                } else
-                    Log.i(this.logTag, "Register Fio Address for Alice: failed")
+                    val actionTraceResponse = response.getActionTraceResponse()
+                    if (actionTraceResponse != null) {
+                        Log.i(
+                            this.logTag,
+                            "Register Fio Address for Alice: " + (actionTraceResponse.status == "OK").toString()
+                        )
+
+                        assertTrue(actionTraceResponse.status == "OK")
+                    } else
+                        Log.i(this.logTag, "Register Fio Address for Alice: failed")
+                }
+                else
+                    Log.i(this.logTag, "Finish registerFioAddress - No Funds Available.  Method not tested.")
+
             }
             catch (e: FIOError)
             {
@@ -214,9 +281,53 @@ class InstrumentedSdkTests {
             }
 
             Log.i(this.logTag, "Finish registerFioAddress")
+    }
+
+    @Test
+    fun renewFioAddress()
+    {
+
+        this.registerFioNameForUser()
+
+        var funds_available  = this.requestFaucetFunds("3.0")
+
+        if(funds_available)
+        {
+            try {
+
+                Log.i(this.logTag, "Start renewFioAddress")
+
+                val response = this.fioSdk!!.renewFioAddress(
+                    this.aliceFioAddress, this.testMaxFee)
+
+                val actionTraceResponse = response.getActionTraceResponse()
+                if (actionTraceResponse != null) {
+                    Log.i(
+                        this.logTag,
+                        "Renew FioAddress, " + this.aliceFioAddress + ", for Alice: " + actionTraceResponse.status
+                    )
+
+                    assertTrue(actionTraceResponse.status == "OK")
+                }
+                else
+                    Log.i(this.logTag, "Renew FioAddress, " + this.aliceFioAddress + ", for Alice: failed")
+
+            }
+            catch (e: FIOError) {
+                Log.e(this.logTag, e.toJson())
+
+                throw AssertionError("Renew FioAddress Failed: " + e.toJson())
+            }
+            catch(generalException:Exception)
+            {
+                throw AssertionError("Renew FioAddress Failed: " + generalException.message)
+            }
+
+            Log.i(this.logTag, "Finish renewFioAddress")
         }
         else
-            Log.i(this.logTag, "Skipped registerFioAddress")
+            Log.i(this.logTag, "Finish renewFioAddress - No Funds Available.  Method not tested.")
+
     }
 
     @Test
@@ -901,5 +1012,68 @@ class InstrumentedSdkTests {
         }
 
         Log.i(this.logTag, "Finish newFundsRequest")
+    }
+
+    private fun requestFaucetFunds(requestAmount:String="1"): Boolean
+    {
+        try
+        {
+            Log.i(this.logTag, "Start requestFaucetFunds")
+
+            val response = this.fioSdk!!.requestNewFunds("faucet:fio",
+                this.aliceFioAddress,this.alicePublicKey,requestAmount,"FIO",
+                this.testMaxFee,this.walletFioAddress)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+            if (actionTraceResponse != null && actionTraceResponse.status == "requested") {
+                Log.i(this.logTag,
+                    "New Funds Requested by Alice: " + (actionTraceResponse.status == "requested").toString()
+                )
+
+                var now = System.currentTimeMillis()
+
+                var check_for_10_minutes = now + (1000 * 60 * 10)
+
+                do {
+                    if(now.rem(10000) == 0L)
+                    {
+                        val balance = this.fioSdk!!.getFioBalance().balance
+                        if(balance> BigInteger.ZERO)
+                            break
+
+                        Log.i(this.logTag,"Waiting on balance...")
+                    }
+
+                    now = System.currentTimeMillis()
+
+                }while(now<check_for_10_minutes)
+
+                if(now>check_for_10_minutes)
+                {
+                    Log.i(this.logTag, "New Funds Requested by Alice: failed")
+                    throw FIOError("New Funds Requested by Alice: failed")
+                }
+
+                Log.i(this.logTag, "Finish requestFaucetFunds")
+
+                return true
+            }
+            else
+                Log.i(this.logTag, "New Funds Requested by Alice: failed")
+
+            Log.i(this.logTag, "Finish requestFaucetFunds")
+
+            return false
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("New Funds Request Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("New Funds Request Failed: " + generalException.message)
+        }
     }
 }

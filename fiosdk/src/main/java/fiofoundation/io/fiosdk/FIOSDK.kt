@@ -629,7 +629,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     @Throws(FIOError::class)
     fun renewFioAddress(fioAddress:String, maxFee:BigInteger): PushTransactionResponse
     {
-        return renewFioAddress(fioAddress,maxFee)
+        return renewFioAddress(fioAddress,maxFee,"")
     }
 
     /**
