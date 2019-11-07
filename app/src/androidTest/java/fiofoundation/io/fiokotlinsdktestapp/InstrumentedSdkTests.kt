@@ -30,10 +30,13 @@ import java.security.SecureRandom
 @RunWith(AndroidJUnit4::class)
 class InstrumentedSdkTests {
 
-    private var alicePrivateKey = "5JbcPK6qTpYxMXtfpGXagYbo3KFE3qqxv2tLXLMPR8dTWWeYCp9"
-    private var alicePublicKey = "FIO7c8SVyAyu6cACCaUjmPFEUyW9p2owWHeqq2WSEZ18FFTgErE1K"
-    private var bobPrivateKey = "5JAExdhmQw8F1siD7uzLrhmzfjW97hubw7ZNxjAiAu6p7Xq9wqG"
-    private var bobPublicKey = "FIO8LKt4DBzXKzDGjFcZo5x82Nv5ahmbZ8AUNXBv2vMfm6smiHst3"
+    private val baseUrl = "http://dev3.fio.dev:8889/v1/"
+    private val baseMockUrl = "http://mock.dapix.io/mockd/DEV3/"
+
+    private var alicePrivateKey = ""
+    private var alicePublicKey = ""
+    private var bobPrivateKey = ""
+    private var bobPublicKey = ""
 
     private var aliceFioAddress = ""
     private var bobFioAddress = ""
@@ -42,7 +45,7 @@ class InstrumentedSdkTests {
     private var testRenewDomain = ""
 
     private var walletFioAddress = "rewards:wallet"
-    private var testMaxFee = BigInteger("4000000000000000000")
+    private var testMaxFee = BigInteger("30000000000")
 
     private var payeeBTCAddress = "1AkZGXsnyDfp4faMmVfTWsN1nNRRvEZJk8"  //bob
     private var payerBTCAddress = "1PzCN3cBkTL72GPeJmpcueU4wQi9guiLa6" //alice
@@ -55,8 +58,7 @@ class InstrumentedSdkTests {
 
     private var sharedSecretKey:ByteArray? = null
 
-    private var baseUrl = "http://dev3.fio.dev:8889/v1/"
-    private var baseMockUrl = "http://mock.dapix.io/mockd/DEV3/"
+
     private var fioSdk:FIOSDK? = null
 
     private var logTag = "FIOSDK-TEST"
@@ -136,11 +138,17 @@ class InstrumentedSdkTests {
 
             Log.i(this.logTag, "Start registerFioDomain")
 
-            var funds_available  = this.requestFaucetFunds("25.0")
+            this.requestFaucetFunds("25.0")
+
+            var funds_available  = this.requestFaucetFunds("5.0")
 
             if(funds_available)
             {
-                val fioDomainToRegister = testFioDomain + (0..10000).random().toString()
+                val fioDomainToRegister = testFioDomain + (100..200).random().toString()
+
+                Log.i(this.logTag, "Wait for balance to really be available.")
+
+                Thread.sleep(60000)
 
                 val response = this.fioSdk!!.registerFioDomain(
                     fioDomainToRegister, this.alicePublicKey,

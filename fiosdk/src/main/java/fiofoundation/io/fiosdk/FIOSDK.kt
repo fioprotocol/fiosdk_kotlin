@@ -1035,6 +1035,32 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
     }
 
     /**
+     * Returns FIO Addresses and FIO Domains owned by public key associated with the FIO SDK instance.
+     *
+     * @return [GetFIONamesResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFioNames(): GetFIONamesResponse
+    {
+        try
+        {
+            val request = GetFIONamesRequest(this.publicKey)
+
+            return this.networkProvider.getFIONames(request)
+        }
+        catch(getFioNamesError: GetFIONamesError)
+        {
+            throw FIOError(getFioNamesError.message!!,getFioNamesError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
      * Returns the FIO token public address for specified FIO Address.
      *
      * @param fioAddress FIO Address for which fio token public address is to be returned.
