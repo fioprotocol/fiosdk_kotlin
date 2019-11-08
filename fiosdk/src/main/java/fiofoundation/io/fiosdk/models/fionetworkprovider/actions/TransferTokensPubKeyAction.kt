@@ -2,14 +2,12 @@ package fiofoundation.io.fiosdk.models.fionetworkprovider.actions
 
 
 import com.google.gson.annotations.SerializedName
-import fiofoundation.io.fiosdk.models.Validator
 import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.FIORequestData
-import fiofoundation.io.fiosdk.models.fionetworkprovider.response.FIOResponse
 import java.math.BigInteger
 
 class TransferTokensPubKeyAction(payeePublicKey: String,
-                                 amount: String,
+                                 amount: BigInteger,
                                  maxFee: BigInteger,
                               walletFioAddress: String,
                               actorPublicKey: String) : IAction
@@ -37,7 +35,7 @@ class TransferTokensPubKeyAction(payeePublicKey: String,
 
     class TransferTokensPubKeyRequestData(
         @field:SerializedName("payee_public_key") var payeePublicKey:String,
-        @field:SerializedName("amount") var amount:String,
+        @field:SerializedName("amount") var amount:BigInteger,
         @field:SerializedName("max_fee") var max_fee:BigInteger,
         @field:SerializedName("actor") var actor:String,
         @field:SerializedName("tpid") var walletFioAddress:String): FIORequestData()

@@ -1,8 +1,8 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider.response
 
-class GetPublicAddressResponse: FIOResponse() {
-    private val public_address: String = ""
+import com.google.gson.annotations.SerializedName
 
-    val publicAddress: String
-        get(){return this.public_address}
+class GetPublicAddressResponse: FIOResponse()
+{
+    @field:SerializedName("public_address") var publicAddress: String = ""
 }

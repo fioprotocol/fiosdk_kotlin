@@ -1,11 +1,8 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider.actions
 
 import com.google.gson.annotations.SerializedName
-import fiofoundation.io.fiosdk.models.Validator
 import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization
-import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.FIORequestData
-import fiofoundation.io.fiosdk.models.fionetworkprovider.response.FIOResponse
 import java.math.BigInteger
 
 class RecordSendAction(payerFioAddress:String,

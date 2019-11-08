@@ -48,6 +48,6 @@ class PushTransactionResponse(@SerializedName("transaction_id") val transactionI
         val feeCollected: BigInteger = BigInteger("0")
 
         @SerializedName("fio_request_id")
-        val fioRequestId: String = ""
+        val fioRequestId: BigInteger = BigInteger("0")
     }
 }

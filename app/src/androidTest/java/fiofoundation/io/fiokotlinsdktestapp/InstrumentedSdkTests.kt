@@ -51,7 +51,7 @@ class InstrumentedSdkTests {
     private var endPointNameForGetFee = FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress
     private var chainId = "cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f"
 
-    private var newFundsRequestId = ""
+    private var newFundsRequestId = BigInteger.ZERO
 
     private var sharedSecretKey:ByteArray? = null
 
@@ -61,8 +61,6 @@ class InstrumentedSdkTests {
 
     private var logTag = "FIOSDK-TEST"
 
-    private val skipRegisterFioAddress = true
-    private val skipRegisterFioDomain = true
     private val skipSetFioDomainVisibility = true
 
     @Test

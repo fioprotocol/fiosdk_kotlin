@@ -666,7 +666,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
             {
                 var transferTokensToPublickey = TransferTokensPubKeyAction(
                     payeeFioPublicKey,
-                    amount.toString(),
+                    amount,
                     maxFee,
                     walletFioAddress,
                     this.publicKey

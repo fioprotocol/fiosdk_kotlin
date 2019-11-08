@@ -1,18 +1,16 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider.actions
 
 import com.google.gson.annotations.SerializedName
-import fiofoundation.io.fiosdk.isFioAddress
-import fiofoundation.io.fiosdk.models.Validator
 import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.FIORequestData
 import java.math.BigInteger
 
 class NewFundsRequestAction(
-    private val payerfioAddress: String,
-    private val payeefioAddress: String,
+    payerfioAddress: String,
+    payeefioAddress: String,
     content: String,
     maxFee: BigInteger,
-    private val walletFioAddress: String,
+    walletFioAddress: String,
     actorPublicKey: String) : IAction
 {
     override var account = "fio.reqobt"
