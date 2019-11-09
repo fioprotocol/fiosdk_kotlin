@@ -1,5 +1,10 @@
 package fiofoundation.io.fiosdk
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import fiofoundation.io.fiosdk.models.MultiLevelAddress
+import java.lang.Exception
+
 fun ByteArray.toHexString():String
 {
     val HEX_CHARS = "0123456789ABCDEF".toCharArray()
@@ -104,4 +109,48 @@ fun String.isNativeBlockChainPublicAddress(): Boolean
     }
 
     return false
+}
+
+fun String.toMultiLevelAddress():MultiLevelAddress
+{
+    var mla = MultiLevelAddress()
+
+    if(!this.contains("?"))
+    {
+        mla.address = this
+        return mla
+    }
+    else
+    {
+        try {
+            var mlaJson = "{"
+
+            val mlaItems = this.split("?")
+            if(mlaItems.count()>0) mlaJson = mlaJson.plus("\"address\":\"" + mlaItems[0] + "\",") else mlaJson = mlaJson.plus("\"address\":\"" + this + "\",")
+
+            val attributes = if(mlaItems.count()>1) mlaItems[1].split("&") else null
+
+            if(!attributes.isNullOrEmpty())
+            {
+                attributes.forEach{
+                    val attItems = it.split("=")
+
+                    if(attItems.count()>1)
+                        mlaJson = mlaJson.plus(attItems[0] +":\"" + attItems[1] + "\",")
+                }
+            }
+
+            mlaJson = mlaJson.trimEnd(',')
+            mlaJson = mlaJson.plus("}")
+
+            return GsonBuilder().create().fromJson(mlaJson,MultiLevelAddress::class.java)
+        }
+        catch (e:Exception)
+        {
+            mla.address = this
+            return mla
+        }
+
+    }
+
 }
