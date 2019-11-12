@@ -837,6 +837,47 @@ class InstrumentedSdkTests {
     }
 
     @Test
+    fun addMutiLevelPublicAddress() {
+
+        try {
+            this.registerFioNameForUser()
+
+            Log.i(this.logTag, "Start addPublicAddress")
+
+            val response = this.fioSdk!!.addPublicAddress(this.aliceFioAddress, "XRP",
+                "rPdvC6ccq8hCdPKSPJkPmyZ4Mi1oG2FFkJ?dt=15231", testMaxFee, walletFioAddress)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            if (actionTraceResponse != null)
+            {
+                Log.i(
+                    this.logTag,
+                    "Add Public Address for Alice: " + (actionTraceResponse.status == "OK").toString()
+                )
+
+                assertTrue(actionTraceResponse.status == "OK")
+            }
+            else
+                Log.i(this.logTag, "Add Public Address for Alice: failed")
+
+        }
+        catch (e: FIOError)
+        {
+            Log.e(this.logTag, e.toJson())
+
+            throw AssertionError("Add Public Address for Alice Failed: " + e.toJson())
+        }
+        catch (generalException: Exception) {
+            throw AssertionError("Add Public Address for Alice: " + generalException.message)
+        }
+
+        Log.i(this.logTag, "Finish addPublicAddress")
+
+    }
+
+
+    @Test
     fun getPublicAddress()
     {
         try
