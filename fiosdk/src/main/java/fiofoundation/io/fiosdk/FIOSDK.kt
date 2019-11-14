@@ -40,7 +40,7 @@ import java.math.BigInteger
  * @param signatureProvider the signature provider used to sign block chain transactions.
  * @param networkBaseUrl the url to the FIO API.
  */
-class FIOSDK(private var privateKey: String, var publicKey: String,
+class FIOSDK(private var privateKey: String, var publicKey: String,var walletFioAddress:String,
              var serializationProvider: ISerializationProvider,
              var signatureProvider: ISignatureProvider, private val networkBaseUrl:String)
 {
@@ -80,8 +80,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
         }
 
         /**
-         * Initialize a static instance of the FIO SDK.  If an instance already exists,
-         * it will be returned.
+         * Initialize a static instance of the FIO SDK.
          *
          * @param privateKey the fio private key of the client sending requests to FIO API.
          * @param publicKey the fio public key of the client sending requests to FIO API.
@@ -93,17 +92,24 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
                         serializationProvider: ISerializationProvider,
                         signatureProvider: ISignatureProvider,networkBaseUrl:String): FIOSDK
         {
-            if(fioSdk == null)
-             fioSdk = FIOSDK(privateKey,publicKey,serializationProvider,
+             fioSdk = FIOSDK(privateKey,publicKey,"",serializationProvider,
                  signatureProvider,networkBaseUrl)
 
             return fioSdk!!
         }
 
+        fun getInstance(privateKey: String,publicKey: String,walletFioAddress: String,
+                        serializationProvider: ISerializationProvider,
+                        signatureProvider: ISignatureProvider,networkBaseUrl:String): FIOSDK
+        {
+            fioSdk = FIOSDK(privateKey,publicKey,walletFioAddress,serializationProvider,
+                signatureProvider,networkBaseUrl)
+
+            return fioSdk!!
+        }
+
         /**
-         * Initialize a static instance of the FIO SDK using the default signature provider
-         * and default serialization provider.  If an instance already exists,
-         * it will be returned.
+         * Initialize a static instance of the FIO SDK using the default signature provider.
          *
          * @param privateKey the fio private key of the client sending requests to FIO API.
          * @param publicKey the fio public key of the client sending requests to FIO API.
@@ -111,21 +117,38 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
          */
         fun getInstance(privateKey: String,publicKey: String,
                         serializationProvider: ISerializationProvider,
-                        networkBaseUrl:String): FIOSDK
-        {
-            if(fioSdk == null)
-            {
-                val signatureProvider = SoftKeySignatureProvider()
-                signatureProvider.importKey(privateKey)
+                        networkBaseUrl:String): FIOSDK {
 
-                fioSdk = FIOSDK(
-                    privateKey,
-                    publicKey,
-                    serializationProvider,
-                    signatureProvider,
-                    networkBaseUrl
-                )
-            }
+            val signatureProvider = SoftKeySignatureProvider()
+            signatureProvider.importKey(privateKey)
+
+            fioSdk = FIOSDK(
+                privateKey,
+                publicKey,
+                "",
+                serializationProvider,
+                signatureProvider,
+                networkBaseUrl
+            )
+
+            return fioSdk!!
+        }
+
+        fun getInstance(privateKey: String,publicKey: String,walletFioAddress: String,
+                        serializationProvider: ISerializationProvider,
+                        networkBaseUrl:String): FIOSDK {
+
+            val signatureProvider = SoftKeySignatureProvider()
+            signatureProvider.importKey(privateKey)
+
+            fioSdk = FIOSDK(
+                privateKey,
+                publicKey,
+                walletFioAddress,
+                serializationProvider,
+                signatureProvider,
+                networkBaseUrl
+            )
 
             return fioSdk!!
         }
@@ -168,7 +191,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
      * @throws [FIOError]
      * */
     @Throws(FIOError::class)
-    open fun setPrivateKey(privateKey:String)
+    fun setPrivateKey(privateKey:String)
     {
         this.privateKey = privateKey
 
@@ -249,7 +272,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            val validator = validateRegisterFioAddress(fioAddress,ownerPublicKey,walletFioAddress)
+            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+
+            val validator = validateRegisterFioAddress(fioAddress,ownerPublicKey,wfa)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
@@ -259,7 +284,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
                     RegisterFIOAddressAction(
                         fioAddress,
                         ownerPublicKey,
-                        walletFioAddress,
+                        wfa,
                         maxFee,
                         this.publicKey
                     )
@@ -368,7 +393,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            val validator = validateRegisterFioDomain(fioDomain,ownerPublicKey,walletFioAddress)
+            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+
+            val validator = validateRegisterFioDomain(fioDomain,ownerPublicKey,wfa)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
@@ -377,7 +404,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
                 var registerFioDomainAction = RegisterFIODomainAction(
                     fioDomain,
                     ownerPublicKey,
-                    walletFioAddress,
+                    wfa,
                     maxFee,
                     this.publicKey
                 )
@@ -486,7 +513,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            val validator = validateRenewFioDomain(fioDomain,walletFioAddress)
+            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+
+            val validator = validateRenewFioDomain(fioDomain,wfa)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
@@ -495,7 +524,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
                 var renewFioDomainAction = RenewFIODomainAction(
                     fioDomain,
                     maxFee,
-                    walletFioAddress,
+                    wfa,
                     this.publicKey
                 )
 
@@ -570,7 +599,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            val validator = validateRenewFioAddress(fioAddress,walletFioAddress)
+            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+
+            val validator = validateRenewFioAddress(fioAddress,wfa)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
@@ -580,7 +611,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
                     RenewFIOAddressAction(
                         fioAddress,
                         maxFee,
-                        walletFioAddress,
+                        wfa,
                         this.publicKey
                     )
 
@@ -658,7 +689,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            val validator = validateTransferPublicTokens(payeeFioPublicKey,walletFioAddress)
+            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+
+            val validator = validateTransferPublicTokens(payeeFioPublicKey,wfa)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
@@ -668,7 +701,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
                     payeeFioPublicKey,
                     amount,
                     maxFee,
-                    walletFioAddress,
+                    wfa,
                     this.publicKey
                 )
 
@@ -783,9 +816,11 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
                         payeeTokenPublicAddress:String, amount:String, tokenCode:String,
                         maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
     {
+        val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+
         val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount,tokenCode)
 
-        return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,walletFioAddress)
+        return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,wfa)
     }
 
     /**
@@ -812,9 +847,11 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
                         memo: String?=null, hash: String?=null, offlineUrl:String?=null,
                         maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
     {
+        val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+
         val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount,tokenCode,memo,hash,offlineUrl)
 
-        return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,walletFioAddress)
+        return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,wfa)
     }
 
     /**
@@ -839,7 +876,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            val validator = validateRejectFundsRequest(fioRequestId,walletFioAddress)
+            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+
+            val validator = validateRejectFundsRequest(fioRequestId,wfa)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
@@ -848,7 +887,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
                 var rejectFundsRequestAction = RejectFundsRequestAction(
                     fioRequestId,
                     maxFee,
-                    walletFioAddress,
+                    wfa,
                     this.publicKey
                 )
 
@@ -924,10 +963,12 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
                    payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
                    tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
     {
+        val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+
         val recordSendContent = RecordSendContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
             tokenCode,obtId,status)
 
-        return this.recordSend(fioRequestId,payerFioAddress,payeeFioAddress,recordSendContent,maxFee,walletFioAddress)
+        return this.recordSend(fioRequestId,payerFioAddress,payeeFioAddress,recordSendContent,maxFee,wfa)
     }
 
     /**
@@ -958,10 +999,12 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
                    tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String="",
                    memo:String?=null, hash:String?=null, offlineUrl:String?=null): PushTransactionResponse
     {
+        val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+
         val recordSendContent = RecordSendContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
             tokenCode,obtId,status,memo,hash,offlineUrl)
 
-        return this.recordSend(fioRequestId,payerFioAddress,payeeFioAddress,recordSendContent,maxFee,walletFioAddress)
+        return this.recordSend(fioRequestId,payerFioAddress,payeeFioAddress,recordSendContent,maxFee,wfa)
     }
 
     fun recordSend(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
@@ -1277,7 +1320,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            val validator = validateAddPublicAddress(fioAddress,tokenCode,tokenPublicAddress,walletFioAddress)
+            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+
+            val validator = validateAddPublicAddress(fioAddress,tokenCode,tokenPublicAddress,wfa)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
@@ -1288,7 +1333,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
                     tokenCode,
                     tokenPublicAddress,
                     maxFee,
-                    walletFioAddress,
+                    wfa,
                     this.publicKey
                 )
 
@@ -1351,7 +1396,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            val validator = validateSetFioDomainVisibility(fioDomain,walletFioAddress)
+            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+
+            val validator = validateSetFioDomainVisibility(fioDomain,wfa)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
@@ -1361,7 +1408,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
                     fioDomain,
                     visibility,
                     maxFee,
-                    walletFioAddress,
+                    wfa,
                     this.publicKey
                 )
 
@@ -1472,7 +1519,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
-            val validator = validateNewFundsRequest(payerFioAddress,payeeFioAddress,fundsRequestContent,walletFioAddress)
+            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+
+            val validator = validateNewFundsRequest(payerFioAddress,payeeFioAddress,fundsRequestContent,wfa)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
@@ -1487,7 +1536,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
                     payeeFioAddress,
                     encryptedContent,
                     maxFee,
-                    walletFioAddress,
+                    wfa,
                     this.publicKey
                 )
 
@@ -1597,8 +1646,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
 
         try
         {
+            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+
             val validator = validateRecordSendRequest(fioRequestId,payerFioAddress,
-                payeeFioAddress,recordSendContent,walletFioAddress)
+                payeeFioAddress,recordSendContent,wfa)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
@@ -1615,7 +1666,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,
                     encryptedContent,
                     fioRequestId,
                     maxFee,
-                    walletFioAddress,
+                    wfa,
                     this.publicKey
                 )
 

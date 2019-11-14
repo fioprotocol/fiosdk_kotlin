@@ -10,8 +10,7 @@ class SetFioDomainVisibilityAction(fioDomain: String,
                              visibility: FioDomainVisiblity,
                              maxFee: BigInteger,
                              walletFioAddress: String,
-                             actorPublicKey: String) :
-    IAction
+                             actorPublicKey: String) : IAction
 {
     override var account = "fio.address"
     override var name = "setdomainpub"

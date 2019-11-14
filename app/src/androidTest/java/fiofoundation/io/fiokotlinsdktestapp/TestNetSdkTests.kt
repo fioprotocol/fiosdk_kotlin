@@ -578,7 +578,7 @@ class TestNetSdkTests {
 
         val serializer = AbiFIOSerializationProvider()
 
-        return FIOSDK(privateKey,publicKey,serializer,signatureProvider,this.baseUrl)
+        return FIOSDK(privateKey,publicKey,"",serializer,signatureProvider,this.baseUrl)
     }
 
 }
