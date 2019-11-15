@@ -76,7 +76,7 @@ interface IFIONetworkProviderApi {
     @POST(FIOApiEndPoints.add_public_address)
     fun addPublicAddress(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
 
-    @POST(FIOApiEndPoints.add_public_address)
+    @POST(FIOApiEndPoints.set_domain_visibility)
     fun setFioDomainVisibility(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
 
 

@@ -63,7 +63,7 @@ class InstrumentedSdkTests {
 
     private var logTag = "FIOSDK-TEST"
 
-    private val skipSetFioDomainVisibility = true
+    private val skipSetFioDomainVisibility = false
 
     @Test
     fun setupTestVariable()
@@ -132,7 +132,7 @@ class InstrumentedSdkTests {
     fun registerFioDomain() {
 
         try {
-            this.registerFioNameForUser()
+            this.initializeFIOSDK()
 
             Log.i(this.logTag, "Start registerFioDomain")
 
@@ -140,13 +140,12 @@ class InstrumentedSdkTests {
 
             var funds_available  = this.requestFaucetFunds("5.0")
 
+            Log.i(this.logTag, "Wait for balance to really be available.")
+            Thread.sleep(60000)
+
             if(funds_available)
             {
                 val fioDomainToRegister = testFioDomain + (100..200).random().toString()
-
-                Log.i(this.logTag, "Wait for balance to really be available.")
-
-                Thread.sleep(60000)
 
                 val response = this.fioSdk!!.registerFioDomain(
                     fioDomainToRegister, this.alicePublicKey,
@@ -915,29 +914,46 @@ class InstrumentedSdkTests {
     @Test
     fun setFioDomainVisibility() {
 
-        if(skipSetFioDomainVisibility == false)
-        {
-            try {
+            try
+            {
                 this.registerFioNameForUser()
 
-                Log.i(this.logTag, "Start setFioDomainVisibility")
+                this.requestFaucetFunds("25.0")
 
-                val response = this.fioSdk!!.setFioDomainVisibility(this.aliceFioAddress, FioDomainVisiblity.PUBLIC,
-                    testMaxFee, walletFioAddress)
+                var funds_available  = this.requestFaucetFunds("5.0")
 
-                val actionTraceResponse = response.getActionTraceResponse()
+                Log.i(this.logTag, "Wait for balance to really be available.")
+                Thread.sleep(60000)
 
-                if (actionTraceResponse != null)
+                if(funds_available)
                 {
-                    Log.i(
-                        this.logTag,
-                        "Set Alice's Domain public: " + (actionTraceResponse.status == "OK").toString()
+                    val fioDomainToRegister = testFioDomain + (200..1000).random().toString()
+
+                    val regdomain_response = this.fioSdk!!.registerFioDomain(
+                        fioDomainToRegister, this.alicePublicKey,
+                        testMaxFee, walletFioAddress
                     )
 
-                    assertTrue(actionTraceResponse.status == "OK")
+
+                    Log.i(this.logTag, "Start setFioDomainVisibility")
+
+                    val response = this.fioSdk!!.setFioDomainVisibility(
+                        fioDomainToRegister, FioDomainVisiblity.PUBLIC,
+                        testMaxFee, walletFioAddress
+                    )
+
+                    val actionTraceResponse = response.getActionTraceResponse()
+
+                    if (actionTraceResponse != null) {
+                        Log.i(
+                            this.logTag,
+                            "Set Alice's Domain public: " + (actionTraceResponse.status == "OK").toString()
+                        )
+
+                        assertTrue(actionTraceResponse.status == "OK")
+                    } else
+                        Log.i(this.logTag, "Set Alice's Domain Public: failed")
                 }
-                else
-                    Log.i(this.logTag, "Set Alice's Domain Public: failed")
 
             }
             catch (e: FIOError)
@@ -951,7 +967,7 @@ class InstrumentedSdkTests {
             }
 
             Log.i(this.logTag, "Finish setFioDomainVisibility")
-        }
+
 
 
     }
