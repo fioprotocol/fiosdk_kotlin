@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
+import java.lang.Error
+import java.lang.Exception
 import java.math.BigInteger
 
 open class FIORequestContent {
@@ -19,14 +21,22 @@ open class FIORequestContent {
 
     var requestContent : FundsRequestContent? = null
 
-    fun deserializeRequestContent(sharedSecretKey: ByteArray, serializationProvider: ISerializationProvider):FundsRequestContent
+    fun deserializeRequestContent(sharedSecretKey: ByteArray, serializationProvider: ISerializationProvider):FundsRequestContent?
     {
-        val decryptedMessage = CryptoUtils.decryptSharedMessage(this.content,sharedSecretKey)
-        val deserializedMessage = serializationProvider.deserializeNewFundsContent(decryptedMessage)
-        
-        this.requestContent = Gson().fromJson(deserializedMessage, FundsRequestContent::class.java)
+        try {
+            val decryptedMessage = CryptoUtils.decryptSharedMessage(this.content,sharedSecretKey)
+            val deserializedMessage = serializationProvider.deserializeNewFundsContent(decryptedMessage)
 
-        return this.requestContent!!
+            this.requestContent = Gson().fromJson(deserializedMessage, FundsRequestContent::class.java)
+
+            return this.requestContent
+        }
+        catch(e:Exception)
+        {
+            this.requestContent = null
+            return this.requestContent
+        }
+
     }
 
     fun toJson(): String {

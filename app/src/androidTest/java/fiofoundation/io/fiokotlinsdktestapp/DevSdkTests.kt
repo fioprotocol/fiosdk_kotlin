@@ -8,6 +8,8 @@ import fiofoundation.io.fiosdk.enums.FioDomainVisiblity
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
+import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
+import fiofoundation.io.fiosdk.utilities.CryptoUtils
 import org.bitcoinj.crypto.MnemonicCode
 import org.junit.Assert
 import org.junit.Test
@@ -37,7 +39,6 @@ class DevSdkTests
     private val alicePublicTokenAddress = "1PzCN3cBkTL72GPeJmpcueU4wQi9guiLa6"
     private val alicePublicTokenCode = "BTC"
     private val bobPublicTokenAddress = "1AkZGXsnyDfp4faMmVfTWsN1nNRRvEZJk8"
-    private val bobPublicTokenCode = "BTC"
     private var otherBlockChainId = "123456789"
 
     private var aliceFioSdk:FIOSDK? = null
@@ -182,6 +183,27 @@ class DevSdkTests
             throw AssertionError("Add Public Address for Alice Failed: " + generalException.message)
         }
 
+        Thread.sleep(4000)
+
+        println("testGenericActions: Test getPublicAddress")
+        try
+        {
+            val response = this.aliceFioSdk!!.getPublicAddress(newFioAddress,this.alicePublicTokenCode)
+
+            Assert.assertTrue(
+                "Couldn't Find Public Address for Alice",
+                !response.publicAddress.isNullOrEmpty()
+            )
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("getPublicAddress Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("getPublicAddress Failed: " + generalException.message)
+        }
+
         println("testGenericActions: Test isFioAddressAvailable True")
         try
         {
@@ -262,6 +284,377 @@ class DevSdkTests
         println("testGenericActions: End Test for Generic Actions")
     }
 
+    @Test
+    fun testFundsRequest()
+    {
+        this.setupTestVariables()
+
+        println("testFundsRequest: Begin Test for NewFundsRequest")
+
+        println("testFundsRequest: Test requestNewFunds")
+        try
+        {
+            val response = this.aliceFioSdk!!.requestNewFunds(this.bobFioAddress,
+                this.aliceFioAddress,this.alicePublicTokenAddress,"2.0",this.alicePublicTokenCode,
+                this.defaultFee)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            Assert.assertTrue(
+                "Alice Couldn't Request Funds from Bob: " + response.toJson(),
+                actionTraceResponse != null && actionTraceResponse.status == "requested"
+            )
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Alice's Funds Request Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Alice's Funds Request Failed: " + generalException.message)
+        }
+
+        Thread.sleep(4000)
+
+        println("testFundsRequest: Test getSentFioRequests")
+        try
+        {
+            val sharedSecretKey = CryptoUtils.generateSharedSecret(this.alicePrivateKey,this.bobPublicKey)
+
+            var sentRequests = this.aliceFioSdk!!.getSentFioRequests()
+
+            if(sentRequests.isNotEmpty())
+            {
+                Assert.assertTrue(
+                    "Requests Sent by Alice are NOT Available",
+                    sentRequests.isNotEmpty()
+                )
+
+                for (req in sentRequests)
+                {
+                    req.deserializeRequestContent(sharedSecretKey,this.aliceFioSdk!!.serializationProvider)
+
+                    if(req.requestContent!=null)
+                    {
+                        Assert.assertTrue(
+                            "Funds Request Sent by Alice is NOT Valid",
+                            req.requestContent != null
+                        )
+                    }
+                }
+            }
+
+            sentRequests = this.aliceFioSdk!!.getSentFioRequests(2,1)
+            if(sentRequests.isNotEmpty())
+            {
+                Assert.assertTrue(
+                    "Requests Sent by Alice are NOT Available",
+                    sentRequests.isNotEmpty()
+                )
+            }
+
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Cannot Get List of Requests Sent by Alice: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Cannot Get List of Requests Sent by Alice: " + generalException.message)
+        }
+
+        println("testFundsRequest: Test getPendingFioRequests")
+        try {
+            val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,this.alicePublicKey)
+
+            val pendingRequests = this.bobFioSdk!!.getPendingFioRequests()
+
+            if(pendingRequests.isNotEmpty())
+            {
+                Assert.assertTrue(
+                    "Bob does not have requests from Alice that are pending",
+                    pendingRequests.isNotEmpty()
+                )
+
+                for (req in pendingRequests)
+                {
+                    req.deserializeRequestContent(sharedSecretKey,this.bobFioSdk!!.serializationProvider)
+
+                    if(req.requestContent!=null)
+                    {
+                        Assert.assertTrue("Pending Requests are Valid", req.requestContent != null)
+                    }
+                }
+            }
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Pending Requests Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Pending Requests Failed: " + generalException.message)
+        }
+
+        println("testFundsRequest: Test recordSend")
+        try
+        {
+            val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,this.alicePublicKey)
+
+            val pendingRequests = this.bobFioSdk!!.getPendingFioRequests()
+
+            if(pendingRequests.isNotEmpty())
+            {
+                val firstPendingRequest = pendingRequests.firstOrNull{it.payerFioAddress == this.bobFioAddress}
+
+                if(firstPendingRequest!=null)
+                {
+                    firstPendingRequest.deserializeRequestContent(sharedSecretKey,this.bobFioSdk!!.serializationProvider)
+
+                    if(firstPendingRequest.requestContent!=null)
+                    {
+                        var recordSendContent = RecordSendContent(this.bobPublicTokenAddress,
+                            firstPendingRequest.requestContent!!.payeeTokenPublicAddress,
+                            firstPendingRequest.requestContent!!.amount,
+                            firstPendingRequest.requestContent!!.tokenCode,this.otherBlockChainId)
+
+                        val response = this.bobFioSdk!!.recordSend(firstPendingRequest.fioRequestId,firstPendingRequest.payerFioAddress
+                            ,firstPendingRequest.payeeFioAddress,this.bobPublicTokenAddress,recordSendContent.payeeTokenPublicAddress,
+                            recordSendContent.amount.toDouble(),recordSendContent.tokenCode,"",
+                            recordSendContent.obtId,this.defaultFee)
+
+                        val actionTraceResponse = response.getActionTraceResponse()
+
+                        Assert.assertTrue(
+                            "Couldn't Record Bob Sent Funds to Alice: " + response.toJson(),
+                            actionTraceResponse != null && actionTraceResponse.status == "sent_to_blockchain"
+                        )
+                    }
+                }
+            }
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Record Send Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Record Send Failed: " + generalException.message)
+        }
+
+        Thread.sleep(4000)
+
+        //Set up test for rejecting funds request
+        println("testFundsRequest: Test requestNewFunds")
+        try
+        {
+            val response = this.aliceFioSdk!!.requestNewFunds(this.bobFioAddress,
+                this.aliceFioAddress,this.alicePublicTokenAddress,"2.0",this.alicePublicTokenCode,
+                this.defaultFee)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            Assert.assertTrue(
+                "Alice Couldn't Request Funds from Bob: " + response.toJson(),
+                actionTraceResponse != null && actionTraceResponse.status == "requested"
+            )
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Alice's Funds Request Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Alice's Funds Request Failed: " + generalException.message)
+        }
+
+        Thread.sleep(4000)
+
+        println("testFundsRequest: Test getSentFioRequests")
+        try
+        {
+            val sharedSecretKey = CryptoUtils.generateSharedSecret(this.alicePrivateKey,this.bobPublicKey)
+
+            val sentRequests = this.aliceFioSdk!!.getSentFioRequests()
+
+            if(sentRequests.isNotEmpty())
+            {
+                Assert.assertTrue(
+                    "Requests Sent by Alice are NOT Available",
+                    sentRequests.isNotEmpty()
+                )
+
+                for (req in sentRequests)
+                {
+                    req.deserializeRequestContent(sharedSecretKey,this.aliceFioSdk!!.serializationProvider)
+
+                    if(req.requestContent!=null)
+                    {
+                        Assert.assertTrue(
+                            "Funds Request Sent by Alice is NOT Valid",
+                            req.requestContent != null
+                        )
+                    }
+                }
+            }
+
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Cannot Get List of Requests Sent by Alice: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Cannot Get List of Requests Sent by Alice: " + generalException.message)
+        }
+
+        println("testFundsRequest: Test getPendingFioRequests")
+        try {
+            val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,this.alicePublicKey)
+
+            val pendingRequests = this.bobFioSdk!!.getPendingFioRequests()
+
+            if(pendingRequests.isNotEmpty())
+            {
+                Assert.assertTrue(
+                    "Bob does not have requests from Alice that are pending",
+                    pendingRequests.isNotEmpty()
+                )
+
+                for (req in pendingRequests)
+                {
+                    req.deserializeRequestContent(sharedSecretKey,this.bobFioSdk!!.serializationProvider)
+
+                    if(req.requestContent!=null)
+                    {
+                        Assert.assertTrue(
+                            "Pending Requests are NOT Valid",
+                            req.requestContent != null
+                        )
+                    }
+                }
+            }
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Pending Requests Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Pending Requests Failed: " + generalException.message)
+        }
+
+        println("testFundsRequest: Test rejectFundsRequest")
+        try {
+            val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,this.alicePublicKey)
+
+            val pendingRequests = this.bobFioSdk!!.getPendingFioRequests()
+
+            if(pendingRequests.isNotEmpty())
+            {
+                val firstPendingRequest = pendingRequests.firstOrNull{it.payerFioAddress == this.bobFioAddress}
+
+                if(firstPendingRequest!=null)
+                {
+                    firstPendingRequest.deserializeRequestContent(sharedSecretKey,this.bobFioSdk!!.serializationProvider)
+
+                    if(firstPendingRequest.requestContent!=null)
+                    {
+                        val response = this.bobFioSdk!!.rejectFundsRequest(firstPendingRequest.fioRequestId,
+                            this.defaultFee)
+
+                        val actionTraceResponse = response.getActionTraceResponse()
+
+                        if(actionTraceResponse!=null)
+                        {
+                            Assert.assertTrue(
+                                "Bob Couldn't Reject Funds Request from Alice: " + response.toJson(),
+                                actionTraceResponse.status == "request_rejected"
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Reject Funds Request Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Reject Funds Request Failed: " + generalException.message)
+        }
+
+        println("testFundsRequest: End Test for NewFundsRequest")
+    }
+
+    @Test
+    fun testTransferFioTokens()
+    {
+        this.setupTestVariables()
+
+        println("testTransferFioTokens: Begin Test for TransferFioTokens")
+
+        val amountToTransfer = BigInteger("1000000000")   //Amount is in SUFs
+        var bobBalanceBeforeTransfer = BigInteger.ZERO
+        var bobBalanceAfterTransfer = BigInteger.ZERO
+
+        println("testTransferFioTokens: Verify Bob's Current FIO Balance")
+        try
+        {
+            bobBalanceBeforeTransfer = this.bobFioSdk!!.getFioBalance().balance
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("GetFioBalance for Bob Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("GetFioBalance for Bob Failed: " + generalException.message)
+        }
+
+        println("testTransferFioTokens: Test transferTokens")
+        try
+        {
+            val response = this.aliceFioSdk!!.transferTokens(this.bobPublicKey,amountToTransfer,this.defaultFee)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            Assert.assertTrue(
+                "Alice Failed to Transfer FIO to Bob",
+                actionTraceResponse != null && actionTraceResponse.status == "OK"
+            )
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("FIO Token Transfer Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("FIO Token Transfer Failed: " + generalException.message)
+        }
+
+        println("testTransferFioTokens: Verify Bob's New FIO Balance")
+        try
+        {
+            bobBalanceAfterTransfer = this.bobFioSdk!!.getFioBalance().balance
+
+            Assert.assertTrue(
+                "Alice Filed to Transfer FIO to Bob",
+                (bobBalanceAfterTransfer - bobBalanceBeforeTransfer) == amountToTransfer
+            )
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("GetFioBalance for Bob Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("GetFioBalance for Bob Failed: " + generalException.message)
+        }
+
+        println("testTransferFioTokens: End Test for TransferFioTokens")
+    }
 
     //Helper Methods
     private fun setupTestVariables()
@@ -363,7 +756,8 @@ class DevSdkTests
                 this.defaultFee,"")
 
             var actionTraceResponse = response.getActionTraceResponse()
-            if (actionTraceResponse != null && actionTraceResponse.status == "requested") {
+            if (actionTraceResponse != null && actionTraceResponse.status == "requested")
+            {
                 Log.i(this.logTag,
                     "New Funds Requested by Alice: " + (actionTraceResponse.status == "requested").toString()
                 )
@@ -394,53 +788,10 @@ class DevSdkTests
 
                 Log.i(this.logTag, "Finish requestFaucetFunds")
 
-                return true
+                    return true
             }
             else
                 Log.i(this.logTag, "New Funds Requested by Alice: failed")
-
-            response = this.bobFioSdk!!.requestNewFunds("faucet:fio",
-                this.bobFioAddress,this.bobPublicKey,requestAmount,"FIO",
-                this.defaultFee,"")
-
-            actionTraceResponse = response.getActionTraceResponse()
-            if (actionTraceResponse != null && actionTraceResponse.status == "requested") {
-                Log.i(this.logTag,
-                    "New Funds Requested by Alice: " + (actionTraceResponse.status == "requested").toString()
-                )
-
-                var now = System.currentTimeMillis()
-
-                var check_for_10_minutes = now + (1000 * 60 * 10)
-
-                do {
-                    if(now.rem(10000) == 0L)
-                    {
-                        val balance = this.aliceFioSdk!!.getFioBalance().balance
-                        if(balance> BigInteger.ZERO)
-                            break
-
-                        Log.i(this.logTag,"Waiting on balance...")
-                    }
-
-                    now = System.currentTimeMillis()
-
-                }while(now<check_for_10_minutes)
-
-                if(now>check_for_10_minutes)
-                {
-                    Log.i(this.logTag, "New Funds Requested by Alice: failed")
-                    throw FIOError("New Funds Requested by Alice: failed")
-                }
-
-                Log.i(this.logTag, "Finish requestFaucetFunds")
-
-                return true
-            }
-            else
-                Log.i(this.logTag, "New Funds Requested by Bob: failed")
-
-            Log.i(this.logTag, "Finish requestFaucetFunds")
 
             return false
         }

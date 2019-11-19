@@ -44,7 +44,6 @@ class TestNetSdkTests {
     private val alicePublicTokenAddress = "1PzCN3cBkTL72GPeJmpcueU4wQi9guiLa6"
     private val alicePublicTokenCode = "BTC"
     private val bobPublicTokenAddress = "1AkZGXsnyDfp4faMmVfTWsN1nNRRvEZJk8"
-    private val bobPublicTokenCode = "BTC"
     private var otherBlockChainId = "123456789"
 
     private var aliceFioSdk = createSdkInstance(alicePrivateKey,alicePublicKey)
