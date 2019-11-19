@@ -36,6 +36,7 @@ import java.math.BigInteger
  *
  * @param privateKey the fio private key of the client sending requests to FIO API.
  * @param publicKey the fio public key of the client sending requests to FIO API.
+ * @param walletFioAddress FIO Address of the wallet which generates this transaction.  Set to empty if not known.
  * @param serializationProvider the serialization provider used for abi serialization and deserialization.
  * @param signatureProvider the signature provider used to sign block chain transactions.
  * @param networkBaseUrl the url to the FIO API.
@@ -98,6 +99,16 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
             return fioSdk!!
         }
 
+        /**
+         * Initialize a static instance of the FIO SDK.
+         *
+         * @param privateKey the fio private key of the client sending requests to FIO API.
+         * @param publicKey the fio public key of the client sending requests to FIO API.
+         * @param walletFioAddress FIO Address of the wallet which generates this transaction.  Set to empty if not known.
+         * @param serializationProvider the serialization provider used for abi serialization and deserialization.
+         * @param signatureProvider the signature provider used to sign block chain transactions.
+         * @param networkBaseUrl the url to the FIO API.
+         */
         fun getInstance(privateKey: String,publicKey: String,walletFioAddress: String,
                         serializationProvider: ISerializationProvider,
                         signatureProvider: ISignatureProvider,networkBaseUrl:String): FIOSDK
@@ -134,6 +145,14 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
             return fioSdk!!
         }
 
+        /**
+         * Initialize a static instance of the FIO SDK using the default signature provider.
+         *
+         * @param privateKey the fio private key of the client sending requests to FIO API.
+         * @param publicKey the fio public key of the client sending requests to FIO API.
+         * @param walletFioAddress FIO Address of the wallet which generates this transaction.  Set to empty if not known.
+         * @param networkBaseUrl the url to the FIO API.
+         */
         fun getInstance(privateKey: String,publicKey: String,walletFioAddress: String,
                         serializationProvider: ISerializationProvider,
                         networkBaseUrl:String): FIOSDK {
