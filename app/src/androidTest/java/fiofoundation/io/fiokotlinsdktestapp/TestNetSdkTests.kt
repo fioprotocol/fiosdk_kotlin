@@ -264,7 +264,6 @@ class TestNetSdkTests {
         println("testFundsRequest: Test getSentFioRequests")
         try
         {
-            val sharedSecretKey = CryptoUtils.generateSharedSecret(this.alicePrivateKey,this.bobPublicKey)
 
             val sentRequests = this.aliceFioSdk.getSentFioRequests()
 
@@ -274,6 +273,8 @@ class TestNetSdkTests {
 
                 for (req in sentRequests)
                 {
+                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.alicePrivateKey,req.payerFioPublicKey)
+
                     req.deserializeRequestContent(sharedSecretKey,this.aliceFioSdk.serializationProvider)
 
                     if(req.requestContent!=null)
@@ -295,7 +296,6 @@ class TestNetSdkTests {
 
         println("testFundsRequest: Test getPendingFioRequests")
         try {
-            val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,this.alicePublicKey)
 
             val pendingRequests = this.bobFioSdk.getPendingFioRequests()
 
@@ -305,6 +305,8 @@ class TestNetSdkTests {
 
                 for (req in pendingRequests)
                 {
+                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,req.payeeFioPublicKey)
+
                     req.deserializeRequestContent(sharedSecretKey,this.bobFioSdk.serializationProvider)
 
                     if(req.requestContent!=null)
@@ -394,7 +396,6 @@ class TestNetSdkTests {
         println("testFundsRequest: Test getSentFioRequests")
         try
         {
-            val sharedSecretKey = CryptoUtils.generateSharedSecret(this.alicePrivateKey,this.bobPublicKey)
 
             val sentRequests = this.aliceFioSdk.getSentFioRequests()
 
@@ -404,6 +405,8 @@ class TestNetSdkTests {
 
                 for (req in sentRequests)
                 {
+                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.alicePrivateKey,req.payerFioPublicKey)
+
                     req.deserializeRequestContent(sharedSecretKey,this.aliceFioSdk.serializationProvider)
 
                     if(req.requestContent!=null)
@@ -425,7 +428,6 @@ class TestNetSdkTests {
 
         println("testFundsRequest: Test getPendingFioRequests")
         try {
-            val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,this.alicePublicKey)
 
             val pendingRequests = this.bobFioSdk.getPendingFioRequests()
 
@@ -435,6 +437,8 @@ class TestNetSdkTests {
 
                 for (req in pendingRequests)
                 {
+                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,req.payeeFioPublicKey)
+
                     req.deserializeRequestContent(sharedSecretKey,this.bobFioSdk.serializationProvider)
 
                     if(req.requestContent!=null)
