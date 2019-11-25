@@ -26,7 +26,7 @@
       </configuration>
     </facet>
     <facet type="kotlin-language" name="Kotlin">
-      <configuration version="3" platform="JVM 1.6" allPlatforms="JVM [1.6]" useProjectSettings="false" pureKotlinSourceFolders="$MODULE_DIR$/src/debug/kotlin;/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/src/debug/java;/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/src/release/kotlin;/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/src/release/java;/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/src/debugAndroidTest/kotlin;/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/src/debugUnitTest/kotlin;/Users/shawnmullen/projects/fiosdk_kotlin/androidfioserializationprovider/src/releaseUnitTest/kotlin">
+      <configuration version="3" platform="JVM 1.6" allPlatforms="JVM [1.6]" useProjectSettings="false">
         <compilerSettings />
         <compilerArguments>
           <option name="destination" value="$MODULE_DIR$/build/tmp/kotlin-classes/debug" />

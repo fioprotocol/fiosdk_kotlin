@@ -1,4 +1,5 @@
-package fiofoundation.io.androidfioserializationprovider
+package fiofoundation.io.javafioserializationprovider
+
 
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.models.serializationprovider.AbiFIOSerializationObject
