@@ -12,6 +12,7 @@ extern "C" {
 typedef struct abieos_context_s abieos_context;
 typedef int abieos_bool;
 
+
 // Create a context. The context holds all memory allocated by functions in this header. Returns null on failure.
 abieos_context* abieos_create();
 

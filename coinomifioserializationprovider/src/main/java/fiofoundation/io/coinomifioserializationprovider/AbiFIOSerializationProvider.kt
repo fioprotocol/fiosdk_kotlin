@@ -24,12 +24,12 @@ class AbiFIOSerializationProvider: ISerializationProvider {
         private val NULL_CONTEXT_ERR_MSG = "Null context!  Has destroyContext() already been called?"
         private val CANNOT_CREATE_CONTEXT_ERR_MSG = "Could not create abieos context."
 
-        init {
-            val libPath = System.getProperty("java.library.path")
-            println("java.library.path=" + libPath!!)
-
-            System.loadLibrary("abieos-lib")
-        }
+//        init {
+//            val libPath = System.getProperty("java.library.path")
+//            println("java.library.path=" + libPath!!)
+//
+//            System.loadLibrary("abieos-lib")
+//        }
     }
 
     external fun stringFromAbiEos():String

@@ -18,6 +18,11 @@ struct abieos_context_s {
     std::map<name, contract> contracts{};
 };
 
+std::string  stringFromAbiEos( ) {
+    std::string  hello = "Hello from abieos-lib!!";
+    return hello;
+}
+
 void fix_null_str(const char*& s) {
     if (!s)
         s = "";

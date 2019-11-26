@@ -3,7 +3,7 @@
 #pragma once
 
 #include <ctime>
-#include <date/date.h>
+#include "./date/include/date/date.h"
 #include <map>
 #include <optional>
 #include <variant>
@@ -11,10 +11,10 @@
 
 #include "abieos_numeric.hpp"
 
-#include "rapidjson/reader.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
-
+#include "rapidjson/include/rapidjson/reader.h"
+#include "rapidjson/include/rapidjson/stringbuffer.h"
+#include "rapidjson/include/rapidjson/writer.h"
+std::string stringFromAbiEos();
 namespace abieos {
 
 inline constexpr bool trace_json_to_jvalue_event = false;
