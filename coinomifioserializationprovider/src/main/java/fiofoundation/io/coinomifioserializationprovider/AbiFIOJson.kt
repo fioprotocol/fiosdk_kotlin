@@ -1,4 +1,4 @@
-package fiofoundation.io.javafioserializationprovider
+package fiofoundation.io.coinomifioserializationprovider
 
 
 object AbiFIOJson {
