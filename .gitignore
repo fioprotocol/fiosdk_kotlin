@@ -6,6 +6,8 @@
 **/*/.cxx
 documentation
 /local.properties
+/androidfioserializationprovider/build
+/androidfioserializationprovider/src/main/cpp/target
 /androidfioserializationprovider/.externalNativeBuild/cmake/debug/x86/rules.ninja
 /androidfioserializationprovider/.externalNativeBuild/cmake/debug/x86/CMakeFiles/TargetDirectories.txt
 /androidfioserializationprovider/.externalNativeBuild/cmake/debug/x86/CMakeFiles/feature_tests.bin

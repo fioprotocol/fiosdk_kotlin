@@ -3,9 +3,9 @@ package fiofoundation.io.coinomifioserializationprovider
 
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.models.serializationprovider.AbiFIOSerializationObject
+import fiofoundation.io.fiosdk.errors.serializationprovider.*
 
 import java.nio.ByteBuffer
-import fiofoundation.io.fiosdk.errors.serializationprovider.*
 
 class AbiFIOSerializationProvider: ISerializationProvider {
 
@@ -23,13 +23,6 @@ class AbiFIOSerializationProvider: ISerializationProvider {
 
         private val NULL_CONTEXT_ERR_MSG = "Null context!  Has destroyContext() already been called?"
         private val CANNOT_CREATE_CONTEXT_ERR_MSG = "Could not create abieos context."
-
-//        init {
-//            val libPath = System.getProperty("java.library.path")
-//            println("java.library.path=" + libPath!!)
-//
-//            System.loadLibrary("abieos-lib")
-//        }
     }
 
     external fun stringFromAbiEos():String
