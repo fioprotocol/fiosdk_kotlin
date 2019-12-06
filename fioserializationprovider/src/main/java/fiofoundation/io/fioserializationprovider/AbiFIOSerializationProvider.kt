@@ -1,4 +1,4 @@
-package fiofoundation.io.coinomifioserializationprovider
+package fiofoundation.io.fioserializationprovider
 
 
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider

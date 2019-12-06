@@ -5,14 +5,14 @@ Before building the app for the first time, ensure the following is installed:
 CMake 3.4.1
 XCode 11.0 or higher
 
-# Building the c++ for the Serialization Provider
+# Building the c++ for ios
 
-    cd src/main/cpp
+    cd src/main/ios-cpp
     sh build.sh
 
 # Resulting files
 
-The build.sh script builds the "libabieos-lib.a" file located at src/main/cpp/target/binaries.
+The build.sh script builds the "libabieos-lib.a" file located at src/main/ios-cpp/target/binaries.
 There is a "libabieos-lib.a" for each supported platform.  The "libabieos-lib.a" in the root of
 the "binaries" folder supports all platforms.
 

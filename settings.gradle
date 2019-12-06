@@ -1,2 +1,2 @@
-include ':app', ':fiosdk', ':androidfioserializationprovider', ':coinomifioserializationprovider'
+include ':app', ':fiosdk', ':androidfioserializationprovider', ':fioserializationprovider'
 
