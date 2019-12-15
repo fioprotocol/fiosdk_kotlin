@@ -3,15 +3,12 @@ package fiofoundation.io.androidfioserializationprovider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.models.serializationprovider.AbiFIOSerializationObject
 
-import android.util.Log
-
 import java.nio.ByteBuffer
 import fiofoundation.io.fiosdk.errors.serializationprovider.*
 
 class AbiFIOSerializationProvider: ISerializationProvider {
 
     private var context: ByteBuffer? = null
-    private val TAG = "SerializationProvider"
 
     init
     {
@@ -351,7 +348,6 @@ class AbiFIOSerializationProvider: ISerializationProvider {
         }
         else
         {
-            Log.e(TAG, "Error, no json in map for: " + abi)
             abiString = ""
         }
 

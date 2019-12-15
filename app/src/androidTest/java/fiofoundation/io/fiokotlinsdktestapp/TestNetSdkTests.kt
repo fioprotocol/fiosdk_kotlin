@@ -1,20 +1,14 @@
 package fiofoundation.io.fiokotlinsdktestapp
 
 import android.support.test.runner.AndroidJUnit4
-import android.util.Log
 import fiofoundation.io.fiosdk.FIOSDK
 import fiofoundation.io.fiosdk.enums.FioDomainVisiblity
 import fiofoundation.io.fiosdk.errors.FIOError
-import fiofoundation.io.fiosdk.errors.fionetworkprovider.GetFIONamesError
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
-import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
 import fiofoundation.io.androidfioserializationprovider.*
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
-import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
-import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
-import org.bitcoinj.crypto.MnemonicCode
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,7 +17,6 @@ import org.junit.Assert.*
 import java.lang.AssertionError
 import java.lang.Exception
 import java.math.BigInteger
-import java.security.SecureRandom
 
 @RunWith(AndroidJUnit4::class)
 class TestNetSdkTests {

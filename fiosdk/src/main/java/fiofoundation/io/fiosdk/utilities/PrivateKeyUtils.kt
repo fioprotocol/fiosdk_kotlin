@@ -1,6 +1,5 @@
 package fiofoundation.io.fiosdk.utilities
 
-import fiofoundation.io.fiosdk.enums.AlgorithmEmployed
 import fiofoundation.io.fiosdk.formatters.FIOFormatter
 import fiofoundation.io.fiosdk.models.PEMProcessor
 import org.bitcoinj.core.Base58

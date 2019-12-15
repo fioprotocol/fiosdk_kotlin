@@ -1,6 +1,5 @@
 package fiofoundation.io.androidfioserializationprovider
 
-import android.util.Log
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -14,7 +13,6 @@ object JsonUtils {
             return json.toString()
         }
         catch (ex: JSONException) {
-            Log.e("JsonUtils", "Error converting map to JSON.", ex)
             return null
         }
 
