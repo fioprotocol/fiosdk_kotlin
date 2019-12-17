@@ -9,6 +9,7 @@ import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
+import fiofoundation.io.fiosdk.toMultiLevelAddress
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
 import org.bitcoinj.crypto.MnemonicCode
 import org.junit.Assert
