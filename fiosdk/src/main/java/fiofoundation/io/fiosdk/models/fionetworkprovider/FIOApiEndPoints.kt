@@ -18,9 +18,10 @@ object FIOApiEndPoints {
     const val get_required_keys = "get_required_keys"
     const val get_pending_fio_requests = "get_pending_fio_requests"
     const val get_sent_fio_requests = "get_sent_fio_requests"
+    const val get_obt_data = "get_obt_data"
     const val new_funds_request = "new_funds_request"
     const val reject_funds_request = "reject_funds_request"
-    const val record_send = "record_send"
+    const val record_obt_data = "record_obt_data"
     const val register_fio_name_behalf_of_user = "register_fio_name"
     const val add_public_address = "add_pub_address"
     const val set_domain_visibility = "set_fio_domain_public"
@@ -29,7 +30,7 @@ object FIOApiEndPoints {
         listOf(register_fio_domain, register_fio_address, transfer_tokens_pub_key)
 
     enum class EndPointsWithFees(val endpoint: String) {
-        RecordSend(record_send),
+        RecordObtData(record_obt_data),
         RegisterFioDomain(register_fio_domain),
         RegisterFioAddress(register_fio_address),
         RenewFioDomain(renew_fio_domain),

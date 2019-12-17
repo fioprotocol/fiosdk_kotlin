@@ -10,17 +10,17 @@ import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.PushTransactionRequest
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.PushTransactionResponse
 
-class RecordSendTrxProcessor(serializationProvider: ISerializationProvider,
-                                  fioNetworkProvider: IFIONetworkProvider,
-                                  abiProvider: IABIProvider,
-                                  signatureProvider: ISignatureProvider
+class RecordObtDataTrxProcessor(serializationProvider: ISerializationProvider,
+                                fioNetworkProvider: IFIONetworkProvider,
+                                abiProvider: IABIProvider,
+                                signatureProvider: ISignatureProvider
 ) : TransactionProcessor(serializationProvider,fioNetworkProvider,abiProvider,signatureProvider)
 {
     @Throws(TransactionPushTransactionError::class)
     override fun pushTransaction(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse {
         try
         {
-            return fioNetworkProvider.recordSend(pushTransactionRequest)
+            return fioNetworkProvider.recordObtData(pushTransactionRequest)
         }
         catch (pushTransactionError: PushTransactionError)
         {

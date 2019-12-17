@@ -34,8 +34,8 @@ interface ISerializationProvider {
     fun deserializeNewFundsContent(hex: String): String
 
     @Throws(SerializeTransactionError::class)
-    fun serializeRecordSendContent(json: String): String
+    fun serializeRecordObtDataContent(json: String): String
 
     @Throws(DeserializeTransactionError::class)
-    fun deserializeRecordSendContent(hex: String): String
+    fun deserializeRecordObtDataContent(hex: String): String
 }

@@ -329,15 +329,27 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
     }
 
     @Throws(PushTransactionError::class)
-    override fun recordSend(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    override fun recordObtData(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     {
         try
         {
-            val syncCall = this.networkProviderApi.recordSend(pushTransactionRequest)
+            val syncCall = this.networkProviderApi.recordObtData(pushTransactionRequest)
             return processCall(syncCall)
         }
         catch(e: FIONetworkProviderCallError){
             throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
+    @Throws(GetObtDataRequestError::class)
+    override fun getObtData(getObtDataRequest: GetObtDataRequest): GetObtDataResponse{
+        try
+        {
+            val syncCall = this.networkProviderApi.getObtData(getObtDataRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw GetObtDataRequestError("",e,e.responseError)
         }
     }
 

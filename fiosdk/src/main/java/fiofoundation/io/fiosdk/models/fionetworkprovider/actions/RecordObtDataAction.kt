@@ -5,23 +5,23 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.FIORequestData
 import java.math.BigInteger
 
-class RecordSendAction(payerFioAddress:String,
-                        payeeFioAddress: String,
-                        content: String,
-                        fioRequestId: BigInteger,
-                        maxFee: BigInteger,
-                        walletFioAddress: String,
-                        actorPublicKey: String) : IAction
+class RecordObtDataAction(payerFioAddress:String,
+                          payeeFioAddress: String,
+                          content: String,
+                          fioRequestId: BigInteger,
+                          maxFee: BigInteger,
+                          walletFioAddress: String,
+                          actorPublicKey: String) : IAction
 {
     override var account = "fio.reqobt"
-    override var name = "recordsend"
+    override var name = "recordobt"
     override var authorization = ArrayList<Authorization>()
     override var data = ""
 
     init
     {
         val auth = Authorization(actorPublicKey, "active")
-        var requestData = RecordSendData(
+        var requestData = RecordObtDataRequestData(
             payerFioAddress, payeeFioAddress, content, maxFee,fioRequestId,
             auth.actor, walletFioAddress)
 
@@ -29,7 +29,7 @@ class RecordSendAction(payerFioAddress:String,
         this.data = requestData.toJson()
     }
 
-    class RecordSendData(
+    class RecordObtDataRequestData(
         @field:SerializedName("payer_fio_address") var payerFioAddress:String,
         @field:SerializedName("payee_fio_address") var payeeFioAddress:String,
         @field:SerializedName("content") var content:String,

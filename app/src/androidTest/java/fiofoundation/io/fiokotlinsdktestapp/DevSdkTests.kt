@@ -8,7 +8,7 @@ import fiofoundation.io.fiosdk.enums.FioDomainVisiblity
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
-import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
+import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
 import org.bitcoinj.crypto.MnemonicCode
 import org.junit.Assert
@@ -22,8 +22,8 @@ import java.security.SecureRandom
 @RunWith(AndroidJUnit4::class)
 class DevSdkTests
 {
-    private val baseUrl = "http://dev3.fio.dev:8889/v1/"
-    private val baseMockUrl = "http://mock.dapix.io/mockd/DEV3/"
+    private val baseUrl = "http://dev2.fio.dev:8889/v1/"
+    private val baseMockUrl = "http://mock.dapix.io/mockd/DEV2/"
 
     private var alicePrivateKey = ""
     private var alicePublicKey = ""
@@ -416,12 +416,12 @@ class DevSdkTests
 
                     if(firstPendingRequest.requestContent!=null)
                     {
-                        var recordSendContent = RecordSendContent(this.bobPublicTokenAddress,
+                        var recordSendContent = RecordObtDataContent(this.bobPublicTokenAddress,
                             firstPendingRequest.requestContent!!.payeeTokenPublicAddress,
                             firstPendingRequest.requestContent!!.amount,
                             firstPendingRequest.requestContent!!.tokenCode,this.otherBlockChainId)
 
-                        val response = this.bobFioSdk!!.recordSend(firstPendingRequest.fioRequestId,firstPendingRequest.payerFioAddress
+                        val response = this.bobFioSdk!!.recordObtData(firstPendingRequest.fioRequestId,firstPendingRequest.payerFioAddress
                             ,firstPendingRequest.payeeFioAddress,this.bobPublicTokenAddress,recordSendContent.payeeTokenPublicAddress,
                             recordSendContent.amount.toDouble(),recordSendContent.tokenCode,"",
                             recordSendContent.obtId,this.defaultFee)

@@ -70,8 +70,12 @@ interface IFIONetworkProviderApi {
     @POST(FIOApiEndPoints.reject_funds_request)
     fun rejectNewFunds(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
     
-    @POST(FIOApiEndPoints.record_send)
-    fun recordSend(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
+    @POST(FIOApiEndPoints.record_obt_data)
+    fun recordObtData(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
+
+    @POST(FIOApiEndPoints.get_obt_data)
+    fun getObtData(@Body getObtDataRequest: GetObtDataRequest): Call<GetObtDataResponse>
+
 
     @POST(FIOApiEndPoints.add_public_address)
     fun addPublicAddress(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>

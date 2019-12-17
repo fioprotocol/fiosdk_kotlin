@@ -21,7 +21,7 @@ import fiofoundation.io.fiosdk.models.Validator
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIORequestContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
-import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordSendContent
+import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.*
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.*
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.*
@@ -978,16 +978,17 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      *
      * @throws [FIOError]
      */
-    fun recordSend(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
+    @ExperimentalUnsignedTypes
+    fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
                    payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
                    tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
     {
         val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
-        val recordSendContent = RecordSendContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
             tokenCode,obtId,status)
 
-        return this.recordSend(fioRequestId,payerFioAddress,payeeFioAddress,recordSendContent,maxFee,wfa)
+        return this.recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,wfa)
     }
 
     /**
@@ -1013,28 +1014,30 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      *
      * @throws [FIOError]
      */
-    fun recordSend(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
+    @ExperimentalUnsignedTypes
+    fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
                    payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
                    tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String="",
                    memo:String?=null, hash:String?=null, offlineUrl:String?=null): PushTransactionResponse
     {
         val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
-        val recordSendContent = RecordSendContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
             tokenCode,obtId,status,memo,hash,offlineUrl)
 
-        return this.recordSend(fioRequestId,payerFioAddress,payeeFioAddress,recordSendContent,maxFee,wfa)
+        return this.recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,wfa)
     }
 
-    fun recordSend(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
+    @ExperimentalUnsignedTypes
+    fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
                    payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
                    tokenCode:String, obtId:String, status:String="sent_to_blockchain",
                    maxFee:BigInteger): PushTransactionResponse
     {
-        val recordSendContent = RecordSendContent(payerTokenPublicAddress,
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,
             payeeTokenPublicAddress, amount.toString(),tokenCode,obtId,status)
 
-        return this.recordSend(fioRequestId, payerFioAddress, payeeFioAddress, recordSendContent, maxFee,"")
+        return this.recordObtData(fioRequestId, payerFioAddress, payeeFioAddress, recordObtDataContent, maxFee,"")
     }
 
     /**
@@ -1197,7 +1200,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param fioName
      *        if endPointName is RenewFioAddress, FIO Address incurring the fee and owned by signer.
      *        if endPointName is RenewFioDomain, FIO Domain incurring the fee and owned by signer.
-     *        if endPointName is RecordSend, Payee FIO Address incurring the fee and owned by signer.
+     *        if endPointName is RecordObtData, Payee FIO Address incurring the fee and owned by signer.
      * @param endPointName Name of API call end point, e.g. add_pub_address.
      * @return [GetFeeResponse]
      *
@@ -1283,20 +1286,20 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     }
 
     /**
-     * Compute and return fee amount for RecordSend
+     * Compute and return fee amount for recordObtData
      *
-     * @param payerFioAddress The FIO Address of the payer whose transaction is being recorded by the RecordSend call
+     * @param payerFioAddress The FIO Address of the payer whose transaction is being recorded by the recordObtData call
      * @return [GetFeeResponse]
      *
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun getFeeForRecordSend(payerFioAddress:String): GetFeeResponse
+    fun getFeeForRecordObtData(payerFioAddress:String): GetFeeResponse
     {
         try
         {
             if(payerFioAddress.isFioAddress()) {
-                val request = GetFeeRequest(FIOApiEndPoints.record_send, payerFioAddress)
+                val request = GetFeeRequest(FIOApiEndPoints.record_obt_data, payerFioAddress)
 
                 return this.networkProvider.getFee(request)
             }
@@ -1494,11 +1497,11 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun serializeAndEncryptRecordSendContent(recordSendContent: RecordSendContent, payerPublickey: String): String
+    private fun serializeAndEncryptRecordObtDataContent(recordObtDataContent: RecordObtDataContent, payerPublickey: String): String
     {
         try
         {
-            val serializedNewFundsContent = this.serializationProvider.serializeRecordSendContent(recordSendContent.toJson())
+            val serializedNewFundsContent = this.serializationProvider.serializeRecordObtDataContent(recordObtDataContent.toJson())
 
             val secretKey = CryptoUtils.generateSharedSecret(this.privateKey,payerPublickey)
 
@@ -1620,7 +1623,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param fioRequestId ID of funds request, if this Record Send transaction is in response to a previously received funds request.  Send empty if no FIO Request ID
      * @param payerFioAddress FIO Address of the payer. This address initiated payment.
      * @param payeeFioAddress FIO Address of the payee. This address is receiving payment.
-     * @param recordSendContent [RecordSendContent]
+     * @param recordObtDataContent [RecordObtDataContent]
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
      * @return [PushTransactionResponse]
      *
@@ -1628,11 +1631,11 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun recordSend(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
-                   recordSendContent: RecordSendContent,
-                   maxFee:BigInteger): PushTransactionResponse
+    private fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
+                           recordObtDataContent: RecordObtDataContent,
+                           maxFee:BigInteger): PushTransactionResponse
     {
-        return recordSend(fioRequestId,payerFioAddress,payeeFioAddress,recordSendContent,maxFee,"")
+        return recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,"")
     }
 
     /**
@@ -1643,7 +1646,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param fioRequestId ID of funds request, if this Record Send transaction is in response to a previously received funds request.  Send empty if no FIO Request ID
      * @param payerFioAddress FIO Address of the payer. This address initiated payment.
      * @param payeeFioAddress FIO Address of the payee. This address is receiving payment.
-     * @param recordSendContent [RecordSendContent]
+     * @param recordObtDataContent [RecordObtDataContent]
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
      * @param walletFioAddress FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
@@ -1652,11 +1655,11 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun recordSend(fioRequestId: BigInteger, payerFioAddress:String,
-                           payeeFioAddress:String, recordSendContent: RecordSendContent,
-                   maxFee:BigInteger, walletFioAddress:String): PushTransactionResponse
+    private fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String,
+                           payeeFioAddress:String, recordObtDataContent: RecordObtDataContent,
+                           maxFee:BigInteger, walletFioAddress:String): PushTransactionResponse
     {
-        var transactionProcessor = RecordSendTrxProcessor(
+        var transactionProcessor = RecordObtDataTrxProcessor(
             this.serializationProvider,
             this.networkProvider,
             this.abiProvider,
@@ -1667,19 +1670,19 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
         {
             val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
-            val validator = validateRecordSendRequest(fioRequestId,payerFioAddress,
-                payeeFioAddress,recordSendContent,wfa)
+            val validator = validateRecordObtDataRequest(fioRequestId,payerFioAddress,
+                payeeFioAddress,recordObtDataContent,wfa)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
             else
             {
-                if(recordSendContent.status == "")
-                    recordSendContent.status = "sent_to_blockchain"
+                if(recordObtDataContent.status == "")
+                    recordObtDataContent.status = "sent_to_blockchain"
 
-                val encryptedContent = serializeAndEncryptRecordSendContent(recordSendContent,this.publicKey)
+                val encryptedContent = serializeAndEncryptRecordObtDataContent(recordObtDataContent,this.publicKey)
 
-                var recordSendAction = RecordSendAction(
+                var recordObtDataAction = RecordObtDataAction(
                     payerFioAddress,
                     payeeFioAddress,
                     encryptedContent,
@@ -1690,8 +1693,8 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
                 )
 
 
-                var actionList = ArrayList<RecordSendAction>()
-                actionList.add(recordSendAction)
+                var actionList = ArrayList<RecordObtDataAction>()
+                actionList.add(recordObtDataAction)
 
                 @Suppress("UNCHECKED_CAST")
                 transactionProcessor.prepare(actionList as ArrayList<IAction>)
@@ -1885,14 +1888,14 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
         return Validator(isValid,if(!isValid) "Invalid Reject Funds Request" else "")
     }
 
-    private fun validateRecordSendRequest(fioRequestId: BigInteger, payerFioAddress:String,
-                                          payeeFioAddress:String, recordSendContent: RecordSendContent,
+    private fun validateRecordObtDataRequest(fioRequestId: BigInteger, payerFioAddress:String,
+                                          payeeFioAddress:String, recordObtDataContent: RecordObtDataContent,
                                           walletFioAddress:String): Validator
     {
         var isValid = fioRequestId > BigInteger.ZERO
 
         isValid = isValid && (payerFioAddress.isFioAddress() && payeeFioAddress.isFioAddress()
-                && recordSendContent.tokenCode.isTokenCode())
+                && recordObtDataContent.tokenCode.isTokenCode())
 
         if(walletFioAddress.isNotEmpty())
             isValid = isValid && walletFioAddress.isFioAddress()

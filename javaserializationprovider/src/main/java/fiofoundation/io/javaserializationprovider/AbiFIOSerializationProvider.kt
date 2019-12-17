@@ -290,7 +290,7 @@ class AbiFIOSerializationProvider: ISerializationProvider {
     }
 
     @Throws(SerializeTransactionError::class)
-    override fun serializeRecordSendContent(json:String): String
+    override fun serializeRecordObtDataContent(json:String): String
     {
         try {
             val abi:String = getAbiJsonString("fio.abi.json")
@@ -307,7 +307,7 @@ class AbiFIOSerializationProvider: ISerializationProvider {
     }
 
     @Throws(DeserializeTransactionError::class)
-    override fun deserializeRecordSendContent(hex:String):String  {
+    override fun deserializeRecordObtDataContent(hex:String):String  {
         try {
             val abi:String = getAbiJsonString("fio.abi.json")
             val serializationObject = AbiFIOSerializationObject(null, "", "record_send_content", abi)

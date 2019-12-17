@@ -15,7 +15,7 @@ import com.google.gson.annotations.SerializedName
  * @param hash
  * @param offlineUrl
  */
-class RecordSendContent(
+class RecordObtDataContent(
     @field:SerializedName("payer_public_address") var payerTokenPublicAddress:String,
     @field:SerializedName("payee_public_address") var payeeTokenPublicAddress:String,
     @field:SerializedName("amount") var amount:String,

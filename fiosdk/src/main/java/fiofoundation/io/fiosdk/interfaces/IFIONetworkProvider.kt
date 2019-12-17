@@ -28,7 +28,8 @@ interface IFIONetworkProvider {
     fun registerFioNameOnBehalfOfUser(request: RegisterFIONameForUserRequest): RegisterFIONameForUserResponse
     fun requestNewFunds(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun rejectNewFunds(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
-    fun recordSend(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun recordObtData(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun getObtData(getObtDataRequest: GetObtDataRequest): GetObtDataResponse
     fun addPublicAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun setFioDomainVisibility(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
 }
