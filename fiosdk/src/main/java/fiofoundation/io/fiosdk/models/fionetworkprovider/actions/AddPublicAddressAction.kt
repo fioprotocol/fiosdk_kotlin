@@ -1,13 +1,13 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider.actions
 
 import com.google.gson.annotations.SerializedName
+import fiofoundation.io.fiosdk.models.TokenPublicAddress
 import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.FIORequestData
 import java.math.BigInteger
 
 class AddPublicAddressAction(fioAddress: String,
-                             tokenCode: String,
-                               tokenPublicAddress: String,
+                               tokenPublicAddresses: List<TokenPublicAddress>,
                              maxFee: BigInteger,
                                walletFioAddress: String,
                                actorPublicKey: String) :
@@ -24,8 +24,7 @@ class AddPublicAddressAction(fioAddress: String,
         var requestData =
             FIOAddressRequestData(
                 fioAddress,
-                tokenCode,
-                tokenPublicAddress,
+                tokenPublicAddresses,
                 maxFee,
                 auth.actor,
                 walletFioAddress
@@ -36,8 +35,7 @@ class AddPublicAddressAction(fioAddress: String,
     }
 
     class FIOAddressRequestData(@field:SerializedName("fio_address") var fioAddress:String,
-                                @field:SerializedName("token_code") var tokenCode:String,
-                                @field:SerializedName("public_address") var tokenPublicAddress:String,
+                                @field:SerializedName("public_addresses") var tokenPublicAddresses:List<TokenPublicAddress>,
                                 @field:SerializedName("max_fee") var maxFee:BigInteger,
                                 @field:SerializedName("actor") var actor:String,
                                 @field:SerializedName("tpid") var walletFioAddress:String): FIORequestData()

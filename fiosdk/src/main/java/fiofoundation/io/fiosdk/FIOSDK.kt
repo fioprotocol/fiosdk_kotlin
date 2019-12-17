@@ -17,6 +17,7 @@ import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
 import fiofoundation.io.fiosdk.models.Constants
+import fiofoundation.io.fiosdk.models.TokenPublicAddress
 import fiofoundation.io.fiosdk.models.Validator
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIORequestContent
@@ -1352,8 +1353,70 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
             {
                 var addPublicAddressAction = AddPublicAddressAction(
                     fioAddress,
-                    tokenCode,
-                    tokenPublicAddress,
+                    listOf(TokenPublicAddress(tokenPublicAddress,tokenCode)),
+                    maxFee,
+                    wfa,
+                    this.publicKey
+                )
+
+                var actionList = ArrayList<AddPublicAddressAction>()
+                actionList.add(addPublicAddressAction)
+
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
+        }
+        catch(fioError:FIOError)
+        {
+            throw fioError
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun addPublicAddresses(fioAddress:String, tokenPublicAddresses:List<TokenPublicAddress>,
+                         maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
+    {
+        var transactionProcessor = AddPublicAddressTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+
+            val validator = validateAddPublicAddresses(fioAddress,tokenPublicAddresses,walletFioAddress)
+
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                var addPublicAddressAction = AddPublicAddressAction(
+                    fioAddress,
+                    tokenPublicAddresses,
                     maxFee,
                     wfa,
                     this.publicKey
@@ -1814,6 +1877,20 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
         if(walletFioAddress.isNotEmpty())
             isValid = isValid && walletFioAddress.isFioAddress()
+
+        return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")
+    }
+
+    private fun validateAddPublicAddresses(fioAddress:String,
+                                           tokenPublicAddresses:List<TokenPublicAddress>,
+                                           walletFioAddress:String=""): Validator
+    {
+        var isValid = true
+
+        for(address in tokenPublicAddresses)
+        {
+            isValid = isValid && this.validateAddPublicAddress(fioAddress,address.tokenCode,address.publicAddress,walletFioAddress).isValid
+        }
 
         return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")
     }

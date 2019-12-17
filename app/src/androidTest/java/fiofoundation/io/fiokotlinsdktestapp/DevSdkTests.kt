@@ -319,8 +319,6 @@ class DevSdkTests
         println("testFundsRequest: Test getSentFioRequests")
         try
         {
-
-
             var sentRequests = this.aliceFioSdk!!.getSentFioRequests()
 
             if(sentRequests.isNotEmpty())
@@ -399,7 +397,7 @@ class DevSdkTests
             throw AssertionError("Pending Requests Failed: " + generalException.message)
         }
 
-        println("testFundsRequest: Test recordSend")
+        println("testFundsRequest: Test recordObtData")
         try
         {
             val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,this.alicePublicKey)

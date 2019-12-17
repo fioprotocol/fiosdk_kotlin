@@ -1,7 +1,7 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider
 
 object FIOApiEndPoints {
-    const val get_public_address = "pub_address_lookup"
+    const val get_public_address = "get_pub_address"
     const val get_fio_names = "get_fio_names"
     const val availability_check = "avail_check"
     const val get_fio_balance = "get_fio_balance"
