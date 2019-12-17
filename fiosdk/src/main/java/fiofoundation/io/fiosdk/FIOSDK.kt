@@ -1544,6 +1544,51 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
         }
     }
 
+    @Throws(FIOError::class)
+    fun pushTransaction(action:Action): PushTransactionResponse
+    {
+        var transactionProcessor = TransactionProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+
+            var actionList = ArrayList<Action>()
+            actionList.add(action)
+
+            @Suppress("UNCHECKED_CAST")
+            transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+            transactionProcessor.sign()
+
+            return transactionProcessor.broadcast()
+        }
+        catch(fioError:FIOError)
+        {
+            throw fioError
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
     fun getMultiplier(): Int
     {
         return Constants.multiplier
@@ -1573,13 +1618,13 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun serializeAndEncryptRecordObtDataContent(recordObtDataContent: RecordObtDataContent, payerPublickey: String): String
+    private fun serializeAndEncryptRecordObtDataContent(recordObtDataContent: RecordObtDataContent, payeePublickey: String): String
     {
         try
         {
             val serializedNewFundsContent = this.serializationProvider.serializeRecordObtDataContent(recordObtDataContent.toJson())
 
-            val secretKey = CryptoUtils.generateSharedSecret(this.privateKey,payerPublickey)
+            val secretKey = CryptoUtils.generateSharedSecret(this.privateKey,payeePublickey)
 
             return CryptoUtils.encryptSharedMessage(serializedNewFundsContent,secretKey)
         }
@@ -1756,7 +1801,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
                 if(recordObtDataContent.status == "")
                     recordObtDataContent.status = "sent_to_blockchain"
 
-                val encryptedContent = serializeAndEncryptRecordObtDataContent(recordObtDataContent,this.publicKey)
+                val payeeKey = this.getPublicAddress(payeeFioAddress,"FIO").publicAddress
+
+                val encryptedContent = serializeAndEncryptRecordObtDataContent(recordObtDataContent,payeeKey)
 
                 var recordObtDataAction = RecordObtDataAction(
                     payerFioAddress,

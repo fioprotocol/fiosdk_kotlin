@@ -4,9 +4,7 @@ import com.google.gson.GsonBuilder
 import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization
 
 
-open class Action(account: String, name: String, data: String,
-                  requestDataJson: String, actorPublicKey: String,
-                  actorPermission:String="active"): IAction
+open class Action(account: String, name: String,authorization:Authorization,data:String): IAction
 {
     override var account = account
     override var name = name
@@ -15,11 +13,8 @@ open class Action(account: String, name: String, data: String,
 
 
     init {
-        val auth = Authorization(actorPublicKey, actorPermission)
 
-        this.authorization.add(auth)
-
-        this.data = requestDataJson
+        this.authorization.add(authorization)
     }
 
     fun toJson(): String {
