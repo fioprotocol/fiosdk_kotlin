@@ -363,6 +363,45 @@ class TestNetSdkTests {
 
         Thread.sleep(4000)
 
+        println("testFundsRequest: Test getObtData")
+        try {
+
+            val obtDataRecords = this.bobFioSdk!!.getObtData()
+
+            if(obtDataRecords.isNotEmpty())
+            {
+                assertTrue(
+                    "Bob does not have obt data recorded",
+                    obtDataRecords.isNotEmpty()
+                )
+
+                for (req in obtDataRecords)
+                {
+                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,req.payeeFioPublicKey)
+
+                    req.deserializeObtDataContent(sharedSecretKey,this.bobFioSdk!!.serializationProvider)
+
+                    if(req.obtDataContent!=null)
+                    {
+                        println("OBT Data: " + req.obtDataContent!!.toJson())
+
+                        assertTrue(
+                            "Obt Data NOT Valid",
+                            req.obtDataContent != null
+                        )
+                    }
+                }
+            }
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Pending Requests Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Pending Requests Failed: " + generalException.message)
+        }
+
         //Set up test for rejecting funds request
         println("testFundsRequest: Test requestNewFunds")
         try

@@ -19,10 +19,7 @@ import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
 import fiofoundation.io.fiosdk.models.Constants
 import fiofoundation.io.fiosdk.models.TokenPublicAddress
 import fiofoundation.io.fiosdk.models.Validator
-import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
-import fiofoundation.io.fiosdk.models.fionetworkprovider.FIORequestContent
-import fiofoundation.io.fiosdk.models.fionetworkprovider.FundsRequestContent
-import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
+import fiofoundation.io.fiosdk.models.fionetworkprovider.*
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.*
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.*
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.*
@@ -1042,6 +1039,22 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     }
 
     /**
+     * Polls for any Obt Data sent using public key associated with the FIO SDK instance.
+     *
+     * @param limit Number of records to return. If omitted, all records will be returned.
+     * @param offset First record from list to return. If omitted, 0 is assumed.
+     *
+     * @return [List<ObtDataRecord>]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getObtData(limit:Int?=null,offset:Int?=null): List<ObtDataRecord>
+    {
+        return this.getObtData(this.publicKey,limit,offset)
+    }
+
+    /**
      * Polls for any pending requests sent to public key associated with the FIO SDK instance.
      *
      * @param limit Number of request to return. If omitted, all requests will be returned.
@@ -1782,6 +1795,39 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
         catch(broadcastError: TransactionBroadCastError)
         {
             throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    @Throws(FIOError::class)
+    private fun getObtData(requesteeFioPublicKey:String,limit:Int?=null,offset:Int?=null): List<ObtDataRecord>
+    {
+        try
+        {
+            val request = GetObtDataRequest(requesteeFioPublicKey,limit,offset)
+            val response = this.networkProvider.getObtData(request)
+
+            for (item in response.records)
+            {
+                try
+                {
+                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.privateKey, item.payeeFioPublicKey)
+                    item.deserializeObtDataContent(sharedSecretKey,this.serializationProvider)
+                }
+                catch(deserializationError: DeserializeTransactionError)
+                {
+                    //eat this error.  We do not want this error to stop the process.
+                }
+            }
+
+            return response.records
+        }
+        catch(getObtDataRequestError: GetObtDataRequestError)
+        {
+            throw FIOError(getObtDataRequestError.message!!,getObtDataRequestError)
         }
         catch(e:Exception)
         {
