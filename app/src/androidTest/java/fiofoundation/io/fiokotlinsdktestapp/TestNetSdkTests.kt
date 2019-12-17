@@ -318,7 +318,7 @@ class TestNetSdkTests {
             throw AssertionError("Pending Requests Failed: " + generalException.message)
         }
 
-        println("testFundsRequest: Test recordSend")
+        println("testFundsRequest: Test recordObtData")
         try
         {
             val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,this.alicePublicKey)
