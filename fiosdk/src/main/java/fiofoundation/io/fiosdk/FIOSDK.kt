@@ -1029,7 +1029,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @ExperimentalUnsignedTypes
     fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
                    payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
-                   tokenCode:String, obtId:String, status:String="sent_to_blockchain",
+                   tokenCode:String, status:String="sent_to_blockchain",obtId:String,
                    maxFee:BigInteger): PushTransactionResponse
     {
         val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,
@@ -1039,7 +1039,39 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     }
 
     /**
-     * Polls for any Obt Data sent using public key associated with the FIO SDK instance.
+     *
+     * Records information on the FIO blockchain about a transaction that occurred on other blockchain, i.e. 1 BTC was sent on Bitcoin Blockchain, and both
+     * sender and receiver have FIO Addresses. OBT stands for Other Blockchain Transaction
+     *
+     * @param payerFioAddress FIO Address of the payer. This address initiated payment.
+     * @param payeeFioAddress FIO Address of the payee. This address is receiving payment.
+     * @param payerTokenPublicAddress Public address on other blockchain of user sending funds.
+     * @param payeeTokenPublicAddress Public address on other blockchain of user receiving funds.
+     * @param amount Amount sent.
+     * @param tokenCode Code of the token represented in Amount requested, i.e. BTC.
+     * @param obtId Other Blockchain Transaction ID (OBT ID), i.e Bitcoin transaction ID.
+     * @param status Status of this OBT. Allowed statuses are: sent_to_blockchain.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @ExperimentalUnsignedTypes
+    fun recordObtData(payerFioAddress:String, payeeFioAddress:String,
+                      payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
+                      tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
+    {
+        val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
+            tokenCode,obtId,status)
+
+        return this.recordObtData(BigInteger.ZERO,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,wfa)
+    }
+
+    /**
+     * Gets for any Obt Data sent using public key associated with the FIO SDK instance.
      *
      * @param limit Number of records to return. If omitted, all records will be returned.
      * @param offset First record from list to return. If omitted, 0 is assumed.
@@ -1052,6 +1084,40 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     fun getObtData(limit:Int?=null,offset:Int?=null): List<ObtDataRecord>
     {
         return this.getObtData(this.publicKey,limit,offset)
+    }
+
+    /**
+     * Gets Obt Data, for a specific token, sent using public key associated with the FIO SDK instance.
+     *
+     * @param tokenCode The token code of the token whose obt data is desired.
+     * @param limit Number of records to return. If omitted, all records will be returned.
+     * @param offset First record from list to return. If omitted, 0 is assumed.
+     *
+     * @return [List<ObtDataRecord>]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getObtDataByTokenCode(tokenCode:String,limit:Int?=null,offset:Int?=null): List<ObtDataRecord>
+    {
+        val obtData = this.getObtData(this.publicKey)
+
+        val tokenObtData = obtData.filter { obtRecord -> obtRecord.obtDataContent!!.tokenCode == tokenCode }
+
+        if(limit!=null && offset!=null)
+        {
+            if (tokenObtData.size <= limit || offset<=0 || offset>tokenObtData.size)
+                return tokenObtData
+
+            var toIndex = offset + (limit - 1)
+
+            if(toIndex<=tokenObtData.lastIndex)
+                return tokenObtData.subList(offset,toIndex)
+            else
+                return tokenObtData.subList(offset,tokenObtData.lastIndex)
+        }
+
+        return tokenObtData
     }
 
     /**
@@ -2062,7 +2128,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
                                           payeeFioAddress:String, recordObtDataContent: RecordObtDataContent,
                                           walletFioAddress:String): Validator
     {
-        var isValid = fioRequestId > BigInteger.ZERO
+        var isValid = fioRequestId >= BigInteger.ZERO
 
         isValid = isValid && (payerFioAddress.isFioAddress() && payeeFioAddress.isFioAddress()
                 && recordObtDataContent.tokenCode.isTokenCode())

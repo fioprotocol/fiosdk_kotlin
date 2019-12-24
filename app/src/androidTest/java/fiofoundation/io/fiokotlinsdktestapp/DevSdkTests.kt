@@ -313,8 +313,6 @@ class DevSdkTests
             throw AssertionError("Get Fee Call Failed for Alice: " + generalException.message)
         }
 
-
-
         println("testGenericActions: End Test for Generic Actions")
     }
 
@@ -455,8 +453,14 @@ class DevSdkTests
 
                         val response = this.bobFioSdk!!.recordObtData(firstPendingRequest.fioRequestId,firstPendingRequest.payerFioAddress
                             ,firstPendingRequest.payeeFioAddress,this.bobPublicTokenAddress,recordSendContent.payeeTokenPublicAddress,
-                            recordSendContent.amount.toDouble(),recordSendContent.tokenCode,recordSendContent.obtId,recordSendContent.status
+                            recordSendContent.amount.toDouble(),recordSendContent.tokenCode,recordSendContent.status,recordSendContent.obtId
                             ,this.defaultFee)
+
+                        println("testFundsRequest: Test recordObtData No RecordId")
+                        this.bobFioSdk!!.recordObtData(firstPendingRequest.payerFioAddress
+                            ,firstPendingRequest.payeeFioAddress,this.bobPublicTokenAddress,recordSendContent.payeeTokenPublicAddress,
+                            recordSendContent.amount.toDouble(),recordSendContent.tokenCode,recordSendContent.status,"987654321",
+                            this.defaultFee)
 
 
                         val actionTraceResponse = response.getActionTraceResponse()
@@ -515,6 +519,40 @@ class DevSdkTests
             throw AssertionError("Pending Requests Failed: " + generalException.message)
         }
 
+        println("testFundsRequest: Test getObtDataByTokenCode")
+        try {
+
+            val obtDataRecords = this.bobFioSdk!!.getObtDataByTokenCode("BTC")
+
+            if(obtDataRecords.isNotEmpty())
+            {
+                Assert.assertTrue(
+                    "Bob does not have obt data recorded",
+                    obtDataRecords.isNotEmpty()
+                )
+
+                for (req in obtDataRecords)
+                {
+                    if(req.obtDataContent!=null)
+                    {
+                        println("OBT Data: " + req.obtDataContent!!.toJson())
+
+                        Assert.assertTrue(
+                            "Obt Data NOT Valid",
+                            req.obtDataContent != null
+                        )
+                    }
+                }
+            }
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Pending Requests Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Pending Requests Failed: " + generalException.message)
+        }
 
         //Set up test for rejecting funds request
         println("testFundsRequest: Test requestNewFunds")
@@ -747,7 +785,11 @@ class DevSdkTests
         this.bobFioAddress = initialFioAddressForBob
 
         this.requestFaucetFunds("25")
+        Thread.sleep(4000)
+
         this.requestFaucetFunds("25")
+        Thread.sleep(4000)
+
         this.requestFaucetFunds("25")
 
         Log.i(this.logTag, "Wait for balance to really be available.")

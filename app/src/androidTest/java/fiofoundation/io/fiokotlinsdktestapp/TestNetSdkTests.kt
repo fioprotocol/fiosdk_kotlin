@@ -375,8 +375,14 @@ class TestNetSdkTests {
 
                         val response = this.bobFioSdk.recordObtData(firstPendingRequest.fioRequestId,firstPendingRequest.payerFioAddress
                             ,firstPendingRequest.payeeFioAddress,this.bobPublicTokenAddress,recordSendContent.payeeTokenPublicAddress,
-                            recordSendContent.amount.toDouble(),recordSendContent.tokenCode,"",
+                            recordSendContent.amount.toDouble(),recordSendContent.tokenCode,recordSendContent.status,
                             recordSendContent.obtId,this.defaultFee)
+
+                        println("testFundsRequest: Test recordObtData No RecordId")
+                        this.bobFioSdk!!.recordObtData(firstPendingRequest.payerFioAddress
+                            ,firstPendingRequest.payeeFioAddress,this.bobPublicTokenAddress,recordSendContent.payeeTokenPublicAddress,
+                            recordSendContent.amount.toDouble(),recordSendContent.tokenCode,recordSendContent.status,"987654321",
+                            this.defaultFee)
 
                         val actionTraceResponse = response.getActionTraceResponse()
 
@@ -415,6 +421,41 @@ class TestNetSdkTests {
                         println("OBT Data: " + req.obtDataContent!!.toJson())
 
                         assertTrue(
+                            "Obt Data NOT Valid",
+                            req.obtDataContent != null
+                        )
+                    }
+                }
+            }
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Pending Requests Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Pending Requests Failed: " + generalException.message)
+        }
+
+        println("testFundsRequest: Test getObtDataByTokenCode")
+        try {
+
+            val obtDataRecords = this.bobFioSdk!!.getObtDataByTokenCode("BTC")
+
+            if(obtDataRecords.isNotEmpty())
+            {
+                Assert.assertTrue(
+                    "Bob does not have obt data recorded",
+                    obtDataRecords.isNotEmpty()
+                )
+
+                for (req in obtDataRecords)
+                {
+                    if(req.obtDataContent!=null)
+                    {
+                        println("OBT Data: " + req.obtDataContent!!.toJson())
+
+                        Assert.assertTrue(
                             "Obt Data NOT Valid",
                             req.obtDataContent != null
                         )
