@@ -12,6 +12,7 @@ import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.Action
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIOAddressAction
+import fiofoundation.io.fiosdk.utilities.Utils
 import org.junit.Assert
 
 import org.junit.Test
@@ -131,13 +132,12 @@ class TestNetSdkTests {
         {
             var anotherfioAddress = this.generateTestingFioAddress()
 
-            val auth = Authorization(this.alicePublicKey, "active")
-            var addressRequestData = RegisterFIOAddressAction.FIOAddressRequestData(anotherfioAddress,this.alicePublicKey,this.defaultFee,auth.actor,"")
+            var addressRequestData = RegisterFIOAddressAction.FIOAddressRequestData(anotherfioAddress,this.alicePublicKey,this.defaultFee,
+                Utils.generateActor(this.alicePublicKey),"")
+
             var requestData = addressRequestData.toJson()
 
-            val action = Action("fio.address","regaddress",auth,requestData)
-
-            val response = this.aliceFioSdk!!.pushTransaction(action)
+            val response = this.aliceFioSdk!!.pushTransaction("fio.address","regaddress",requestData)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -268,7 +268,7 @@ class TestNetSdkTests {
         println("testFundsRequest: Test requestNewFunds")
         try
         {
-            val response = this.aliceFioSdk.requestNewFunds(this.bobFioAddress,
+            val response = this.aliceFioSdk.requestFunds(this.bobFioAddress,
                 this.aliceFioAddress,this.alicePublicTokenAddress,"2.0",this.alicePublicTokenCode,
                 this.defaultFee)
 
@@ -476,7 +476,7 @@ class TestNetSdkTests {
         println("testFundsRequest: Test requestNewFunds")
         try
         {
-            val response = this.aliceFioSdk.requestNewFunds(this.bobFioAddress,
+            val response = this.aliceFioSdk.requestFunds(this.bobFioAddress,
                 this.aliceFioAddress,this.alicePublicTokenAddress,"2.0",this.alicePublicTokenCode,
                 this.defaultFee)
 
@@ -660,6 +660,38 @@ class TestNetSdkTests {
 
         println("testTransferFioTokens: End Test for TransferFioTokens")
     }
+
+    @Test
+    fun testGeneralPushTransaction()
+    {
+        println("testGenericActions: Test generic Push Transaction")
+        try
+        {
+            var anotherfioAddress = this.generateTestingFioAddress()
+
+            var addressRequestData = RegisterFIOAddressAction.FIOAddressRequestData(anotherfioAddress,this.alicePublicKey,this.defaultFee,
+                Utils.generateActor(this.alicePublicKey),"")
+            var requestData = addressRequestData.toJson()
+
+            val response = this.aliceFioSdk!!.pushTransaction("fio.address","regaddress",requestData)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            Assert.assertTrue(
+                "Couldn't register $anotherfioAddress for Alice",
+                actionTraceResponse != null && actionTraceResponse.status == "OK"
+            )
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Generic Push Transaction for Alice Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Generic Push Transaction for Alice Failed: " + generalException.message)
+        }
+    }
+
 
     //Helper Methods
     private fun generateTestingFioDomain():String

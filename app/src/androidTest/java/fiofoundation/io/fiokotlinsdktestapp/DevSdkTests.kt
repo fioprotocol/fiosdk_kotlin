@@ -13,6 +13,7 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.Action
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIOAddressAction
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
+import fiofoundation.io.fiosdk.utilities.Utils
 import org.bitcoinj.crypto.MnemonicCode
 import org.junit.Assert
 import org.junit.Test
@@ -141,35 +142,6 @@ class DevSdkTests
         catch (generalException: Exception)
         {
             throw AssertionError("Register FioAddress for Alice Failed: " + generalException.message)
-        }
-
-        println("testGenericActions: Test generic Push Transaction")
-        try
-        {
-            var anotherfioAddress = this.generateTestingFioAddress()
-
-            val auth = Authorization(this.alicePublicKey, "active")
-            var addressRequestData = RegisterFIOAddressAction.FIOAddressRequestData(anotherfioAddress,this.alicePublicKey,this.defaultFee,auth.actor,"")
-            var requestData = addressRequestData.toJson()
-
-            val action = Action("fio.address","regaddress",auth,requestData)
-
-            val response = this.aliceFioSdk!!.pushTransaction(action)
-
-            val actionTraceResponse = response.getActionTraceResponse()
-
-            Assert.assertTrue(
-                "Couldn't register $anotherfioAddress for Alice",
-                actionTraceResponse != null && actionTraceResponse.status == "OK"
-            )
-        }
-        catch (e: FIOError)
-        {
-            throw AssertionError("Generic Push Transaction for Alice Failed: " + e.toJson())
-        }
-        catch (generalException: Exception)
-        {
-            throw AssertionError("Generic Push Transaction for Alice Failed: " + generalException.message)
         }
 
         println("testGenericActions: Test renewFioAddress")
@@ -326,7 +298,7 @@ class DevSdkTests
         println("testFundsRequest: Test requestNewFunds")
         try
         {
-            val response = this.aliceFioSdk!!.requestNewFunds(this.bobFioAddress,
+            val response = this.aliceFioSdk!!.requestFunds(this.bobFioAddress,
                 this.aliceFioAddress,this.alicePublicTokenAddress,"2.0",this.alicePublicTokenCode,
                 this.defaultFee)
 
@@ -558,7 +530,7 @@ class DevSdkTests
         println("testFundsRequest: Test requestNewFunds")
         try
         {
-            val response = this.aliceFioSdk!!.requestNewFunds(this.bobFioAddress,
+            val response = this.aliceFioSdk!!.requestFunds(this.bobFioAddress,
                 this.aliceFioAddress,this.alicePublicTokenAddress,"2.0",this.alicePublicTokenCode,
                 this.defaultFee)
 
@@ -767,6 +739,39 @@ class DevSdkTests
         println("testTransferFioTokens: End Test for TransferFioTokens")
     }
 
+    @Test
+    fun testGeneralPushTransaction()
+    {
+        this.setupTestVariables()
+
+        println("testGenericActions: Test generic Push Transaction")
+        try
+        {
+            var anotherfioAddress = this.generateTestingFioAddress()
+
+            var addressRequestData = RegisterFIOAddressAction.FIOAddressRequestData(anotherfioAddress,this.alicePublicKey,this.defaultFee,
+                Utils.generateActor(this.alicePublicKey),"")
+            var requestData = addressRequestData.toJson()
+
+            val response = this.aliceFioSdk!!.pushTransaction("fio.address","regaddress",requestData)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            Assert.assertTrue(
+                "Couldn't register $anotherfioAddress for Alice",
+                actionTraceResponse != null && actionTraceResponse.status == "OK"
+            )
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Generic Push Transaction for Alice Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Generic Push Transaction for Alice Failed: " + generalException.message)
+        }
+    }
+
     //Helper Methods
     private fun setupTestVariables()
     {
@@ -783,6 +788,9 @@ class DevSdkTests
 
         this.aliceFioAddress = initialFioAddressForAlice
         this.bobFioAddress = initialFioAddressForBob
+
+        println("Alice's Public Key: " + this.alicePublicKey)
+        println("Bob's Public Key: " + this.bobPublicKey)
 
         this.requestFaucetFunds("25")
         Thread.sleep(4000)
@@ -806,6 +814,8 @@ class DevSdkTests
         Log.i(this.logTag,"RegisterFioNameForUser: " + response.status)
 
         Assert.assertTrue(response.status == "OK")
+
+        println("Registered Address: " + fioAddress)
 
         Log.i(this.logTag,"Finish registerFioNameForUser")
     }
@@ -867,7 +877,7 @@ class DevSdkTests
         {
             Log.i(this.logTag, "Start requestFaucetFunds")
 
-            var response = this.aliceFioSdk!!.requestNewFunds("faucet:fio",
+            var response = this.aliceFioSdk!!.requestFunds("faucet:fio",
                 this.aliceFioAddress,this.alicePublicKey,requestAmount,"FIO",
                 this.defaultFee,"")
 

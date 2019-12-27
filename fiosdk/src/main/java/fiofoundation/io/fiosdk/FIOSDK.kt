@@ -829,7 +829,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    fun requestNewFunds(payerFioAddress:String, payeeFioAddress:String,
+    fun requestFunds(payerFioAddress:String, payeeFioAddress:String,
                         payeeTokenPublicAddress:String, amount:String, tokenCode:String,
                         maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
     {
@@ -859,7 +859,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    fun requestNewFunds(payerFioAddress:String, payeeFioAddress:String,
+    fun requestFunds(payerFioAddress:String, payeeFioAddress:String,
                         payeeTokenPublicAddress:String, amount:String, tokenCode:String,
                         memo: String?=null, hash: String?=null, offlineUrl:String?=null,
                         maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
@@ -867,6 +867,34 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
         val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
         val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount,tokenCode,memo,hash,offlineUrl)
+
+        return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,wfa)
+    }
+
+    /**
+     * Create a new funds request on the FIO chain.
+     *
+     * @param payerFioAddress FIO Address of the payer. This address will receive the request and will initiate payment.
+     * @param payeeFioAddress FIO Address of the payee. This address is sending the request and will receive payment.
+     * @param payeeTokenPublicAddress Payee's public address where they want funds sent.
+     * @param amount Amount requested.
+     * @param tokenCode Code of the token represented in amount requested.
+     * @param memo
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
+     * @param walletFioAddress (optional) FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun requestFunds(payerFioAddress:String, payeeFioAddress:String,
+                     payeeTokenPublicAddress:String, amount:String, tokenCode:String,
+                     memo: String, maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
+    {
+        val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+
+        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount,tokenCode,memo)
 
         return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,wfa)
     }
@@ -1610,8 +1638,18 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
         }
     }
 
+    /**
+     * Allows users to send their own content directly to FIO contracts
+     *
+     * @param account FIO account name
+     * @param name FIO contract name
+     * @param data JSON string of data to send
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
     @Throws(FIOError::class)
-    fun pushTransaction(action:Action): PushTransactionResponse
+    fun pushTransaction(account: String, name: String, data:String): PushTransactionResponse
     {
         var transactionProcessor = TransactionProcessor(
             this.serializationProvider,
@@ -1622,6 +1660,8 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
         try
         {
+            val auth = Authorization(this.publicKey, "active")
+            val action = Action(account,name,auth,data)
 
             var actionList = ArrayList<Action>()
             actionList.add(action)
