@@ -57,6 +57,10 @@ class TestNetSdkTests {
         val newFioDomain = this.generateTestingFioDomain()
         val newFioAddress = this.generateTestingFioAddress(newFioDomain)
 
+        val registerAddressFee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress).fee
+        val registerDomainFee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.EndPointsWithFees.RegisterFioDomain).fee
+
+
         println("testGenericActions: Test getFioBalance - Alice")
         try
         {
@@ -76,7 +80,7 @@ class TestNetSdkTests {
         println("testGenericActions: Test registerFioDomain")
         try
         {
-            val response = this.aliceFioSdk.registerFioDomain(newFioDomain, defaultFee)
+            val response = this.aliceFioSdk.registerFioDomain(newFioDomain, registerDomainFee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -112,7 +116,7 @@ class TestNetSdkTests {
         println("testGenericActions: Test registerFioAddress")
         try
         {
-            val response = this.aliceFioSdk.registerFioAddress(newFioAddress,defaultFee)
+            val response = this.aliceFioSdk.registerFioAddress(newFioAddress,registerAddressFee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -176,6 +180,8 @@ class TestNetSdkTests {
         println("testGenericActions: Test addPublicAddress")
         try
         {
+            val addPublicAddressFee = this.aliceFioSdk!!.getFeeForAddPublicAddress(newFioAddress).fee
+
             val response = this.aliceFioSdk.addPublicAddress(newFioAddress,this.alicePublicTokenCode,
                 this.alicePublicTokenAddress,defaultFee)
 
@@ -246,7 +252,7 @@ class TestNetSdkTests {
         {
             val response = this.aliceFioSdk.getFee(FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress)
 
-            assertTrue("Couldn't Get Fee for " + FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress.endpoint,response.fee>=0)
+            assertTrue("Couldn't Get Fee for " + FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress.endpoint,response.fee>=BigInteger.ZERO)
         }
         catch (e: FIOError)
         {

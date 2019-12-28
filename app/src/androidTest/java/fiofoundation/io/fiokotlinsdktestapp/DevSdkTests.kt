@@ -61,6 +61,9 @@ class DevSdkTests
         var newFioDomain = this.generateTestingFioDomain()
         var newFioAddress = this.generateTestingFioAddress(newFioDomain)
 
+        val registerAddressFee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress).fee
+        val registerDomainFee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.EndPointsWithFees.RegisterFioDomain).fee
+
         println("testGenericActions: Test getFioBalance - Alice")
         try
         {
@@ -70,6 +73,8 @@ class DevSdkTests
                 "Balance not Available for Alice.",
                 fioBalance != null && fioBalance >= BigInteger.ZERO
             )
+
+            Log.i(this.logTag, "Alice's balance: $fioBalance")
         }
         catch (e: FIOError)
         {
@@ -83,7 +88,7 @@ class DevSdkTests
         println("testGenericActions: Test registerFioDomain")
         try
         {
-            val response = this.aliceFioSdk!!.registerFioDomain(newFioDomain, defaultFee)
+            val response = this.aliceFioSdk!!.registerFioDomain(newFioDomain, registerDomainFee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -91,6 +96,8 @@ class DevSdkTests
                 "Couldn't register $newFioDomain for Alice",
                 actionTraceResponse != null && actionTraceResponse.status == "OK"
             )
+
+            Log.i(this.logTag, "Registered Fio Domain: ${actionTraceResponse != null && actionTraceResponse.status == "OK"}")
         }
         catch (e: FIOError)
         {
@@ -113,6 +120,8 @@ class DevSdkTests
                 "Visibility NOT set for $newFioDomain",
                 actionTraceResponse != null && actionTraceResponse.status == "OK"
             )
+
+            Log.i(this.logTag, "Set domain visibility: ${actionTraceResponse != null && actionTraceResponse.status == "OK"}")
         }
         catch (e: FIOError)
         {
@@ -126,7 +135,7 @@ class DevSdkTests
         println("testGenericActions: Test registerFioAddress")
         try
         {
-            val response = this.aliceFioSdk!!.registerFioAddress(newFioAddress,defaultFee)
+            val response = this.aliceFioSdk!!.registerFioAddress(newFioAddress,registerAddressFee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -134,6 +143,9 @@ class DevSdkTests
                 "Couldn't Register FioAddress $newFioAddress for Alice",
                 actionTraceResponse != null && actionTraceResponse.status == "OK"
             )
+
+            Log.i(this.logTag, "Registered FioAddress: ${actionTraceResponse != null && actionTraceResponse.status == "OK"}")
+
         }
         catch (e: FIOError)
         {
@@ -155,6 +167,8 @@ class DevSdkTests
                 "Couldn't Renew FioAddress $newFioAddress for Alice",
                 actionTraceResponse != null && actionTraceResponse.status == "OK"
             )
+
+            Log.i(this.logTag, "Renewed FioAddress: ${actionTraceResponse != null && actionTraceResponse.status == "OK"}")
         }
         catch (e: FIOError)
         {
@@ -168,8 +182,10 @@ class DevSdkTests
         println("testGenericActions: Test addPublicAddress")
         try
         {
+            val addPublicAddressFee = this.aliceFioSdk!!.getFeeForAddPublicAddress(newFioAddress).fee
+
             val response = this.aliceFioSdk!!.addPublicAddress(newFioAddress,this.alicePublicTokenCode,
-                this.alicePublicTokenAddress,defaultFee)
+                this.alicePublicTokenAddress,addPublicAddressFee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -177,6 +193,8 @@ class DevSdkTests
                 "Couldn't Add Public Address for Alice",
                 actionTraceResponse != null && actionTraceResponse.status == "OK"
             )
+
+            Log.i(this.logTag, "Added public address: ${actionTraceResponse != null && actionTraceResponse.status == "OK"}")
         }
         catch (e: FIOError)
         {
@@ -198,6 +216,8 @@ class DevSdkTests
                 "Couldn't Find Public Address for Alice",
                 !response.publicAddress.isNullOrEmpty()
             )
+
+            Log.i(this.logTag, "Retrieved public address: ${!response.publicAddress.isNullOrEmpty()}")
         }
         catch (e: FIOError)
         {
@@ -218,6 +238,8 @@ class DevSdkTests
                 "FioAddress, $testAddress, is NOT Available",
                 response != null && response.isAvailable
             )
+
+            Log.i(this.logTag, "Is Fio Address Available: ${response != null && response.isAvailable}")
         }
         catch (e: FIOError)
         {
@@ -237,6 +259,8 @@ class DevSdkTests
                 "FioAddress, $aliceFioAddress, IS Available (not supposed to be)",
                 response != null && !response.isAvailable
             )
+
+            Log.i(this.logTag, "Is Fio Address Available: ${response != null && response.isAvailable}")
         }
         catch (e: FIOError)
         {
@@ -256,6 +280,8 @@ class DevSdkTests
                 "Couldn't Get FioNames for Alice",
                 response.fioAddresses!!.isNotEmpty()
             )
+
+            Log.i(this.logTag, "Retrieved FioNames: ${response.fioAddresses!!.isNotEmpty()}")
         }
         catch (e: FIOError)
         {
@@ -273,7 +299,7 @@ class DevSdkTests
 
             Assert.assertTrue(
                 "Couldn't Get Fee for " + FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress.endpoint,
-                response.fee >= 0
+                response.fee >= BigInteger.ZERO
             )
         }
         catch (e: FIOError)
@@ -308,6 +334,8 @@ class DevSdkTests
                 "Alice Couldn't Request Funds from Bob: " + response.toJson(),
                 actionTraceResponse != null && actionTraceResponse.status == "requested"
             )
+
+            Log.i(this.logTag, "Requested funds: ${actionTraceResponse != null && actionTraceResponse.status == "requested"}")
         }
         catch (e: FIOError)
         {
@@ -331,6 +359,8 @@ class DevSdkTests
                     "Requests Sent by Alice are NOT Available",
                     sentRequests.isNotEmpty()
                 )
+
+                Log.i(this.logTag, "Retrieved Sent Fio Requests: ${sentRequests.isNotEmpty()}")
 
                 for (req in sentRequests)
                 {
@@ -378,6 +408,8 @@ class DevSdkTests
                     "Bob does not have requests from Alice that are pending",
                     pendingRequests.isNotEmpty()
                 )
+
+                Log.i(this.logTag, "Retrieved Pending Fio Requests: ${pendingRequests.isNotEmpty()}")
 
                 for (req in pendingRequests)
                 {

@@ -1341,7 +1341,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun getFeeForNewFundsRequest(): GetFeeResponse
+    fun getFeeForFundsRequest(): GetFeeResponse
     {
         try
         {
@@ -1365,23 +1365,54 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
     /**
      * Compute and return fee amount for Reject Funds Request
-     *
+     * @param payeeFioPublicKey The payee's FIO public key
      * @return [GetFeeResponse]
      *
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun getFeeForRejectFundsRequest(): GetFeeResponse
+    fun getFeeForRejectFundsRequest(payeeFioPublicKey:String): GetFeeResponse
     {
         try
         {
-            if(this.publicKey.isFioPublicKey()) {
-                val request = GetFeeRequest(FIOApiEndPoints.reject_funds_request, this.publicKey)
+            if(payeeFioPublicKey.isFioPublicKey()) {
+                val request = GetFeeRequest(FIOApiEndPoints.reject_funds_request, payeeFioPublicKey)
 
                 return this.networkProvider.getFee(request)
             }
             else
                 throw Exception("Invalid FIO Public Key")
+        }
+        catch(getFeeError: GetFeeError)
+        {
+            throw FIOError(getFeeError.message!!,getFeeError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Compute and return fee amount for mapping a fio address to a block chain public address
+
+     * @param fioAddress The FIO Address which will be mapped to public address.
+     * @return [GetFeeResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFeeForAddPublicAddress(fioAddress:String): GetFeeResponse
+    {
+        try
+        {
+            if(fioAddress.isFioAddress()) {
+                val request = GetFeeRequest(FIOApiEndPoints.add_public_address, fioAddress)
+
+                return this.networkProvider.getFee(request)
+            }
+            else
+                throw Exception("Invalid FIO Public Address")
         }
         catch(getFeeError: GetFeeError)
         {
