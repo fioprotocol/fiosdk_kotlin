@@ -84,5 +84,6 @@
     <orderEntry type="library" exported="" scope="TEST" name="Gradle: scrypt-1.4.0" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="Gradle: slf4j-api-1.7.25" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="Gradle: jcip-annotations-1.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: fiosdk.fiosdk-0.7.0" level="project" />
   </component>
 </module>
