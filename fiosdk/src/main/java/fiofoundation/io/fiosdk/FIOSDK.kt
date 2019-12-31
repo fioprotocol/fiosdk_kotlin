@@ -129,7 +129,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
                         networkBaseUrl:String): FIOSDK {
 
             val signatureProvider = SoftKeySignatureProvider()
-            signatureProvider.importKey(privateKey)
+
+            if(privateKey!="")
+                signatureProvider.importKey(privateKey)
 
             fioSdk = FIOSDK(
                 privateKey,
@@ -156,7 +158,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
                         networkBaseUrl:String): FIOSDK {
 
             val signatureProvider = SoftKeySignatureProvider()
-            signatureProvider.importKey(privateKey)
+
+            if(privateKey!="")
+                signatureProvider.importKey(privateKey)
 
             fioSdk = FIOSDK(
                 privateKey,
@@ -175,9 +179,6 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
          */
         fun getInstance(): FIOSDK
         {
-            if(this.fioSdk == null)
-                throw FIOError("The instance has not been previously initialized.")
-
             return fioSdk!!
         }
 
@@ -208,14 +209,19 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @throws [FIOError]
      * */
     @Throws(FIOError::class)
-    fun setPrivateKey(privateKey:String)
+    open fun setPrivateKey(privateKey:String)
     {
         this.privateKey = privateKey
 
         //If the signature provider is the default provider, then import the private key
         try {
             if(this.signatureProvider is SoftKeySignatureProvider)
-                (this.signatureProvider as SoftKeySignatureProvider).importKey(privateKey)
+            {
+                if(privateKey!="")
+                    (this.signatureProvider as SoftKeySignatureProvider).importKey(privateKey)
+                else
+                    this.signatureProvider = SoftKeySignatureProvider()
+            }
         }
         catch(e:ImportKeyError)
         {
