@@ -33,8 +33,8 @@ class TestNetSdkTests {
     private var bobPrivateKey = "5JRN3nAJfBnu53LupB8dCfaX9H1Trst9Txu2bMkURec4kmrHj9U"
     private var bobPublicKey = "FIO8h4Gk85PnQd24n3HmTANCD3dR5cKjoAYXNuj7uFvibYHG8jNEm"
 
-    private var aliceFioAddress = "alicetest1:fiotestnet"
-    private var bobFioAddress = "bobtest1:fiotestnet"
+    private var aliceFioAddress = "alicetest1@fiotestnet"
+    private var bobFioAddress = "bobtest1@fiotestnet"
 
     private var fioTestNetDomain = "fiotestnet"
     private var defaultFee = BigInteger("400000000000")
@@ -711,7 +711,7 @@ class TestNetSdkTests {
     {
         val now = System.currentTimeMillis().toString()
 
-        return "testing$now:$customDomain"
+        return "testing$now@$customDomain"
     }
 
     private fun createSdkInstance(privateKey: String, publicKey: String):FIOSDK
