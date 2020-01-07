@@ -46,7 +46,7 @@ fun String.isFioAddress(): Boolean
     {
         if(this.length in 3..64)
         {
-            val fioRegEx = Regex("^(?:(?=.{3,64}\$)[a-zA-Z0-9]{1}(?:(?!-{2,}))[a-zA-Z0-9-]*(?:(?<!-)):[a-zA-Z0-9]{1}(?:(?!-{2,}))[a-zA-Z0-9-]*(?:(?<!-))\$)",RegexOption.IGNORE_CASE)
+            val fioRegEx = Regex("^(?:(?=.{3,64}\$)[a-zA-Z0-9]{1}(?:(?!-{2,}))[a-zA-Z0-9-]*(?:(?<!-))@[a-zA-Z0-9]{1}(?:(?!-{2,}))[a-zA-Z0-9-]*(?:(?<!-))\$)",RegexOption.IGNORE_CASE)
             if(fioRegEx.matchEntire(this)!=null)
                 return true
         }

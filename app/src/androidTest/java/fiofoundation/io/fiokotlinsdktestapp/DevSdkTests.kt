@@ -863,7 +863,7 @@ class DevSdkTests
     {
         val now = System.currentTimeMillis().toString()
 
-        return "testing$now:$customDomain"
+        return "testing$now@$customDomain"
     }
 
     private fun createSdkInstance(privateKey: String, publicKey: String):FIOSDK
@@ -909,7 +909,7 @@ class DevSdkTests
         {
             Log.i(this.logTag, "Start requestFaucetFunds")
 
-            var response = this.aliceFioSdk!!.requestFunds("faucet:fio",
+            var response = this.aliceFioSdk!!.requestFunds("faucet@fio",
                 this.aliceFioAddress,this.alicePublicKey,requestAmount,"FIO",
                 this.defaultFee,"")
 
