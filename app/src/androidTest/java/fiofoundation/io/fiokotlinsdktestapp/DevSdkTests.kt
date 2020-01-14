@@ -41,7 +41,7 @@ class DevSdkTests
     private var bobFioAddress = ""
 
     private var fioTestDomain = "brd"
-    private var defaultFee = BigInteger("300000000000")
+    private var defaultFee = BigInteger("500000000000")
 
     private val alicePublicTokenAddress = "1PzCN3cBkTL72GPeJmpcueU4wQi9guiLa6"
     private val alicePublicTokenCode = "BTC"
@@ -52,6 +52,9 @@ class DevSdkTests
     private var bobFioSdk:FIOSDK? = null
 
     private var logTag = "FIOSDK-TEST"
+
+    private var useMockServerForAlice = false
+    private var useMockServerForBob = false
 
     @Test
     @ExperimentalUnsignedTypes
@@ -834,10 +837,18 @@ class DevSdkTests
         this.bobFioSdk = createSdkInstance(this.bobPrivateKey,this.bobPublicKey)
 
         val initialFioAddressForAlice = this.generateTestingFioAddress()
-        this.registerFioNameForUser(this.aliceFioSdk!!,initialFioAddressForAlice)
+
+        if(useMockServerForAlice)
+            this.registerFioNameForUser(this.aliceFioSdk!!,initialFioAddressForAlice)
+        else
+            this.aliceFioSdk!!.registerFioAddress(initialFioAddressForAlice,this.defaultFee)
 
         val initialFioAddressForBob = this.generateTestingFioAddress()
-        this.registerFioNameForUser(this.bobFioSdk!!,initialFioAddressForBob)
+
+        if(useMockServerForBob)
+            this.registerFioNameForUser(this.bobFioSdk!!,initialFioAddressForBob)
+        else
+            this.bobFioSdk!!.registerFioAddress(initialFioAddressForBob,this.defaultFee)
 
         this.aliceFioAddress = initialFioAddressForAlice
         this.bobFioAddress = initialFioAddressForBob
@@ -845,16 +856,20 @@ class DevSdkTests
         println("Alice's Public Key: " + this.alicePublicKey)
         println("Bob's Public Key: " + this.bobPublicKey)
 
-        this.requestFaucetFunds("25")
-        Thread.sleep(4000)
+        if(useMockServerForAlice || useMockServerForBob) {
+            this.requestFaucetFunds("25")
+            Thread.sleep(4000)
 
-        this.requestFaucetFunds("25")
-        Thread.sleep(4000)
+            this.requestFaucetFunds("25")
+            Thread.sleep(4000)
 
-        this.requestFaucetFunds("25")
+            this.requestFaucetFunds("25")
 
-        Log.i(this.logTag, "Wait for balance to really be available.")
-        Thread.sleep(60000)
+            Log.i(this.logTag, "Wait for balance to really be available.")
+            Thread.sleep(60000)
+        }
+
+
     }
 
     fun registerFioNameForUser(fioSdk:FIOSDK,fioAddress:String) {
@@ -884,7 +899,7 @@ class DevSdkTests
     {
         val now = System.currentTimeMillis().toString()
 
-        return "testing$now:$customDomain"
+        return "testing$now@$customDomain"
     }
 
     private fun createSdkInstance(privateKey: String, publicKey: String):FIOSDK
@@ -905,12 +920,20 @@ class DevSdkTests
 
         var mn = getRandomSeedWords().joinToString(" ")
 
-        alicePrivateKey = FIOSDK.createPrivateKey(mn)
+        if(this.alicePrivateKey == "") {
+            alicePrivateKey = FIOSDK.createPrivateKey(mn)
+            useMockServerForAlice = true
+        }
+
         alicePublicKey = FIOSDK.derivedPublicKey(alicePrivateKey)
 
         mn = getRandomSeedWords().joinToString(" ")
 
-        bobPrivateKey = FIOSDK.createPrivateKey(mn)
+        if(this.bobPrivateKey == "") {
+            bobPrivateKey = FIOSDK.createPrivateKey(mn)
+            useMockServerForBob = true
+        }
+
         bobPublicKey = FIOSDK.derivedPublicKey(bobPrivateKey)
     }
 
@@ -930,7 +953,7 @@ class DevSdkTests
         {
             Log.i(this.logTag, "Start requestFaucetFunds")
 
-            var response = this.aliceFioSdk!!.requestFunds("faucet:fio",
+            var response = this.aliceFioSdk!!.requestFunds("faucet@fio",
                 this.aliceFioAddress,this.alicePublicKey,requestAmount,"FIO",
                 this.defaultFee,"")
 

@@ -731,7 +731,7 @@ class TestNetSdkTests {
     {
         val now = System.currentTimeMillis().toString()
 
-        return "testing$now:$customDomain"
+        return "testing$now@$customDomain"
     }
 
     private fun createSdkInstance(privateKey: String, publicKey: String):FIOSDK
