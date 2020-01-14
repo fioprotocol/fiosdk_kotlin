@@ -33,6 +33,9 @@ class DevSdkTests
     private var alicePublicKey = ""
     private var bobPrivateKey = ""
     private var bobPublicKey = ""
+    private val testPrivateKey = "5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu"
+    private val testPublicKey = "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o"
+    private val testMnemonic = "valley alien library bread worry brother bundle hammer loyal barely dune brave"
 
     private var aliceFioAddress = ""
     private var bobFioAddress = ""
@@ -58,6 +61,24 @@ class DevSdkTests
     fun testGenericActions()
     {
         this.setupTestVariables()
+
+        println("testGenericActions: Key Generation Test")
+        val genericPrivateTestKey = FIOSDK.createPrivateKey(testMnemonic)
+        val genericPublicTestKey = FIOSDK.derivedPublicKey(genericPrivateTestKey)
+
+        println("Private key test pass: ${genericPrivateTestKey == testPrivateKey}" )
+        Log.i(this.logTag, "Private key test pass: ${genericPrivateTestKey == testPrivateKey}")
+        Assert.assertTrue(
+            "Private key does not match test private key",
+            genericPrivateTestKey == testPrivateKey
+        )
+
+        println("Public key test pass: ${genericPublicTestKey == testPublicKey}" )
+        Log.i(this.logTag, "Public key test pass: ${genericPublicTestKey == testPublicKey}")
+        Assert.assertTrue(
+            "Public key does not match test public key",
+            genericPublicTestKey == testPublicKey
+        )
 
         println("testGenericActions: Begin Test for Generic Actions")
 
