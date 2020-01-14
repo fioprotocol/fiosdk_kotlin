@@ -33,6 +33,10 @@ class TestNetSdkTests {
     private var bobPrivateKey = "5JRN3nAJfBnu53LupB8dCfaX9H1Trst9Txu2bMkURec4kmrHj9U"
     private var bobPublicKey = "FIO8h4Gk85PnQd24n3HmTANCD3dR5cKjoAYXNuj7uFvibYHG8jNEm"
 
+    private val testPrivateKey = "5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu"
+    private val testPublicKey = "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o"
+    private val testMnemonic = "valley alien library bread worry brother bundle hammer loyal barely dune brave"
+
     private var aliceFioAddress = "alicetest1:fiotestnet"
     private var bobFioAddress = "bobtest1:fiotestnet"
 
@@ -52,6 +56,22 @@ class TestNetSdkTests {
     @ExperimentalUnsignedTypes
     fun testGenericActions()
     {
+        println("testGenericActions: Key Generation Test")
+        val genericPrivateTestKey = FIOSDK.createPrivateKey(testMnemonic)
+        val genericPublicTestKey = FIOSDK.derivedPublicKey(genericPrivateTestKey)
+
+        println("Private key test pass: ${genericPrivateTestKey == testPrivateKey}" )
+        Assert.assertTrue(
+            "Private key does not match test private key",
+            genericPrivateTestKey == testPrivateKey
+        )
+
+        println("Public key test pass: ${genericPublicTestKey == testPublicKey}" )
+        Assert.assertTrue(
+            "Public key does not match test public key",
+            genericPublicTestKey == testPublicKey
+        )
+
         println("testGenericActions: Begin Test for Generic Actions")
 
         val newFioDomain = this.generateTestingFioDomain()
