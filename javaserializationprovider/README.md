@@ -1,6 +1,6 @@
 # Java FIO Serialization Provider
 
-    Be sure to set the Android SDK location in build.sh before running the build.
+    Be sure to set the Android SDK location and NDK VERSION in build.sh before running the build.
 
     cd src/main/cpp
     sh build.sh

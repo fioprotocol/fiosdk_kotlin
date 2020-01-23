@@ -28,17 +28,17 @@ class TestNetSdkTests {
 
     private val baseUrl = "https://testnet.fioprotocol.io:443/v1/"
 
-    private var alicePrivateKey = "5HpdzXwqQGdu2UCRgzqD1HPQEFQhAwbuWEfzt4bmC1MX8FvruvM"
-    private var alicePublicKey = "FIO5XhhneWkku7rCGfTedXHgfYQomhoQA5oQNXMumC5c2YNQSfraH"
-    private var bobPrivateKey = "5JRN3nAJfBnu53LupB8dCfaX9H1Trst9Txu2bMkURec4kmrHj9U"
-    private var bobPublicKey = "FIO8h4Gk85PnQd24n3HmTANCD3dR5cKjoAYXNuj7uFvibYHG8jNEm"
+    private var alicePrivateKey = ""
+    private var alicePublicKey = ""
+    private var bobPrivateKey = ""
+    private var bobPublicKey = ""
 
     private val testPrivateKey = "5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu"
     private val testPublicKey = "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o"
     private val testMnemonic = "valley alien library bread worry brother bundle hammer loyal barely dune brave"
 
-    private var aliceFioAddress = "alicetest1:fiotestnet"
-    private var bobFioAddress = "bobtest1:fiotestnet"
+    private var aliceFioAddress = "alicetest2@fiotestnet"
+    private var bobFioAddress = "bobtest3@fiotestnet"
 
     private var fioTestNetDomain = "fiotestnet"
     private var defaultFee = BigInteger("400000000000")
