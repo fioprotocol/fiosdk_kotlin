@@ -5,6 +5,7 @@ import fiofoundation.io.fiosdk.models.serializationprovider.AbiFIOSerializationO
 
 import java.nio.ByteBuffer
 import fiofoundation.io.fiosdk.errors.serializationprovider.*
+import org.bouncycastle.util.encoders.Base64
 
 class AbiFIOSerializationProvider: ISerializationProvider {
 

@@ -13,7 +13,9 @@ import org.bouncycastle.crypto.params.ECDomainParameters
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters
 import org.bouncycastle.crypto.params.ECPublicKeyParameters
 import org.bouncycastle.jce.ECNamedCurveTable
+import org.bouncycastle.util.encoders.Base64
 import java.lang.Exception
+
 
 import java.math.BigInteger
 
@@ -116,6 +118,79 @@ object CryptoUtils
 
             return decryptedMessage.toHexString()
         }
+    }
+
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun encryptSharedMessage(message: UByteArray, sharedKey: ByteArray, iv: ByteArray?=null,resultsEncoding: EncrytionResultsEncoding = EncrytionResultsEncoding.BASE64): String
+    {
+        try
+        {
+            val hashedSecretKey = HashUtils.sha512(sharedKey)
+
+            val encryptionKey = hashedSecretKey.copyOf(32)
+            val hmacKey = hashedSecretKey.copyOfRange(32,hashedSecretKey.size)
+            val encryptor = Cryptography(encryptionKey,iv)
+            val encryptedMessage = encryptor.encrypt(message)
+            val hmacContent = ByteArray(encryptor.iv!!.size + encryptedMessage.size)
+
+            encryptor.iv!!.copyInto(hmacContent)
+            encryptedMessage.copyInto(hmacContent,encryptor.iv!!.size)
+
+            val hmacData = Cryptography.createHmac(hmacContent,hmacKey)
+
+            val returnArray = ByteArray(hmacContent.size + hmacData.size)
+
+            hmacContent.copyInto(returnArray)
+            hmacData.copyInto(returnArray,hmacContent.size)
+
+            if(resultsEncoding == EncrytionResultsEncoding.BASE64)
+                return Base64.toBase64String(returnArray)
+            else
+                return returnArray.toHexString()
+        }
+        catch (e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    @Throws(FIOError::class)
+    fun decryptSharedMessage(encryptedMessageString: String, sharedKey: ByteArray,messageEncoding: EncrytionResultsEncoding = EncrytionResultsEncoding.BASE64): ByteArray
+    {
+        val hashedSecretKey = HashUtils.sha512(sharedKey)
+
+        val decryptionKey = hashedSecretKey.copyOf(32)
+        val hmacKey = hashedSecretKey.copyOfRange(32,hashedSecretKey.size)
+
+        var messageBytes:ByteArray? = null
+
+        if(messageEncoding == EncrytionResultsEncoding.BASE64)
+            messageBytes = Base64.decode(encryptedMessageString)
+        else
+            messageBytes = encryptedMessageString.hexStringToByteArray()
+
+        val hmacContent = messageBytes!!.copyOfRange(0,messageBytes.size-32)
+        val messageHmacData = messageBytes!!.copyOfRange(hmacContent.size,messageBytes.size)
+
+        val iv = hmacContent.copyOf(16)
+        val encryptedMessage = hmacContent.copyOfRange(iv.size,hmacContent.size)
+
+        val hmacData = Cryptography.createHmac(hmacContent,hmacKey)
+        if(hmacData.equals(messageHmacData))
+            throw FIOError("Hmac does not match.")
+        else
+        {
+            val decrypter = Cryptography(decryptionKey, iv)
+            val decryptedMessage = decrypter.decrypt(encryptedMessage)
+
+            return decryptedMessage
+        }
+    }
+
+    enum class EncrytionResultsEncoding
+    {
+        BASE64, HEX
     }
 
 }

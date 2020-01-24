@@ -50,11 +50,16 @@ class DevSdkTests
 
     private var aliceFioSdk:FIOSDK? = null
     private var bobFioSdk:FIOSDK? = null
+    private var whaleFioSdk:FIOSDK? = null
 
     private var logTag = "FIOSDK-TEST"
 
     private var useMockServerForAlice = false
     private var useMockServerForBob = false
+
+    private var whalePrivateKey = "5KF2B21xT5pE5G3LNA6LKJc6AP2pAd2EnfpAUrJH12SFV8NtvCD"
+    private var whalePublicKey = "FIO6zwqqzHQcqCc2MB4jpp1F73MXpisEQe2SDghQFSGQKoAPjvQ3H"
+    private var useWhaleFunds = false
 
     @Test
     @ExperimentalUnsignedTypes
@@ -838,6 +843,16 @@ class DevSdkTests
 
         val initialFioAddressForAlice = this.generateTestingFioAddress()
 
+        if(this.useWhaleFunds)
+        {
+            this.whaleFioSdk = createSdkInstance(this.whalePrivateKey,this.whalePublicKey)
+            this.whaleFioSdk!!.transferTokens(this.alicePublicKey,BigInteger("2500000000000"),this.defaultFee)
+            this.whaleFioSdk!!.transferTokens(this.bobPublicKey,BigInteger("2500000000000"),this.defaultFee)
+
+            Log.i(this.logTag, "Wait for balance to really be available.")
+            Thread.sleep(60000)
+        }
+
         if(useMockServerForAlice)
             this.registerFioNameForUser(this.aliceFioSdk!!,initialFioAddressForAlice)
         else
@@ -922,7 +937,11 @@ class DevSdkTests
 
         if(this.alicePrivateKey == "") {
             alicePrivateKey = FIOSDK.createPrivateKey(mn)
-            useMockServerForAlice = true
+
+            if(this.whalePrivateKey == "" || this.whalePublicKey == "")
+                useMockServerForAlice = true
+            else
+                this.useWhaleFunds = true
         }
 
         alicePublicKey = FIOSDK.derivedPublicKey(alicePrivateKey)
@@ -931,7 +950,11 @@ class DevSdkTests
 
         if(this.bobPrivateKey == "") {
             bobPrivateKey = FIOSDK.createPrivateKey(mn)
-            useMockServerForBob = true
+
+            if(this.whalePrivateKey == "" || this.whalePublicKey == "")
+                useMockServerForBob = true
+            else
+                this.useWhaleFunds = true
         }
 
         bobPublicKey = FIOSDK.derivedPublicKey(bobPrivateKey)
@@ -953,7 +976,7 @@ class DevSdkTests
         {
             Log.i(this.logTag, "Start requestFaucetFunds")
 
-            var response = this.aliceFioSdk!!.requestFunds("faucet@fio",
+            var response = this.aliceFioSdk!!.requestFunds("fio@faucet",
                 this.aliceFioAddress,this.alicePublicKey,requestAmount,"FIO",
                 this.defaultFee,"")
 

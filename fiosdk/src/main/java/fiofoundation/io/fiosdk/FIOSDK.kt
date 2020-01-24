@@ -24,6 +24,7 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.*
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.*
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.*
 import fiofoundation.io.fiosdk.session.processors.*
+import fiofoundation.io.fiosdk.utilities.CompressionUtils
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
 import fiofoundation.io.fiosdk.utilities.PrivateKeyUtils
 
@@ -1749,8 +1750,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
             val secretKey = CryptoUtils.generateSharedSecret(this.privateKey,payerPublickey)
 
+            val compressed_data = CompressionUtils.compress(serializedNewFundsContent.hexStringToByteArray().asUByteArray())
 
-            return CryptoUtils.encryptSharedMessage(serializedNewFundsContent,secretKey)
+            return CryptoUtils.encryptSharedMessage(compressed_data!!,secretKey)
         }
         catch(serializeError: SerializeTransactionError)
         {

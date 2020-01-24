@@ -4,6 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
+import fiofoundation.io.fiosdk.toHexString
+import fiofoundation.io.fiosdk.utilities.CompressionUtils
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
 import java.lang.Error
 import java.lang.Exception
@@ -24,8 +26,10 @@ open class FIORequestContent {
     fun deserializeRequestContent(sharedSecretKey: ByteArray, serializationProvider: ISerializationProvider):FundsRequestContent?
     {
         try {
-            val decryptedMessage = CryptoUtils.decryptSharedMessage(this.content,sharedSecretKey)
-            val deserializedMessage = serializationProvider.deserializeNewFundsContent(decryptedMessage)
+            val decryptedMessage = CryptoUtils.decryptSharedMessage(this.content,sharedSecretKey,CryptoUtils.EncrytionResultsEncoding.BASE64)
+            val decompressedMessage = CompressionUtils.decompress(decryptedMessage.toUByteArray())
+
+            val deserializedMessage = serializationProvider.deserializeNewFundsContent(decompressedMessage!!.toByteArray().toHexString())
 
             this.requestContent = Gson().fromJson(deserializedMessage, FundsRequestContent::class.java)
 
