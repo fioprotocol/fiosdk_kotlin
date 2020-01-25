@@ -78,6 +78,8 @@ extern "C" const char* abieos_get_bin_data(abieos_context* context) {
     return context->result_bin.data();
 }
 
+
+
 extern "C" const char* abieos_get_bin_hex(abieos_context* context) {
     return handle_exceptions(context, nullptr, [&] {
         context->result_str.clear();

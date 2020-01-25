@@ -49,7 +49,8 @@ extern "C"
             jobject context_direct_byte_buffer) {
         abieos_context* context = getContext(env, context_direct_byte_buffer);
         const char *data = abieos_get_bin_data(context);
-        return (nullptr == data) ? nullptr : env->NewDirectByteBuffer((void *)data, sizeof(data));
+
+        return (nullptr == data) ? nullptr : env->NewDirectByteBuffer((void *)data, abieos_get_bin_size(context));
     }
 
     JNIEXPORT jstring JNICALL

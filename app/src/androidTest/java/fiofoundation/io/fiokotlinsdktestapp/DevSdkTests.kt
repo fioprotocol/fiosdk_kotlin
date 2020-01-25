@@ -354,8 +354,8 @@ class DevSdkTests
         try
         {
             val response = this.aliceFioSdk!!.requestFunds(this.bobFioAddress,
-                this.aliceFioAddress,this.alicePublicTokenAddress,"2.0",this.alicePublicTokenCode,
-                this.defaultFee)
+                this.aliceFioAddress,this.alicePublicTokenAddress,"2.0",
+                this.alicePublicTokenCode,"Hello TestNetHello TestNetHello TestNetHello TestNetHello TestNetHello TestNetHello TestNetHello TestNetHello TestNetHello TestNetHello TestNetHello TestNetHello TestNet", this.defaultFee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -870,6 +870,12 @@ class DevSdkTests
 
         println("Alice's Public Key: " + this.alicePublicKey)
         println("Bob's Public Key: " + this.bobPublicKey)
+
+        Log.i(this.logTag, "Alice's Public Key: " + this.alicePublicKey)
+        Log.i(this.logTag, "Bob's Public Key: " + this.bobPublicKey)
+
+        Log.i(this.logTag, "Alice's Private Key: " + this.alicePrivateKey)
+        Log.i(this.logTag, "Bob's Private Key: " + this.bobPrivateKey)
 
         if(useMockServerForAlice || useMockServerForBob) {
             this.requestFaucetFunds("25")

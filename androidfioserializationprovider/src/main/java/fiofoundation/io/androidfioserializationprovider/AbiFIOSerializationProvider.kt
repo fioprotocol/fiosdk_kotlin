@@ -1,11 +1,10 @@
 package fiofoundation.io.androidfioserializationprovider
 
+import fiofoundation.io.fiosdk.errors.serializationprovider.*
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.models.serializationprovider.AbiFIOSerializationObject
-
+import fiofoundation.io.fiosdk.toHexString
 import java.nio.ByteBuffer
-import fiofoundation.io.fiosdk.errors.serializationprovider.*
-import org.bouncycastle.util.encoders.Base64
 
 class AbiFIOSerializationProvider: ISerializationProvider {
 
@@ -135,6 +134,69 @@ class AbiFIOSerializationProvider: ISerializationProvider {
 
     }
 
+    @Throws(SerializeError::class)
+    fun serializev2(serializationObject: AbiFIOSerializationObject)
+    {
+
+        try {
+            refreshContext()
+
+            if (serializationObject.json.isEmpty()) {
+                throw SerializeError("No content to serialize.")
+            }
+
+            val contract64: Long = stringToName64(serializationObject.contract)
+
+            if (serializationObject.abi.isEmpty()) {
+                throw SerializeError(String.format("serialize -- No ABI provided for %s %s",
+                    if (serializationObject.contract == null)  serializationObject.contract else "",
+                    serializationObject.name))
+            }
+
+            val result: Boolean = setAbi(context!!, contract64, serializationObject.abi)
+
+            if (!result)
+            {
+                val err: String? = error()
+                val errMsg: String = String.format("Json to hex == Unable to set ABI. %s", if (err == null)  "" else err)
+                throw SerializeError(errMsg)
+            }
+
+            val typeStr:String? = if(serializationObject.type == null) getType(serializationObject.name, contract64) else serializationObject.type
+
+            if (typeStr == null)
+            {
+                val err:String? = error()
+                val errMsg:String = String.format("Unable to find type for action %s. %s", serializationObject.name, if(err == null) "" else err)
+
+                throw SerializeError(errMsg)
+            }
+
+            val jsonToBinResult:Boolean = jsonToBin(context!!, contract64, typeStr, serializationObject.json, true)
+
+            if (!jsonToBinResult)
+            {
+                val err:String? = error()
+                val errMsg:String = String.format("Unable to pack json to bin. %s", if(err == null) "" else err)
+
+                throw SerializeError(errMsg)
+            }
+
+            var binData:ByteBuffer = getBinData(context!!)
+
+
+
+            var byteData:ByteArray = ByteArray(binData.capacity())
+            binData.get(byteData)
+
+            serializationObject.bytes = byteData
+
+        }
+        catch (serializationProviderError:SerializationProviderError) {
+            throw SerializeError(serializationProviderError)
+        }
+
+    }
 
     @Throws(SerializeTransactionError::class)
     override fun serializeTransaction(json:String): String
@@ -267,7 +329,14 @@ class AbiFIOSerializationProvider: ISerializationProvider {
             val serializationObject = AbiFIOSerializationObject(null, "", "new_funds_content", abi)
 
             serializationObject.json = json
+            serializev2(serializationObject)
+
+            val test_data = serializationObject.bytes!!.toHexString()
+
             serialize(serializationObject)
+
+            val test_data_2 = serializationObject.hex
+
             return serializationObject.hex
         }
         catch (serializationProviderError:SerializationProviderError)
