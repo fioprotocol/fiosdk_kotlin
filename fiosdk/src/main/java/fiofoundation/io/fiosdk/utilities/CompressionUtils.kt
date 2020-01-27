@@ -7,9 +7,9 @@ import java.util.zip.Inflater
 
 object CompressionUtils
 {
-    fun compress(data: UByteArray): UByteArray? {
+    fun compress(data: ByteArray): ByteArray {
         val deflater = Deflater()
-        deflater.setInput(data.asByteArray())
+        deflater.setInput(data)
         val outputStream = ByteArrayOutputStream(data.size)
         deflater.finish()
         val buffer = ByteArray(1024)
@@ -20,12 +20,13 @@ object CompressionUtils
         outputStream.close()
         val output: ByteArray = outputStream.toByteArray()
         deflater.end()
-        return output.toUByteArray()
+
+        return output
     }
 
-    fun decompress(data: UByteArray): UByteArray? {
+    fun decompress(data: ByteArray): ByteArray {
         val inflater = Inflater()
-        inflater.setInput(data.asByteArray())
+        inflater.setInput(data)
         val outputStream = ByteArrayOutputStream(data.size)
         val buffer = ByteArray(1024)
         while (!inflater.finished()) {
@@ -35,6 +36,6 @@ object CompressionUtils
         outputStream.close()
         val output: ByteArray = outputStream.toByteArray()
         inflater.end()
-        return output.toUByteArray()
+        return output
     }
 }

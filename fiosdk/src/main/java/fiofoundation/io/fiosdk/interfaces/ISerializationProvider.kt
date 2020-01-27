@@ -28,14 +28,8 @@ interface ISerializationProvider {
     fun serializeAbi(json: String): String
 
     @Throws(SerializeTransactionError::class)
-    fun serializeNewFundsContent(json: String): String
+    fun serializeContent(json: String,contentType: String): ByteArray
 
     @Throws(DeserializeTransactionError::class)
-    fun deserializeNewFundsContent(hex: String): String
-
-    @Throws(SerializeTransactionError::class)
-    fun serializeRecordObtDataContent(json: String): String
-
-    @Throws(DeserializeTransactionError::class)
-    fun deserializeRecordObtDataContent(hex: String): String
+    fun deserializeContent(content: ByteArray,contentType: String): String
 }

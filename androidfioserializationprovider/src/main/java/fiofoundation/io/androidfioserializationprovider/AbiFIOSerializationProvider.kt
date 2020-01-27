@@ -135,7 +135,7 @@ class AbiFIOSerializationProvider: ISerializationProvider {
     }
 
     @Throws(SerializeError::class)
-    fun serializev2(serializationObject: AbiFIOSerializationObject)
+    fun serializeToBytes(serializationObject: AbiFIOSerializationObject)
     {
 
         try {
@@ -184,9 +184,7 @@ class AbiFIOSerializationProvider: ISerializationProvider {
 
             var binData:ByteBuffer = getBinData(context!!)
 
-
-
-            var byteData:ByteArray = ByteArray(binData.capacity())
+            var byteData = ByteArray(binData.capacity())
             binData.get(byteData)
 
             serializationObject.bytes = byteData
@@ -287,6 +285,61 @@ class AbiFIOSerializationProvider: ISerializationProvider {
         }
     }
 
+    @Throws(DeserializeError::class)
+    fun deserializeFromBytes(deserilizationObject:AbiFIOSerializationObject)
+    {
+        try {
+            refreshContext()
+
+            if (deserilizationObject.bytes == null) {
+                throw DeserializeError("No content to serialize.")
+            }
+
+            val contract64:Long = stringToName64(deserilizationObject.contract)
+
+            if (deserilizationObject.abi.isEmpty()) {
+                throw DeserializeError(String.format("deserialize -- No ABI provided for %s %s",
+                    if(deserilizationObject.contract == null) deserilizationObject.contract else "", deserilizationObject.name))
+            }
+
+            val result:Boolean = setAbi(context!!, contract64, deserilizationObject.abi)
+
+            if (!result)
+            {
+                val err:String? = error()
+                val errMsg:String = String.format("deserialize == Unable to set ABI. %s", if(err == null) "" else err)
+
+                throw DeserializeError(errMsg)
+            }
+
+            val typeStr:String? = if(deserilizationObject.type == null) getType(deserilizationObject.name, contract64) else deserilizationObject.type
+
+            if (typeStr == null)
+            {
+                val err:String? = error()
+                val errMsg:String = String.format("Unable to find type for action %s. %s", deserilizationObject.name, if(err == null) "" else err)
+
+                throw DeserializeError(errMsg)
+            }
+
+            val jsonStr:String? = hexToJson(context!!, contract64, typeStr, deserilizationObject.bytes!!.toHexString())
+
+            if (jsonStr == null)
+            {
+                val err:String? = error()
+                val errMsg:String = String.format("Unable to unpack hex to json. %s", if(err == null) "" else err)
+
+                throw DeserializeError(errMsg)
+            }
+
+            deserilizationObject.json = jsonStr
+        }
+        catch (serializationProviderError:SerializationProviderError)
+        {
+            throw DeserializeError(serializationProviderError)
+        }
+    }
+
     @Throws(DeserializeTransactionError::class)
     override fun deserializeTransaction(hex:String):String  {
         try {
@@ -322,22 +375,16 @@ class AbiFIOSerializationProvider: ISerializationProvider {
     }
 
     @Throws(SerializeTransactionError::class)
-    override fun serializeNewFundsContent(json:String): String
+    override fun serializeContent(json:String,contentType:String): ByteArray
     {
         try {
             val abi:String = getAbiJsonString("fio.abi.json")
-            val serializationObject = AbiFIOSerializationObject(null, "", "new_funds_content", abi)
+            val serializationObject = AbiFIOSerializationObject(null, "", contentType, abi)
 
             serializationObject.json = json
-            serializev2(serializationObject)
+            serializeToBytes(serializationObject)
 
-            val test_data = serializationObject.bytes!!.toHexString()
-
-            serialize(serializationObject)
-
-            val test_data_2 = serializationObject.hex
-
-            return serializationObject.hex
+            return serializationObject.bytes!!
         }
         catch (serializationProviderError:SerializationProviderError)
         {
@@ -346,47 +393,13 @@ class AbiFIOSerializationProvider: ISerializationProvider {
     }
 
     @Throws(DeserializeTransactionError::class)
-    override fun deserializeNewFundsContent(hex:String):String  {
+    override fun deserializeContent(content:ByteArray,contentType:String): String  {
         try {
             val abi:String = getAbiJsonString("fio.abi.json")
-            val serializationObject = AbiFIOSerializationObject(null, "", "new_funds_content", abi)
+            val serializationObject = AbiFIOSerializationObject(null, "", contentType, abi)
 
-            serializationObject.hex = hex
-            deserialize(serializationObject)
-
-            return serializationObject.json
-        }
-        catch (serializationProviderError:SerializationProviderError)
-        {
-            throw DeserializeTransactionError(serializationProviderError)
-        }
-    }
-
-    @Throws(SerializeTransactionError::class)
-    override fun serializeRecordObtDataContent(json:String): String
-    {
-        try {
-            val abi:String = getAbiJsonString("fio.abi.json")
-            val serializationObject = AbiFIOSerializationObject(null, "", "record_send_content", abi)
-
-            serializationObject.json = json
-            serialize(serializationObject)
-            return serializationObject.hex
-        }
-        catch (serializationProviderError:SerializationProviderError)
-        {
-            throw SerializeTransactionError(serializationProviderError)
-        }
-    }
-
-    @Throws(DeserializeTransactionError::class)
-    override fun deserializeRecordObtDataContent(hex:String):String  {
-        try {
-            val abi:String = getAbiJsonString("fio.abi.json")
-            val serializationObject = AbiFIOSerializationObject(null, "", "record_send_content", abi)
-
-            serializationObject.hex = hex
-            deserialize(serializationObject)
+            serializationObject.bytes = content
+            deserializeFromBytes(serializationObject)
 
             return serializationObject.json
         }

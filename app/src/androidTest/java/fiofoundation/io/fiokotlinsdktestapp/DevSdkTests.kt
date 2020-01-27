@@ -355,7 +355,7 @@ class DevSdkTests
         {
             val response = this.aliceFioSdk!!.requestFunds(this.bobFioAddress,
                 this.aliceFioAddress,this.alicePublicTokenAddress,"2.0",
-                this.alicePublicTokenCode,"Hello TestNetHello TestNetHello TestNetHello TestNetHello TestNetHello TestNetHello TestNetHello TestNetHello TestNetHello TestNetHello TestNetHello TestNetHello TestNet", this.defaultFee)
+                this.alicePublicTokenCode,"", this.defaultFee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -393,21 +393,17 @@ class DevSdkTests
 
                 for (req in sentRequests)
                 {
-                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.alicePrivateKey,req.payerFioPublicKey)
-
-                    req.deserializeRequestContent(sharedSecretKey,this.aliceFioSdk!!.serializationProvider)
-
-                    if(req.requestContent!=null)
+                    if(req.deserializedContent!=null)
                     {
                         Assert.assertTrue(
                             "Funds Request Sent by Alice is NOT Valid",
-                            req.requestContent != null
+                            req.deserializedContent != null
                         )
                     }
                 }
             }
 
-            sentRequests = this.aliceFioSdk!!.getSentFioRequests(2,1)
+            sentRequests = this.aliceFioSdk!!.getSentFioRequests(2,0)
             if(sentRequests.isNotEmpty())
             {
                 Assert.assertTrue(
@@ -442,13 +438,9 @@ class DevSdkTests
 
                 for (req in pendingRequests)
                 {
-                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,req.payeeFioPublicKey)
-
-                    req.deserializeRequestContent(sharedSecretKey,this.bobFioSdk!!.serializationProvider)
-
-                    if(req.requestContent!=null)
+                    if(req.deserializedContent!=null)
                     {
-                        Assert.assertTrue("Pending Requests are Valid", req.requestContent != null)
+                        Assert.assertTrue("Pending Requests are Valid", req.deserializedContent != null)
                     }
                 }
             }
@@ -465,8 +457,6 @@ class DevSdkTests
         println("testFundsRequest: Test recordObtData")
         try
         {
-            val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,this.alicePublicKey)
-
             val pendingRequests = this.bobFioSdk!!.getPendingFioRequests()
 
             if(pendingRequests.isNotEmpty())
@@ -475,14 +465,12 @@ class DevSdkTests
 
                 if(firstPendingRequest!=null)
                 {
-                    firstPendingRequest.deserializeRequestContent(sharedSecretKey,this.bobFioSdk!!.serializationProvider)
-
-                    if(firstPendingRequest.requestContent!=null)
+                    if(firstPendingRequest.deserializedContent!=null)
                     {
                         var recordSendContent = RecordObtDataContent(this.bobPublicTokenAddress,
-                            firstPendingRequest.requestContent!!.payeeTokenPublicAddress,
-                            firstPendingRequest.requestContent!!.amount,
-                            firstPendingRequest.requestContent!!.tokenCode,this.otherBlockChainId)
+                            firstPendingRequest.deserializedContent!!.payeeTokenPublicAddress,
+                            firstPendingRequest.deserializedContent!!.amount,
+                            firstPendingRequest.deserializedContent!!.tokenCode,this.otherBlockChainId)
 
                         val response = this.bobFioSdk!!.recordObtData(firstPendingRequest.fioRequestId,firstPendingRequest.payerFioAddress
                             ,firstPendingRequest.payeeFioAddress,this.bobPublicTokenAddress,recordSendContent.payeeTokenPublicAddress,
@@ -531,13 +519,13 @@ class DevSdkTests
 
                 for (req in obtDataRecords)
                 {
-                    if(req.obtDataContent!=null)
+                    if(req.deserializedContent!=null)
                     {
-                        println("OBT Data: " + req.obtDataContent!!.toJson())
+                        println("OBT Data: " + req.deserializedContent!!.toJson())
 
                         Assert.assertTrue(
                             "Obt Data NOT Valid",
-                            req.obtDataContent != null
+                            req.deserializedContent != null
                         )
                     }
                 }
@@ -566,13 +554,13 @@ class DevSdkTests
 
                 for (req in obtDataRecords)
                 {
-                    if(req.obtDataContent!=null)
+                    if(req.deserializedContent!=null)
                     {
-                        println("OBT Data: " + req.obtDataContent!!.toJson())
+                        println("OBT Data: " + req.deserializedContent!!.toJson())
 
                         Assert.assertTrue(
                             "Obt Data NOT Valid",
-                            req.obtDataContent != null
+                            req.deserializedContent != null
                         )
                     }
                 }
@@ -627,15 +615,11 @@ class DevSdkTests
 
                 for (req in sentRequests)
                 {
-                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.alicePrivateKey,req.payerFioPublicKey)
-
-                    req.deserializeRequestContent(sharedSecretKey,this.aliceFioSdk!!.serializationProvider)
-
-                    if(req.requestContent!=null)
+                    if(req.deserializedContent!=null)
                     {
                         Assert.assertTrue(
                             "Funds Request Sent by Alice is NOT Valid",
-                            req.requestContent != null
+                            req.deserializedContent != null
                         )
                     }
                 }
@@ -665,15 +649,11 @@ class DevSdkTests
 
                 for (req in pendingRequests)
                 {
-                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,req.payeeFioPublicKey)
-
-                    req.deserializeRequestContent(sharedSecretKey,this.bobFioSdk!!.serializationProvider)
-
-                    if(req.requestContent!=null)
+                    if(req.deserializedContent!=null)
                     {
                         Assert.assertTrue(
                             "Pending Requests are NOT Valid",
-                            req.requestContent != null
+                            req.deserializedContent != null
                         )
                     }
                 }
@@ -690,8 +670,6 @@ class DevSdkTests
 
         println("testFundsRequest: Test rejectFundsRequest")
         try {
-            val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,this.alicePublicKey)
-
             val pendingRequests = this.bobFioSdk!!.getPendingFioRequests()
 
             if(pendingRequests.isNotEmpty())
@@ -700,9 +678,7 @@ class DevSdkTests
 
                 if(firstPendingRequest!=null)
                 {
-                    firstPendingRequest.deserializeRequestContent(sharedSecretKey,this.bobFioSdk!!.serializationProvider)
-
-                    if(firstPendingRequest.requestContent!=null)
+                    if(firstPendingRequest.deserializedContent!=null)
                     {
                         val response = this.bobFioSdk!!.rejectFundsRequest(firstPendingRequest.fioRequestId,
                             this.defaultFee)

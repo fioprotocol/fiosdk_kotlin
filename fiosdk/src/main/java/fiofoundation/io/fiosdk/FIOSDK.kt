@@ -1137,7 +1137,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     {
         val obtData = this.getObtData(this.publicKey)
 
-        val tokenObtData = obtData.filter { obtRecord -> obtRecord.obtDataContent!!.tokenCode == tokenCode }
+        val tokenObtData = obtData.filter { obtRecord -> obtRecord.deserializedContent!!.tokenCode == tokenCode }
 
         if(limit!=null && offset!=null)
         {
@@ -1740,46 +1740,6 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
     //Private Methods
 
-    @Throws(FIOError::class)
-    @ExperimentalUnsignedTypes
-    private fun serializeAndEncryptNewFundsContent(fundsRequestContent: FundsRequestContent, payerPublickey: String): String
-    {
-        try
-        {
-            val serializedNewFundsContent = this.serializationProvider.serializeNewFundsContent(fundsRequestContent.toJson())
-
-            val secretKey = CryptoUtils.generateSharedSecret(this.privateKey,payerPublickey)
-
-            val compressed_data = CompressionUtils.compress(serializedNewFundsContent.hexStringToByteArray().asUByteArray())
-
-            return CryptoUtils.encryptSharedMessage(compressed_data!!,secretKey)
-        }
-        catch(serializeError: SerializeTransactionError)
-        {
-            throw FIOError(serializeError.message!!,serializeError)
-        }
-
-    }
-
-    @Throws(FIOError::class)
-    @ExperimentalUnsignedTypes
-    private fun serializeAndEncryptRecordObtDataContent(recordObtDataContent: RecordObtDataContent, payeePublickey: String): String
-    {
-        try
-        {
-            val serializedNewFundsContent = this.serializationProvider.serializeRecordObtDataContent(recordObtDataContent.toJson())
-
-            val secretKey = CryptoUtils.generateSharedSecret(this.privateKey,payeePublickey)
-
-            return CryptoUtils.encryptSharedMessage(serializedNewFundsContent,secretKey)
-        }
-        catch(serializeError: SerializeTransactionError)
-        {
-            throw FIOError(serializeError.message!!,serializeError)
-        }
-
-    }
-
     /**
      * Create a new funds request on the FIO chain.
      *
@@ -1817,7 +1777,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
             {
                 val payerPublicKey = this.getFioPublicAddress(payerFioAddress).publicAddress
 
-                val encryptedContent = serializeAndEncryptNewFundsContent(fundsRequestContent,payerPublicKey)
+                val encryptedContent = fundsRequestContent.serialize(this.privateKey,payerPublicKey,this.serializationProvider)
 
                 var newFundsRequestAction = NewFundsRequestAction(
                     payerFioAddress,
@@ -1948,7 +1908,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
                 val payeeKey = this.getPublicAddress(payeeFioAddress,"FIO").publicAddress
 
-                val encryptedContent = serializeAndEncryptRecordObtDataContent(recordObtDataContent,payeeKey)
+                val encryptedContent = recordObtDataContent.serialize(this.privateKey,payeeKey,this.serializationProvider)
 
                 var recordObtDataAction = RecordObtDataAction(
                     payerFioAddress,
@@ -2006,8 +1966,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
             {
                 try
                 {
-                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.privateKey, item.payeeFioPublicKey)
-                    item.deserializeObtDataContent(sharedSecretKey,this.serializationProvider)
+                    item.deserializedContent = RecordObtDataContent.deserialize(this.privateKey,item.payeeFioPublicKey,this.serializationProvider,item.content)
                 }
                 catch(deserializationError: DeserializeTransactionError)
                 {
@@ -2039,8 +1998,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
             {
                 try
                 {
-                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.privateKey, item.payeeFioPublicKey)
-                    item.deserializeRequestContent(sharedSecretKey,this.serializationProvider)
+                    item.deserializedContent = FundsRequestContent.deserialize(this.privateKey,item.payeeFioPublicKey,this.serializationProvider,item.content)
                 }
                 catch(deserializationError: DeserializeTransactionError)
                 {
@@ -2072,8 +2030,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
             {
                 try
                 {
-                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.privateKey, item.payerFioPublicKey)
-                    item.deserializeRequestContent(sharedSecretKey,this.serializationProvider)
+                    item.deserializedContent = FundsRequestContent.deserialize(this.privateKey,item.payerFioPublicKey,this.serializationProvider,item.content)
                 }
                 catch(deserializationError: DeserializeTransactionError)
                 {
