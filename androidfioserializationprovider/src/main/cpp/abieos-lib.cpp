@@ -13,12 +13,6 @@ extern "C"
         return (abieos_context *)env->GetDirectBufferAddress(context_buffer);
     }
 
-    JNIEXPORT jstring JNICALL
-    stringFromAbiEos(JNIEnv *env, jobject /* this */) {
-        std::string hello = "Hello from abieos-lib!!";
-        return env->NewStringUTF(hello.c_str());
-    }
-
     JNIEXPORT jobject JNICALL
     create(JNIEnv *env, jobject /* this */) {
         abieos_context* context = abieos_create();
@@ -37,20 +31,6 @@ extern "C"
     getError(JNIEnv *env, jobject /* this */, jobject context_direct_byte_buffer) {
         abieos_context* context = getContext(env, context_direct_byte_buffer);
         return env->NewStringUTF(abieos_get_error(context));
-    }
-
-    JNIEXPORT jint getBinSize(JNIEnv *env, jobject /* this */,
-            jobject context_direct_byte_buffer) {
-        abieos_context* context = getContext(env, context_direct_byte_buffer);
-        return abieos_get_bin_size(context);
-    }
-
-    JNIEXPORT jobject getBinData(JNIEnv *env, jobject /* this */,
-            jobject context_direct_byte_buffer) {
-        abieos_context* context = getContext(env, context_direct_byte_buffer);
-        const char *data = abieos_get_bin_data(context);
-
-        return (nullptr == data) ? nullptr : env->NewDirectByteBuffer((void *)data, abieos_get_bin_size(context));
     }
 
     JNIEXPORT jstring JNICALL
@@ -72,15 +52,6 @@ extern "C"
         if (nameStr != nullptr)
             env->ReleaseStringUTFChars(str, nameStr);
         return name;
-    }
-
-    JNIEXPORT jstring JNICALL
-    nameToString(JNIEnv *env, jobject /* this */,
-            jobject context_direct_byte_buffer,
-            jlong name) {
-        abieos_context* context = getContext(env, context_direct_byte_buffer);
-        const char *str = abieos_name_to_string(context, (uint64_t) name);
-        return (str == nullptr) ? nullptr : env->NewStringUTF(str);
     }
 
     JNIEXPORT jboolean JNICALL
@@ -156,15 +127,11 @@ extern "C"
     }
 
     static JNINativeMethod method_table[] = {
-            {"stringFromAbiEos", "()Ljava/lang/String;", (void *) stringFromAbiEos},
             {"create", "()Ljava/nio/ByteBuffer;", (void *) create},
             {"destroy", "(Ljava/nio/ByteBuffer;)V", (void *) destroy},
             {"getError", "(Ljava/nio/ByteBuffer;)Ljava/lang/String;", (void *) getError},
-            {"getBinSize", "(Ljava/nio/ByteBuffer;)I", (void *) getBinSize},
-            {"getBinData", "(Ljava/nio/ByteBuffer;)Ljava/nio/ByteBuffer;", (void *) getBinData},
             {"getBinHex", "(Ljava/nio/ByteBuffer;)Ljava/lang/String;", (void *) getBinHex},
             {"stringToName", "(Ljava/nio/ByteBuffer;Ljava/lang/String;)J", (void *) stringToName},
-            {"nameToString", "(Ljava/nio/ByteBuffer;J)Ljava/lang/String;", (void *) nameToString},
             {"setAbi", "(Ljava/nio/ByteBuffer;JLjava/lang/String;)Z", (void *) setAbi},
             {"jsonToBin", "(Ljava/nio/ByteBuffer;JLjava/lang/String;Ljava/lang/String;Z)Z", (void *) jsonToBin},
             {"hexToJson", "(Ljava/nio/ByteBuffer;JLjava/lang/String;Ljava/lang/String;)Ljava/lang/String;", (void *) hexToJson},

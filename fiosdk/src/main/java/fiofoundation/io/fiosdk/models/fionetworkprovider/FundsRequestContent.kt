@@ -3,9 +3,12 @@ package fiofoundation.io.fiosdk.models.fionetworkprovider
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
+import fiofoundation.io.fiosdk.hexStringToByteArray
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
+import fiofoundation.io.fiosdk.toHexString
 import fiofoundation.io.fiosdk.utilities.CompressionUtils
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
+import org.bouncycastle.util.encoders.Base64
 import java.lang.Exception
 
 class FundsRequestContent(
