@@ -7,12 +7,9 @@ import fiofoundation.io.fiosdk.FIOSDK
 import fiofoundation.io.fiosdk.enums.FioDomainVisiblity
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
-import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
-import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.Action
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIOAddressAction
-import fiofoundation.io.fiosdk.utilities.CryptoUtils
 import fiofoundation.io.fiosdk.utilities.Utils
 import org.bitcoinj.crypto.MnemonicCode
 import org.junit.Assert
@@ -68,11 +65,14 @@ class DevSdkTests
         this.setupTestVariables()
 
         println("testGenericActions: Key Generation Test")
+        Log.i(this.logTag,"testGenericActions: Key Generation Test")
+
         val genericPrivateTestKey = FIOSDK.createPrivateKey(testMnemonic)
         val genericPublicTestKey = FIOSDK.derivedPublicKey(genericPrivateTestKey)
 
         println("Private key test pass: ${genericPrivateTestKey == testPrivateKey}" )
-        Log.i(this.logTag, "Private key test pass: ${genericPrivateTestKey == testPrivateKey}")
+        Log.i(this.logTag,"Private key test pass: ${genericPrivateTestKey == testPrivateKey}" )
+
         Assert.assertTrue(
             "Private key does not match test private key",
             genericPrivateTestKey == testPrivateKey
@@ -80,12 +80,14 @@ class DevSdkTests
 
         println("Public key test pass: ${genericPublicTestKey == testPublicKey}" )
         Log.i(this.logTag, "Public key test pass: ${genericPublicTestKey == testPublicKey}")
+
         Assert.assertTrue(
             "Public key does not match test public key",
             genericPublicTestKey == testPublicKey
         )
 
         println("testGenericActions: Begin Test for Generic Actions")
+        Log.i(this.logTag,"testGenericActions: Begin Test for Generic Actions")
 
         var newFioDomain = this.generateTestingFioDomain()
         var newFioAddress = this.generateTestingFioAddress(newFioDomain)
@@ -94,6 +96,8 @@ class DevSdkTests
         val registerDomainFee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.EndPointsWithFees.RegisterFioDomain).fee
 
         println("testGenericActions: Test getFioBalance - Alice")
+        Log.i(this.logTag,"testGenericActions: Test getFioBalance - Alice")
+
         try
         {
             val fioBalance = this.aliceFioSdk!!.getFioBalance().balance
@@ -115,6 +119,8 @@ class DevSdkTests
         }
 
         println("testGenericActions: Test registerFioDomain")
+        Log.i(this.logTag,"testGenericActions: Test registerFioDomain")
+
         try
         {
             val response = this.aliceFioSdk!!.registerFioDomain(newFioDomain, registerDomainFee)
@@ -138,6 +144,8 @@ class DevSdkTests
         }
 
         println("testGenericActions: Test setFioDomainVisibility to True")
+        Log.i(this.logTag,"testGenericActions: Test setFioDomainVisibility to True")
+
         try
         {
             val response = this.aliceFioSdk!!.setFioDomainVisibility(newFioDomain,
@@ -162,6 +170,8 @@ class DevSdkTests
         }
 
         println("testGenericActions: Test registerFioAddress")
+        Log.i(this.logTag,"testGenericActions: Test registerFioAddress")
+
         try
         {
             val response = this.aliceFioSdk!!.registerFioAddress(newFioAddress,registerAddressFee)
@@ -186,6 +196,8 @@ class DevSdkTests
         }
 
         println("testGenericActions: Test renewFioAddress")
+        Log.i(this.logTag,"testGenericActions: Test renewFioAddress")
+
         try
         {
             val response = this.aliceFioSdk!!.renewFioAddress(newFioAddress,defaultFee)
@@ -209,6 +221,8 @@ class DevSdkTests
         }
 
         println("testGenericActions: Test addPublicAddress")
+        Log.i(this.logTag,"testGenericActions: Test addPublicAddress")
+
         try
         {
             val addPublicAddressFee = this.aliceFioSdk!!.getFeeForAddPublicAddress(newFioAddress).fee
@@ -237,6 +251,8 @@ class DevSdkTests
         Thread.sleep(4000)
 
         println("testGenericActions: Test getPublicAddress")
+        Log.i(this.logTag,"testGenericActions: Test getPublicAddress")
+
         try
         {
             val response = this.aliceFioSdk!!.getPublicAddress(newFioAddress,this.alicePublicTokenCode)
@@ -258,6 +274,8 @@ class DevSdkTests
         }
 
         println("testGenericActions: Test isFioAddressAvailable True")
+        Log.i(this.logTag,"testGenericActions: Test isFioAddressAvailable True")
+
         try
         {
             val testAddress = this.generateTestingFioAddress()
@@ -280,6 +298,8 @@ class DevSdkTests
         }
 
         println("testGenericActions: Test isFioAddressAvailable False")
+        Log.i(this.logTag,"testGenericActions: Test isFioAddressAvailable False")
+
         try
         {
             val response = this.aliceFioSdk!!.isAvailable(this.aliceFioAddress)
@@ -301,6 +321,8 @@ class DevSdkTests
         }
 
         println("testGenericActions: Test getFioNames")
+        Log.i(this.logTag,"testGenericActions: Test getFioNames")
+
         try
         {
             val response = this.aliceFioSdk!!.getFioNames()
@@ -322,6 +344,8 @@ class DevSdkTests
         }
 
         println("testGenericActions: Test getFee")
+        Log.i(this.logTag,"testGenericActions: Test getFee")
+
         try
         {
             val response = this.aliceFioSdk!!.getFee(FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress)
@@ -341,6 +365,7 @@ class DevSdkTests
         }
 
         println("testGenericActions: End Test for Generic Actions")
+        Log.i(this.logTag,"testGenericActions: End Test for Generic Actions")
     }
 
     @Test
@@ -349,8 +374,12 @@ class DevSdkTests
         this.setupTestVariables()
 
         println("testFundsRequest: Begin Test for NewFundsRequest")
+        Log.i(this.logTag,"testFundsRequest: Begin Test for NewFundsRequest")
 
         println("testFundsRequest: Test requestNewFunds")
+
+        Log.i(this.logTag,"testFundsRequest: Test requestNewFunds")
+
         try
         {
             val response = this.aliceFioSdk!!.requestFunds(this.bobFioAddress,
@@ -378,6 +407,8 @@ class DevSdkTests
         Thread.sleep(4000)
 
         println("testFundsRequest: Test getSentFioRequests")
+        Log.i(this.logTag,"testFundsRequest: Test getSentFioRequests")
+
         try
         {
             var sentRequests = this.aliceFioSdk!!.getSentFioRequests()
@@ -423,6 +454,8 @@ class DevSdkTests
         }
 
         println("testFundsRequest: Test getPendingFioRequests")
+        Log.i(this.logTag,"testFundsRequest: Test getPendingFioRequests")
+
         try {
 
             val pendingRequests = this.bobFioSdk!!.getPendingFioRequests()
@@ -455,6 +488,8 @@ class DevSdkTests
         }
 
         println("testFundsRequest: Test recordObtData")
+        Log.i(this.logTag,"testFundsRequest: Test recordObtData")
+
         try
         {
             val pendingRequests = this.bobFioSdk!!.getPendingFioRequests()
@@ -506,6 +541,8 @@ class DevSdkTests
         Thread.sleep(4000)
 
         println("testFundsRequest: Test getObtData")
+        Log.i(this.logTag,"testFundsRequest: Test getObtData")
+
         try {
 
             val obtDataRecords = this.bobFioSdk!!.getObtData()
@@ -541,6 +578,8 @@ class DevSdkTests
         }
 
         println("testFundsRequest: Test getObtDataByTokenCode")
+        Log.i(this.logTag,"testFundsRequest: Test getObtDataByTokenCode")
+
         try {
 
             val obtDataRecords = this.bobFioSdk!!.getObtDataByTokenCode("BTC")
@@ -577,6 +616,8 @@ class DevSdkTests
 
         //Set up test for rejecting funds request
         println("testFundsRequest: Test requestNewFunds")
+        Log.i(this.logTag,"testFundsRequest: Test requestNewFunds")
+
         try
         {
             val response = this.aliceFioSdk!!.requestFunds(this.bobFioAddress,
@@ -602,6 +643,8 @@ class DevSdkTests
         Thread.sleep(4000)
 
         println("testFundsRequest: Test getSentFioRequests")
+        Log.i(this.logTag,"testFundsRequest: Test getSentFioRequests")
+
         try
         {
             val sentRequests = this.aliceFioSdk!!.getSentFioRequests()
@@ -636,6 +679,8 @@ class DevSdkTests
         }
 
         println("testFundsRequest: Test getPendingFioRequests")
+        Log.i(this.logTag,"testFundsRequest: Test getPendingFioRequests")
+
         try {
 
             val pendingRequests = this.bobFioSdk!!.getPendingFioRequests()
@@ -669,6 +714,8 @@ class DevSdkTests
         }
 
         println("testFundsRequest: Test rejectFundsRequest")
+        Log.i(this.logTag,"testFundsRequest: Test rejectFundsRequest")
+
         try {
             val pendingRequests = this.bobFioSdk!!.getPendingFioRequests()
 
@@ -706,6 +753,7 @@ class DevSdkTests
         }
 
         println("testFundsRequest: End Test for NewFundsRequest")
+        Log.i(this.logTag,"testFundsRequest: End Test for NewFundsRequest")
     }
 
     @Test
@@ -714,12 +762,16 @@ class DevSdkTests
         this.setupTestVariables()
 
         println("testTransferFioTokens: Begin Test for TransferFioTokens")
+        Log.i(this.logTag,"testTransferFioTokens: Begin Test for TransferFioTokens")
+
 
         val amountToTransfer = BigInteger("1000000000")   //Amount is in SUFs
         var bobBalanceBeforeTransfer = BigInteger.ZERO
         var bobBalanceAfterTransfer = BigInteger.ZERO
 
         println("testTransferFioTokens: Verify Bob's Current FIO Balance")
+        Log.i(this.logTag,"testTransferFioTokens: Verify Bob's Current FIO Balance")
+
         try
         {
             bobBalanceBeforeTransfer = this.bobFioSdk!!.getFioBalance().balance
@@ -734,6 +786,8 @@ class DevSdkTests
         }
 
         println("testTransferFioTokens: Test transferTokens")
+        Log.i(this.logTag,"testTransferFioTokens: Test transferTokens")
+
         try
         {
             val response = this.aliceFioSdk!!.transferTokens(this.bobPublicKey,amountToTransfer,this.defaultFee)
@@ -755,6 +809,8 @@ class DevSdkTests
         }
 
         println("testTransferFioTokens: Verify Bob's New FIO Balance")
+        Log.i(this.logTag,"testTransferFioTokens: Verify Bob's New FIO Balance")
+
         try
         {
             bobBalanceAfterTransfer = this.bobFioSdk!!.getFioBalance().balance
@@ -774,6 +830,7 @@ class DevSdkTests
         }
 
         println("testTransferFioTokens: End Test for TransferFioTokens")
+        Log.i(this.logTag,"testTransferFioTokens: End Test for TransferFioTokens")
     }
 
     @Test
@@ -782,6 +839,8 @@ class DevSdkTests
         this.setupTestVariables()
 
         println("testGenericActions: Test generic Push Transaction")
+        Log.i(this.logTag,"testGenericActions: Test generic Push Transaction")
+
         try
         {
             var anotherfioAddress = this.generateTestingFioAddress()
@@ -825,8 +884,7 @@ class DevSdkTests
             this.whaleFioSdk!!.transferTokens(this.alicePublicKey,BigInteger("2500000000000"),this.defaultFee)
             this.whaleFioSdk!!.transferTokens(this.bobPublicKey,BigInteger("2500000000000"),this.defaultFee)
 
-            Log.i(this.logTag, "Wait for balance to really be available.")
-            Thread.sleep(60000)
+            Thread.sleep(6000)
         }
 
         if(useMockServerForAlice)

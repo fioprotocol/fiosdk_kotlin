@@ -37,9 +37,7 @@ class RecordObtDataContent(
 
         val secretKey = CryptoUtils.generateSharedSecret(privateKey,publicKey)
 
-        val compressedContent = CompressionUtils.compress(serializedNewFundsContent)
-
-        return CryptoUtils.encryptSharedMessage(compressedContent,secretKey,null)
+        return CryptoUtils.encryptSharedMessage(serializedNewFundsContent,secretKey,null)
     }
 
     fun toJson(): String {
@@ -55,9 +53,7 @@ class RecordObtDataContent(
 
                 val decryptedMessage = CryptoUtils.decryptSharedMessage(serializedRecordObtDataContent,secretKey)
 
-                val decompressedMessage = CompressionUtils.decompress(decryptedMessage)
-
-                val deserializedMessage = serializationProvider.deserializeContent(decompressedMessage,"record_send_content")
+                val deserializedMessage = serializationProvider.deserializeContent(decryptedMessage,"record_send_content")
 
                 return Gson().fromJson(deserializedMessage, RecordObtDataContent::class.java)
             }

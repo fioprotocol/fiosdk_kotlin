@@ -6,11 +6,8 @@ import fiofoundation.io.fiosdk.enums.FioDomainVisiblity
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
-import fiofoundation.io.fiosdk.utilities.CryptoUtils
 import fiofoundation.io.androidfioserializationprovider.*
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
-import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization
-import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.Action
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIOAddressAction
 import fiofoundation.io.fiosdk.utilities.Utils
 import org.junit.Assert
@@ -28,10 +25,10 @@ class TestNetSdkTests {
 
     private val baseUrl = "https://testnet.fioprotocol.io:443/v1/"
 
-    private var alicePrivateKey = "5J1f3XtRf2D8YD74UjE75gc6grMCa1GBczAmmMxFKpy8sF1zruH"
-    private var alicePublicKey = "FIO8JNEX7ciAXSBDTh1Jx5xECV9ogsN9KrM8Pao9jyFT2hYqTdFMr"
-    private var bobPrivateKey = "5K1m7jqUgyhEaDbMye5htpDSM3ecJ8dc6VBuAEkt1tbDGpVNipa"
-    private var bobPublicKey = "FIO6RrtEHBYgq2ZbXa4Ay2wLbQF5ZpgVxyMSMREMZCcsz1fJjRk4C"
+    private var alicePrivateKey = ""
+    private var alicePublicKey = ""
+    private var bobPrivateKey = ""
+    private var bobPublicKey = ""
 
     private val testPrivateKey = "5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu"
     private val testPublicKey = "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o"
@@ -477,11 +474,11 @@ class TestNetSdkTests {
         }
         catch (e: FIOError)
         {
-            throw AssertionError("Pending Requests Failed: " + e.toJson())
+            throw AssertionError("Test getObtDataByTokenCode Failed: " + e.toJson())
         }
         catch (generalException: Exception)
         {
-            throw AssertionError("Pending Requests Failed: " + generalException.message)
+            throw AssertionError("Test getObtDataByTokenCode Failed: " + generalException.message)
         }
 
         //Set up test for rejecting funds request

@@ -247,6 +247,16 @@ class AbiFIOSerializationProvider: ISerializationProvider {
         }
     }
 
+
+    /**
+     * Serializes a specific FIO ABI structure (fio.abi.json). [AbiFIOJson]
+     *
+     * @param json JSON to serialize
+     * @param contentType Type of content (abi structure) to serialize.  Ex: new_funds_content
+     * @return [ByteArray]
+     *
+     * @throws [SerializeTransactionError]
+     */
     @Throws(SerializeTransactionError::class)
     override fun serializeContent(json:String,contentType:String): ByteArray
     {
@@ -265,6 +275,15 @@ class AbiFIOSerializationProvider: ISerializationProvider {
         }
     }
 
+    /**
+     * Deserialize a specific FIO ABI structure (fio.abi.json). [AbiFIOJson]
+     *
+     * @param content Serialized content.
+     * @param contentType Type of content (abi structure) to deserialize.  Ex: new_funds_content
+     * @return [ByteArray]
+     *
+     * @throws [DeserializeTransactionError]
+     */
     @Throws(DeserializeTransactionError::class)
     override fun deserializeContent(content:ByteArray,contentType:String): String  {
         try {

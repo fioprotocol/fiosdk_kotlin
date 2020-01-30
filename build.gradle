@@ -41,7 +41,7 @@ dokka {
 
     configuration {
         moduleName="fiosdk"
-        subProjects = ["fiosdk"]
+        subProjects = ["fiosdk","javaserializationprovider","androidfioserializationprovider"]
         skipDeprecated = true
     }
 }

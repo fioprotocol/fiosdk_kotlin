@@ -1137,7 +1137,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     {
         val obtData = this.getObtData(this.publicKey)
 
-        val tokenObtData = obtData.filter { obtRecord -> obtRecord.deserializedContent!!.tokenCode == tokenCode }
+        val tokenObtData = obtData.filter { obtRecord -> (obtRecord.deserializedContent!=null && obtRecord.deserializedContent!!.tokenCode == tokenCode) }
 
         if(limit!=null && offset!=null)
         {

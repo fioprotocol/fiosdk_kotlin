@@ -26,9 +26,7 @@ class FundsRequestContent(
 
         val secretKey = CryptoUtils.generateSharedSecret(privateKey,publicKey)
 
-        val compressedContent = CompressionUtils.compress(serializedNewFundsContent)
-
-        return CryptoUtils.encryptSharedMessage(compressedContent,secretKey,null)
+        return CryptoUtils.encryptSharedMessage(serializedNewFundsContent,secretKey,null)
     }
 
     fun toJson(): String {
@@ -44,9 +42,7 @@ class FundsRequestContent(
 
                 val decryptedMessage = CryptoUtils.decryptSharedMessage(serializedFundsRequestContent,secretKey)
 
-                val decompressedMessage = CompressionUtils.decompress(decryptedMessage)
-
-                val deserializedMessage = serializationProvider.deserializeContent(decompressedMessage,"new_funds_content")
+                val deserializedMessage = serializationProvider.deserializeContent(decryptedMessage,"new_funds_content")
 
                 return Gson().fromJson(deserializedMessage, FundsRequestContent::class.java)
             }
