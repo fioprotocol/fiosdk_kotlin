@@ -42,6 +42,7 @@ class DevSdkTests
 
     private val alicePublicTokenAddress = "1PzCN3cBkTL72GPeJmpcueU4wQi9guiLa6"
     private val alicePublicTokenCode = "BTC"
+    private val alicePublicChainCode = "BTC"
     private val bobPublicTokenAddress = "1AkZGXsnyDfp4faMmVfTWsN1nNRRvEZJk8"
     private var otherBlockChainId = "123456789"
 
@@ -92,8 +93,8 @@ class DevSdkTests
         var newFioDomain = this.generateTestingFioDomain()
         var newFioAddress = this.generateTestingFioAddress(newFioDomain)
 
-        val registerAddressFee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress).fee
-        val registerDomainFee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.EndPointsWithFees.RegisterFioDomain).fee
+        val registerAddressFee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioAddress).fee
+        val registerDomainFee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioDomain).fee
 
         println("testGenericActions: Test getFioBalance - Alice")
         Log.i(this.logTag,"testGenericActions: Test getFioBalance - Alice")
@@ -200,7 +201,9 @@ class DevSdkTests
 
         try
         {
-            val response = this.aliceFioSdk!!.renewFioAddress(newFioAddress,defaultFee)
+            val fee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RenewFioAddress).fee
+
+            val response = this.aliceFioSdk!!.renewFioAddress(newFioAddress,fee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -228,7 +231,7 @@ class DevSdkTests
             val addPublicAddressFee = this.aliceFioSdk!!.getFeeForAddPublicAddress(newFioAddress).fee
 
             val response = this.aliceFioSdk!!.addPublicAddress(newFioAddress,this.alicePublicTokenCode,
-                this.alicePublicTokenAddress,addPublicAddressFee)
+                this.alicePublicChainCode,this.alicePublicTokenAddress,addPublicAddressFee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -255,7 +258,7 @@ class DevSdkTests
 
         try
         {
-            val response = this.aliceFioSdk!!.getPublicAddress(newFioAddress,this.alicePublicTokenCode)
+            val response = this.aliceFioSdk!!.getPublicAddress(newFioAddress,this.alicePublicTokenCode,this.alicePublicChainCode)
 
             Assert.assertTrue(
                 "Couldn't Find Public Address for Alice",
@@ -348,10 +351,10 @@ class DevSdkTests
 
         try
         {
-            val response = this.aliceFioSdk!!.getFee(FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress)
+            val response = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioAddress)
 
             Assert.assertTrue(
-                "Couldn't Get Fee for " + FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress.endpoint,
+                "Couldn't Get Fee for " + FIOApiEndPoints.FeeEndPoint.RegisterFioAddress.endpoint,
                 response.fee >= BigInteger.ZERO
             )
         }
@@ -382,9 +385,11 @@ class DevSdkTests
 
         try
         {
+            val fee = this.aliceFioSdk!!.getFeeForNewFundsRequest(this.aliceFioAddress).fee
+
             val response = this.aliceFioSdk!!.requestFunds(this.bobFioAddress,
                 this.aliceFioAddress,this.alicePublicTokenAddress,"2.0",
-                this.alicePublicTokenCode,"", this.defaultFee)
+                this.alicePublicTokenCode,"", fee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -620,9 +625,11 @@ class DevSdkTests
 
         try
         {
+            val fee = this.aliceFioSdk!!.getFeeForNewFundsRequest(this.aliceFioAddress).fee
+
             val response = this.aliceFioSdk!!.requestFunds(this.bobFioAddress,
                 this.aliceFioAddress,this.alicePublicTokenAddress,"2.0",this.alicePublicTokenCode,
-                this.defaultFee)
+                fee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -727,8 +734,9 @@ class DevSdkTests
                 {
                     if(firstPendingRequest.deserializedContent!=null)
                     {
-                        val response = this.bobFioSdk!!.rejectFundsRequest(firstPendingRequest.fioRequestId,
-                            this.defaultFee)
+                        val fee = this.bobFioSdk!!.getFeeForRejectFundsRequest(firstPendingRequest.payeeFioAddress).fee
+
+                        val response = this.bobFioSdk!!.rejectFundsRequest(firstPendingRequest.fioRequestId, fee)
 
                         val actionTraceResponse = response.getActionTraceResponse()
 
@@ -790,7 +798,8 @@ class DevSdkTests
 
         try
         {
-            val response = this.aliceFioSdk!!.transferTokens(this.bobPublicKey,amountToTransfer,this.defaultFee)
+            val fee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.TransferTokens).fee
+            val response = this.aliceFioSdk!!.transferTokens(this.bobPublicKey,amountToTransfer,fee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -845,8 +854,11 @@ class DevSdkTests
         {
             var anotherfioAddress = this.generateTestingFioAddress()
 
-            var addressRequestData = RegisterFIOAddressAction.FIOAddressRequestData(anotherfioAddress,this.alicePublicKey,this.defaultFee,
+            val fee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioAddress).fee
+
+            var addressRequestData = RegisterFIOAddressAction.FIOAddressRequestData(anotherfioAddress,this.alicePublicKey,fee,
                 Utils.generateActor(this.alicePublicKey),"")
+
             var requestData = addressRequestData.toJson()
 
             val response = this.aliceFioSdk!!.pushTransaction("fio.address","regaddress",requestData)
@@ -890,14 +902,20 @@ class DevSdkTests
         if(useMockServerForAlice)
             this.registerFioNameForUser(this.aliceFioSdk!!,initialFioAddressForAlice)
         else
-            this.aliceFioSdk!!.registerFioAddress(initialFioAddressForAlice,this.defaultFee)
+        {
+            val fee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioAddress).fee
+            this.aliceFioSdk!!.registerFioAddress(initialFioAddressForAlice, fee)
+        }
 
         val initialFioAddressForBob = this.generateTestingFioAddress()
 
         if(useMockServerForBob)
             this.registerFioNameForUser(this.bobFioSdk!!,initialFioAddressForBob)
         else
-            this.bobFioSdk!!.registerFioAddress(initialFioAddressForBob,this.defaultFee)
+        {
+            val fee = this.bobFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioAddress).fee
+            this.bobFioSdk!!.registerFioAddress(initialFioAddressForBob, fee)
+        }
 
         this.aliceFioAddress = initialFioAddressForAlice
         this.bobFioAddress = initialFioAddressForBob

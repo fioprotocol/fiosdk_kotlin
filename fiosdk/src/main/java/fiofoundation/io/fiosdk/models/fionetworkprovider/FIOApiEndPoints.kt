@@ -26,18 +26,13 @@ object FIOApiEndPoints {
     const val add_public_address = "add_pub_address"
     const val set_domain_visibility = "set_fio_domain_public"
 
-    val no_fioaddress_endpoints: List<String> =
-        listOf(register_fio_domain, register_fio_address, transfer_tokens_pub_key)
-
-    enum class EndPointsWithFees(val endpoint: String) {
-        RecordObtData(record_obt_data),
+    enum class FeeEndPoint (val endpoint: String) {
         RegisterFioDomain(register_fio_domain),
         RegisterFioAddress(register_fio_address),
         RenewFioDomain(renew_fio_domain),
         RenewFioAddress(renew_fio_address),
         TransferTokens(transfer_tokens_pub_key),
-        AddPublicAddress(add_public_address),
-        SetFioDomainVisibility(set_domain_visibility)
+        SetDomainVisibility(set_domain_visibility)
     }
 }
 
