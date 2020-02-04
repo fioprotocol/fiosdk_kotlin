@@ -1,10 +1,11 @@
 package fiofoundation.io.androidfioserializationprovider
 
+import fiofoundation.io.fiosdk.errors.serializationprovider.*
+import fiofoundation.io.fiosdk.hexStringToByteArray
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.models.serializationprovider.AbiFIOSerializationObject
-
+import fiofoundation.io.fiosdk.toHexString
 import java.nio.ByteBuffer
-import fiofoundation.io.fiosdk.errors.serializationprovider.*
 
 class AbiFIOSerializationProvider: ISerializationProvider {
 
@@ -31,15 +32,11 @@ class AbiFIOSerializationProvider: ISerializationProvider {
         }
     }
 
-    external fun stringFromAbiEos():String
     external fun create():ByteBuffer
     external fun destroy(context: ByteBuffer)
     external fun getError(context: ByteBuffer): String
-    external fun getBinSize(context: ByteBuffer): Int
-    external fun getBinData(context: ByteBuffer): ByteBuffer
     external fun getBinHex(context: ByteBuffer): String
     external fun stringToName(context: ByteBuffer, str: String?): Long
-    external fun nameToString(context: ByteBuffer, name: Long): String
     external fun setAbi(context: ByteBuffer, contract: Long, abi: String): Boolean
     external fun jsonToBin(context: ByteBuffer, contract: Long, type: String, json: String, reorderable: Boolean): Boolean
     external fun hexToJson(context: ByteBuffer, contract: Long, type: String, hex: String): String
@@ -59,13 +56,6 @@ class AbiFIOSerializationProvider: ISerializationProvider {
         if (context == null) throw AbiFIOContextNullError(NULL_CONTEXT_ERR_MSG)
 
         return stringToName(context!!, str)
-    }
-
-    @Throws(AbiFIOContextNullError::class)
-    fun name64ToString(name: Long): String
-    {
-        if (context == null) throw AbiFIOContextNullError(NULL_CONTEXT_ERR_MSG)
-        return nameToString(context!!, name)
     }
 
     @Throws(AbiFIOContextNullError::class)
@@ -133,7 +123,6 @@ class AbiFIOSerializationProvider: ISerializationProvider {
         }
 
     }
-
 
     @Throws(SerializeTransactionError::class)
     override fun serializeTransaction(json:String): String
@@ -258,16 +247,27 @@ class AbiFIOSerializationProvider: ISerializationProvider {
         }
     }
 
+
+    /**
+     * Serializes a specific FIO ABI structure (fio.abi.json). [AbiFIOJson]
+     *
+     * @param json JSON to serialize
+     * @param contentType Type of content (abi structure) to serialize.  Ex: new_funds_content
+     * @return [ByteArray]
+     *
+     * @throws [SerializeTransactionError]
+     */
     @Throws(SerializeTransactionError::class)
-    override fun serializeNewFundsContent(json:String): String
+    override fun serializeContent(json:String,contentType:String): ByteArray
     {
         try {
             val abi:String = getAbiJsonString("fio.abi.json")
-            val serializationObject = AbiFIOSerializationObject(null, "", "new_funds_content", abi)
+            val serializationObject = AbiFIOSerializationObject(null, "", contentType, abi)
 
             serializationObject.json = json
             serialize(serializationObject)
-            return serializationObject.hex
+
+            return serializationObject.hex.hexStringToByteArray()
         }
         catch (serializationProviderError:SerializationProviderError)
         {
@@ -275,47 +275,22 @@ class AbiFIOSerializationProvider: ISerializationProvider {
         }
     }
 
+    /**
+     * Deserialize a specific FIO ABI structure (fio.abi.json). [AbiFIOJson]
+     *
+     * @param content Serialized content.
+     * @param contentType Type of content (abi structure) to deserialize.  Ex: new_funds_content
+     * @return [ByteArray]
+     *
+     * @throws [DeserializeTransactionError]
+     */
     @Throws(DeserializeTransactionError::class)
-    override fun deserializeNewFundsContent(hex:String):String  {
+    override fun deserializeContent(content:ByteArray,contentType:String): String  {
         try {
             val abi:String = getAbiJsonString("fio.abi.json")
-            val serializationObject = AbiFIOSerializationObject(null, "", "new_funds_content", abi)
+            val serializationObject = AbiFIOSerializationObject(null, "", contentType, abi)
 
-            serializationObject.hex = hex
-            deserialize(serializationObject)
-
-            return serializationObject.json
-        }
-        catch (serializationProviderError:SerializationProviderError)
-        {
-            throw DeserializeTransactionError(serializationProviderError)
-        }
-    }
-
-    @Throws(SerializeTransactionError::class)
-    override fun serializeRecordObtDataContent(json:String): String
-    {
-        try {
-            val abi:String = getAbiJsonString("fio.abi.json")
-            val serializationObject = AbiFIOSerializationObject(null, "", "record_send_content", abi)
-
-            serializationObject.json = json
-            serialize(serializationObject)
-            return serializationObject.hex
-        }
-        catch (serializationProviderError:SerializationProviderError)
-        {
-            throw SerializeTransactionError(serializationProviderError)
-        }
-    }
-
-    @Throws(DeserializeTransactionError::class)
-    override fun deserializeRecordObtDataContent(hex:String):String  {
-        try {
-            val abi:String = getAbiJsonString("fio.abi.json")
-            val serializationObject = AbiFIOSerializationObject(null, "", "record_send_content", abi)
-
-            serializationObject.hex = hex
+            serializationObject.hex = content.toHexString()
             deserialize(serializationObject)
 
             return serializationObject.json

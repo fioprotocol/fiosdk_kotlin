@@ -1,5 +1,3 @@
-#!/bin/bash
-
 SDK=$ANDROID_SDK_HOME
 NDK_VERSION=$NDK_VERSION
 SELF=$(basename $0)

@@ -24,6 +24,7 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.*
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.*
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.*
 import fiofoundation.io.fiosdk.session.processors.*
+import fiofoundation.io.fiosdk.utilities.CompressionUtils
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
 import fiofoundation.io.fiosdk.utilities.PrivateKeyUtils
 
@@ -1136,7 +1137,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     {
         val obtData = this.getObtData(this.publicKey)
 
-        val tokenObtData = obtData.filter { obtRecord -> obtRecord.obtDataContent!!.tokenCode == tokenCode }
+        val tokenObtData = obtData.filter { obtRecord -> (obtRecord.deserializedContent!=null && obtRecord.deserializedContent!!.tokenCode == tokenCode) }
 
         if(limit!=null && offset!=null)
         {
@@ -1250,7 +1251,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @Throws(FIOError::class)
     fun getFioPublicAddress(fioAddress:String): GetPublicAddressResponse
     {
-        return getPublicAddress(fioAddress,"FIO")
+        return getPublicAddress(fioAddress,"FIO","FIO")
     }
 
     /**
@@ -1258,16 +1259,17 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      *
      * @param fioAddress FIO Address for which the token public address is to be returned.
      * @param tokenCode Token code for which public address is to be returned.
+     * @param chainCode Blockchain code for blockchain hosting this token.
      * @return [GetPublicAddressResponse]
      *
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun getPublicAddress(fioAddress:String, tokenCode:String): GetPublicAddressResponse
+    fun getPublicAddress(fioAddress:String, tokenCode:String,chainCode:String): GetPublicAddressResponse
     {
         try
         {
-            val request = GetPublicAddressRequest(fioAddress,tokenCode)
+            val request = GetPublicAddressRequest(fioAddress,tokenCode,chainCode)
 
             return this.networkProvider.getPublicAddress(request)
         }
@@ -1309,19 +1311,15 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     }
 
     /**
-     * Compute and return fee amount for specific call and specific user
+     * Compute and return fee amount for specific call
      *
-     * @param fioName
-     *        if endPointName is RenewFioAddress, FIO Address incurring the fee and owned by signer.
-     *        if endPointName is RenewFioDomain, FIO Domain incurring the fee and owned by signer.
-     *        if endPointName is RecordObtData, Payee FIO Address incurring the fee and owned by signer.
      * @param endPointName Name of API call end point, e.g. add_pub_address.
      * @return [GetFeeResponse]
      *
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun getFee(endPointName:FIOApiEndPoints.EndPointsWithFees): GetFeeResponse
+    fun getFee(endPointName:FIOApiEndPoints.FeeEndPoint): GetFeeResponse
     {
         try
         {
@@ -1342,22 +1340,23 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     /**
      * Compute and return fee amount for New Funds Request
      *
+     * @param payeeFioAddress The payee's FIO Address
      * @return [GetFeeResponse]
      *
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun getFeeForFundsRequest(): GetFeeResponse
+    fun getFeeForNewFundsRequest(payeeFioAddress:String): GetFeeResponse
     {
         try
         {
-            if(this.publicKey.isFioPublicKey()) {
-                val request = GetFeeRequest(FIOApiEndPoints.new_funds_request, this.publicKey)
+            if(payeeFioAddress.isFioAddress()) {
+                val request = GetFeeRequest(FIOApiEndPoints.new_funds_request, payeeFioAddress)
 
                 return this.networkProvider.getFee(request)
             }
             else
-                throw Exception("Invalid FIO Public Key")
+                throw Exception("Invalid FIO Address")
         }
         catch(getFeeError: GetFeeError)
         {
@@ -1371,23 +1370,23 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
     /**
      * Compute and return fee amount for Reject Funds Request
-     * @param payeeFioPublicKey The payee's FIO public key
+     * @param payeeFioAddress The payee's FIO Address
      * @return [GetFeeResponse]
      *
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun getFeeForRejectFundsRequest(payeeFioPublicKey:String): GetFeeResponse
+    fun getFeeForRejectFundsRequest(payeeFioAddress:String): GetFeeResponse
     {
         try
         {
-            if(payeeFioPublicKey.isFioPublicKey()) {
-                val request = GetFeeRequest(FIOApiEndPoints.reject_funds_request, payeeFioPublicKey)
+            if(payeeFioAddress.isFioAddress()) {
+                val request = GetFeeRequest(FIOApiEndPoints.reject_funds_request, payeeFioAddress)
 
                 return this.networkProvider.getFee(request)
             }
             else
-                throw Exception("Invalid FIO Public Key")
+                throw Exception("Invalid FIO Address")
         }
         catch(getFeeError: GetFeeError)
         {
@@ -1466,6 +1465,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      *
      * @param fioAddress FIO Address to add the public address to.
      * @param tokenCode Token code to be used with that public address.
+     * @param chainCode Blockchain code for blockchain hosting this token.
      * @param tokenPublicAddress The public address to be added to the FIO Address for the specified token.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
      * @param walletFioAddress (optional) FIO Address of the wallet which generates this transaction.
@@ -1475,7 +1475,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    fun addPublicAddress(fioAddress:String, tokenCode:String, tokenPublicAddress:String,
+    fun addPublicAddress(fioAddress:String, tokenCode:String, chainCode:String, tokenPublicAddress:String,
                          maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
     {
         var transactionProcessor = AddPublicAddressTrxProcessor(
@@ -1489,7 +1489,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
         {
             val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
-            val validator = validateAddPublicAddress(fioAddress,tokenCode,tokenPublicAddress,wfa)
+            val validator = validateAddPublicAddress(fioAddress,tokenCode,chainCode,tokenPublicAddress,wfa)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
@@ -1497,7 +1497,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
             {
                 var addPublicAddressAction = AddPublicAddressAction(
                     fioAddress,
-                    listOf(TokenPublicAddress(tokenPublicAddress,tokenCode)),
+                    listOf(TokenPublicAddress(tokenPublicAddress,tokenCode,chainCode)),
                     maxFee,
                     wfa,
                     this.publicKey
@@ -1536,6 +1536,17 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
         }
     }
 
+    /**
+     * Adds public addresses of specific blockchain types to the FIO Address.
+     *
+     * @param fioAddress FIO Address to add the public address to.
+     * @param tokenPublicAddresses List of public token addresses to add [TokenPublicAddress].
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
+     * @param walletFioAddress (optional) FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
     fun addPublicAddresses(fioAddress:String, tokenPublicAddresses:List<TokenPublicAddress>,
@@ -1739,45 +1750,6 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
     //Private Methods
 
-    @Throws(FIOError::class)
-    @ExperimentalUnsignedTypes
-    private fun serializeAndEncryptNewFundsContent(fundsRequestContent: FundsRequestContent, payerPublickey: String): String
-    {
-        try
-        {
-            val serializedNewFundsContent = this.serializationProvider.serializeNewFundsContent(fundsRequestContent.toJson())
-
-            val secretKey = CryptoUtils.generateSharedSecret(this.privateKey,payerPublickey)
-
-
-            return CryptoUtils.encryptSharedMessage(serializedNewFundsContent,secretKey)
-        }
-        catch(serializeError: SerializeTransactionError)
-        {
-            throw FIOError(serializeError.message!!,serializeError)
-        }
-
-    }
-
-    @Throws(FIOError::class)
-    @ExperimentalUnsignedTypes
-    private fun serializeAndEncryptRecordObtDataContent(recordObtDataContent: RecordObtDataContent, payeePublickey: String): String
-    {
-        try
-        {
-            val serializedNewFundsContent = this.serializationProvider.serializeRecordObtDataContent(recordObtDataContent.toJson())
-
-            val secretKey = CryptoUtils.generateSharedSecret(this.privateKey,payeePublickey)
-
-            return CryptoUtils.encryptSharedMessage(serializedNewFundsContent,secretKey)
-        }
-        catch(serializeError: SerializeTransactionError)
-        {
-            throw FIOError(serializeError.message!!,serializeError)
-        }
-
-    }
-
     /**
      * Create a new funds request on the FIO chain.
      *
@@ -1815,7 +1787,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
             {
                 val payerPublicKey = this.getFioPublicAddress(payerFioAddress).publicAddress
 
-                val encryptedContent = serializeAndEncryptNewFundsContent(fundsRequestContent,payerPublicKey)
+                val encryptedContent = fundsRequestContent.serialize(this.privateKey,payerPublicKey,this.serializationProvider)
 
                 var newFundsRequestAction = NewFundsRequestAction(
                     payerFioAddress,
@@ -1944,9 +1916,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
                 if(recordObtDataContent.status == "")
                     recordObtDataContent.status = "sent_to_blockchain"
 
-                val payeeKey = this.getPublicAddress(payeeFioAddress,"FIO").publicAddress
+                val payeeKey = this.getPublicAddress(payeeFioAddress,"FIO","FIO").publicAddress
 
-                val encryptedContent = serializeAndEncryptRecordObtDataContent(recordObtDataContent,payeeKey)
+                val encryptedContent = recordObtDataContent.serialize(this.privateKey,payeeKey,this.serializationProvider)
 
                 var recordObtDataAction = RecordObtDataAction(
                     payerFioAddress,
@@ -2004,8 +1976,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
             {
                 try
                 {
-                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.privateKey, item.payeeFioPublicKey)
-                    item.deserializeObtDataContent(sharedSecretKey,this.serializationProvider)
+                    item.deserializedContent = RecordObtDataContent.deserialize(this.privateKey,item.payeeFioPublicKey,this.serializationProvider,item.content)
                 }
                 catch(deserializationError: DeserializeTransactionError)
                 {
@@ -2037,8 +2008,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
             {
                 try
                 {
-                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.privateKey, item.payeeFioPublicKey)
-                    item.deserializeRequestContent(sharedSecretKey,this.serializationProvider)
+                    item.deserializedContent = FundsRequestContent.deserialize(this.privateKey,item.payeeFioPublicKey,this.serializationProvider,item.content)
                 }
                 catch(deserializationError: DeserializeTransactionError)
                 {
@@ -2070,8 +2040,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
             {
                 try
                 {
-                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.privateKey, item.payerFioPublicKey)
-                    item.deserializeRequestContent(sharedSecretKey,this.serializationProvider)
+                    item.deserializedContent = FundsRequestContent.deserialize(this.privateKey,item.payerFioPublicKey,this.serializationProvider,item.content)
                 }
                 catch(deserializationError: DeserializeTransactionError)
                 {
@@ -2103,13 +2072,13 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
         return Validator(isValid,if(!isValid) "Invalid New Funds Request" else "")
     }
 
-    private fun validateAddPublicAddress(fioAddress:String, tokenCode:String,
+    private fun validateAddPublicAddress(fioAddress:String, tokenCode:String, chainCode:String,
                                          tokenPublicAddress:String,
                                         walletFioAddress:String=""): Validator
     {
         var isValid = (fioAddress.isFioAddress()
                 && tokenPublicAddress.isNativeBlockChainPublicAddress()
-                && tokenCode.isTokenCode())
+                && tokenCode.isTokenCode() && chainCode.isTokenCode())
 
         if(walletFioAddress.isNotEmpty())
             isValid = isValid && walletFioAddress.isFioAddress()
@@ -2125,7 +2094,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
         for(address in tokenPublicAddresses)
         {
-            isValid = isValid && this.validateAddPublicAddress(fioAddress,address.tokenCode,address.publicAddress,walletFioAddress).isValid
+            isValid = isValid && this.validateAddPublicAddress(fioAddress,address.tokenCode,address.chainCode,address.publicAddress,walletFioAddress).isValid
         }
 
         return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")

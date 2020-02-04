@@ -15,29 +15,11 @@ class ObtDataRecord
     @field:SerializedName("payee_fio_address") var payeeFioAddress:String = ""
     @field:SerializedName("payer_fio_public_key") var payerFioPublicKey:String = ""
     @field:SerializedName("payee_fio_public_key") var payeeFioPublicKey:String = ""
-    @field:SerializedName("content") private var content:String = ""
+    @field:SerializedName("content") var content:String = ""
     @field:SerializedName("status") var status:String=""
     @field:SerializedName("time_stamp") var timeStamp:String = ""
 
-    var obtDataContent : RecordObtDataContent? = null
-
-    fun deserializeObtDataContent(sharedSecretKey: ByteArray, serializationProvider: ISerializationProvider):RecordObtDataContent?
-    {
-        try {
-            val decryptedMessage = CryptoUtils.decryptSharedMessage(this.content,sharedSecretKey)
-            val deserializedMessage = serializationProvider.deserializeRecordObtDataContent(decryptedMessage)
-
-            this.obtDataContent = Gson().fromJson(deserializedMessage, RecordObtDataContent::class.java)
-
-            return this.obtDataContent
-        }
-        catch(e: Exception)
-        {
-            this.obtDataContent = null
-            return this.obtDataContent
-        }
-
-    }
+    var deserializedContent : RecordObtDataContent? = null
 
     fun toJson(): String {
         val gson = GsonBuilder().create()

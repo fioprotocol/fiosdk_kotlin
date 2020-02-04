@@ -1,7 +1,12 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider
 
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
+import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
+import fiofoundation.io.fiosdk.utilities.CompressionUtils
+import fiofoundation.io.fiosdk.utilities.CryptoUtils
+import java.lang.Exception
 
 /**
  *
@@ -26,9 +31,36 @@ class RecordObtDataContent(
     @field:SerializedName("hash") var hash:String?=null,
     @field:SerializedName("offline_url") var offlineUrl:String?=null)
 {
+    fun serialize(privateKey: String, publicKey: String, serializationProvider: ISerializationProvider): String
+    {
+        val serializedNewFundsContent = serializationProvider.serializeContent(this.toJson(),"record_send_content")
+
+        val secretKey = CryptoUtils.generateSharedSecret(privateKey,publicKey)
+
+        return CryptoUtils.encryptSharedMessage(serializedNewFundsContent,secretKey,null)
+    }
 
     fun toJson(): String {
         val gson = GsonBuilder().serializeNulls().create()
         return gson.toJson(this,this.javaClass)
+    }
+
+    companion object {
+        fun deserialize(privateKey: String, publicKey: String, serializationProvider: ISerializationProvider,serializedRecordObtDataContent:String):RecordObtDataContent?
+        {
+            try {
+                val secretKey = CryptoUtils.generateSharedSecret(privateKey,publicKey)
+
+                val decryptedMessage = CryptoUtils.decryptSharedMessage(serializedRecordObtDataContent,secretKey)
+
+                val deserializedMessage = serializationProvider.deserializeContent(decryptedMessage,"record_send_content")
+
+                return Gson().fromJson(deserializedMessage, RecordObtDataContent::class.java)
+            }
+            catch(e: Exception)
+            {
+                return null
+            }
+        }
     }
 }

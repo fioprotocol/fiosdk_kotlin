@@ -13,7 +13,9 @@ import org.bouncycastle.crypto.params.ECDomainParameters
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters
 import org.bouncycastle.crypto.params.ECPublicKeyParameters
 import org.bouncycastle.jce.ECNamedCurveTable
+import org.bouncycastle.util.encoders.Base64
 import java.lang.Exception
+
 
 import java.math.BigInteger
 
@@ -61,7 +63,7 @@ object CryptoUtils
 
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    fun encryptSharedMessage(messageAsHexString: String, sharedKey: ByteArray, iv: ByteArray?=null): String
+    fun encryptSharedMessage(message: ByteArray, sharedKey: ByteArray, iv: ByteArray?=null): String
     {
         try
         {
@@ -70,7 +72,7 @@ object CryptoUtils
             val encryptionKey = hashedSecretKey.copyOf(32)
             val hmacKey = hashedSecretKey.copyOfRange(32,hashedSecretKey.size)
             val encryptor = Cryptography(encryptionKey,iv)
-            val encryptedMessage = encryptor.encrypt(messageAsHexString.hexStringToByteArray().asUByteArray())
+            val encryptedMessage = encryptor.encrypt(message.toUByteArray())
             val hmacContent = ByteArray(encryptor.iv!!.size + encryptedMessage.size)
 
             encryptor.iv!!.copyInto(hmacContent)
@@ -83,7 +85,7 @@ object CryptoUtils
             hmacContent.copyInto(returnArray)
             hmacData.copyInto(returnArray,hmacContent.size)
 
-            return returnArray.toHexString()
+            return Base64.toBase64String(returnArray)
         }
         catch (e:Exception)
         {
@@ -92,16 +94,17 @@ object CryptoUtils
     }
 
     @Throws(FIOError::class)
-    fun decryptSharedMessage(encryptedMessageAsHexString: String, sharedKey: ByteArray): String
+    fun decryptSharedMessage(encryptedMessageString: String, sharedKey: ByteArray): ByteArray
     {
         val hashedSecretKey = HashUtils.sha512(sharedKey)
 
         val decryptionKey = hashedSecretKey.copyOf(32)
         val hmacKey = hashedSecretKey.copyOfRange(32,hashedSecretKey.size)
 
-        val messageBytes = encryptedMessageAsHexString.hexStringToByteArray()
-        val hmacContent = messageBytes.copyOfRange(0,messageBytes.size-32)
-        val messageHmacData = messageBytes.copyOfRange(hmacContent.size,messageBytes.size)
+        var messageBytes:ByteArray = Base64.decode(encryptedMessageString)
+
+        val hmacContent = messageBytes!!.copyOfRange(0,messageBytes.size-32)
+        val messageHmacData = messageBytes!!.copyOfRange(hmacContent.size,messageBytes.size)
 
         val iv = hmacContent.copyOf(16)
         val encryptedMessage = hmacContent.copyOfRange(iv.size,hmacContent.size)
@@ -114,7 +117,7 @@ object CryptoUtils
             val decrypter = Cryptography(decryptionKey, iv)
             val decryptedMessage = decrypter.decrypt(encryptedMessage)
 
-            return decryptedMessage.toHexString()
+            return decryptedMessage
         }
     }
 

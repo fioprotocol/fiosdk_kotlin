@@ -6,11 +6,8 @@ import fiofoundation.io.fiosdk.enums.FioDomainVisiblity
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
-import fiofoundation.io.fiosdk.utilities.CryptoUtils
 import fiofoundation.io.androidfioserializationprovider.*
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
-import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization
-import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.Action
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIOAddressAction
 import fiofoundation.io.fiosdk.utilities.Utils
 import org.junit.Assert
@@ -28,23 +25,24 @@ class TestNetSdkTests {
 
     private val baseUrl = "https://testnet.fioprotocol.io:443/v1/"
 
-    private var alicePrivateKey = ""
-    private var alicePublicKey = ""
-    private var bobPrivateKey = ""
-    private var bobPublicKey = ""
+    private var alicePrivateKey = "5JZwQXHYgqYyJR5zVdndA8Foi7FexXReT4gAN2XEyScfkUHH7Bi"
+    private var alicePublicKey = "FIO5YB9ivgKMjNrHtangJvUSfunaX3cwwmiQQrd4YHfVTvyxc2swE"
+    private var bobPrivateKey = "5Ja67427GaXjzbawx74dsvEoWcEzXtgDjAG8bah6NGt68YWZ3bu"
+    private var bobPublicKey = "FIO7v1Ch4Qywgj7onSDEMZ5v6WRr3ocrBd867NRyySSB4yBcDW3fb"
 
     private val testPrivateKey = "5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu"
     private val testPublicKey = "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o"
     private val testMnemonic = "valley alien library bread worry brother bundle hammer loyal barely dune brave"
 
-    private var aliceFioAddress = "alicetest2@fiotestnet"
-    private var bobFioAddress = "bobtest3@fiotestnet"
+    private var aliceFioAddress = "alicetest51@fiotestnet"
+    private var bobFioAddress = "bobtest51@fiotestnet"
 
     private var fioTestNetDomain = "fiotestnet"
     private var defaultFee = BigInteger("400000000000")
 
     private val alicePublicTokenAddress = "1PzCN3cBkTL72GPeJmpcueU4wQi9guiLa6"
     private val alicePublicTokenCode = "BTC"
+    private val alicePublicChainCode = "BTC"
     private val bobPublicTokenAddress = "1AkZGXsnyDfp4faMmVfTWsN1nNRRvEZJk8"
     private var otherBlockChainId = "123456789"
 
@@ -77,8 +75,8 @@ class TestNetSdkTests {
         val newFioDomain = this.generateTestingFioDomain()
         val newFioAddress = this.generateTestingFioAddress(newFioDomain)
 
-        val registerAddressFee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress).fee
-        val registerDomainFee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.EndPointsWithFees.RegisterFioDomain).fee
+        val registerAddressFee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioAddress).fee
+        val registerDomainFee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioDomain).fee
 
 
         println("testGenericActions: Test getFioBalance - Alice")
@@ -118,7 +116,9 @@ class TestNetSdkTests {
         println("testGenericActions: Test setFioDomainVisibility to True")
         try
         {
-            val response = this.aliceFioSdk.setFioDomainVisibility(newFioDomain,FioDomainVisiblity.PUBLIC,defaultFee)
+            val fee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.SetDomainVisibility).fee
+
+            val response = this.aliceFioSdk.setFioDomainVisibility(newFioDomain,FioDomainVisiblity.PUBLIC,fee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -156,7 +156,9 @@ class TestNetSdkTests {
         {
             var anotherfioAddress = this.generateTestingFioAddress()
 
-            var addressRequestData = RegisterFIOAddressAction.FIOAddressRequestData(anotherfioAddress,this.alicePublicKey,this.defaultFee,
+            val fee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioAddress).fee
+
+            var addressRequestData = RegisterFIOAddressAction.FIOAddressRequestData(anotherfioAddress,this.alicePublicKey,fee,
                 Utils.generateActor(this.alicePublicKey),"")
 
             var requestData = addressRequestData.toJson()
@@ -182,7 +184,9 @@ class TestNetSdkTests {
         println("testGenericActions: Test renewFioAddress")
         try
         {
-            val response = this.aliceFioSdk.renewFioAddress(newFioAddress,defaultFee)
+            val fee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RenewFioAddress).fee
+
+            val response = this.aliceFioSdk.renewFioAddress(newFioAddress,fee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -203,7 +207,7 @@ class TestNetSdkTests {
             val addPublicAddressFee = this.aliceFioSdk!!.getFeeForAddPublicAddress(newFioAddress).fee
 
             val response = this.aliceFioSdk.addPublicAddress(newFioAddress,this.alicePublicTokenCode,
-                this.alicePublicTokenAddress,defaultFee)
+                this.alicePublicTokenCode,this.alicePublicTokenAddress,addPublicAddressFee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -216,6 +220,26 @@ class TestNetSdkTests {
         catch (generalException: Exception)
         {
             throw AssertionError("Add Public Address for Alice Failed: " + generalException.message)
+        }
+
+        println("testGenericActions: Test getPublicAddress")
+        try
+        {
+            val response = this.aliceFioSdk!!.getPublicAddress(newFioAddress,this.alicePublicTokenCode,this.alicePublicChainCode)
+
+            assertTrue(
+                "Couldn't Find Public Address for Alice",
+                !response.publicAddress.isNullOrEmpty()
+            )
+
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("getPublicAddress Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("getPublicAddress Failed: " + generalException.message)
         }
 
         println("testGenericActions: Test isFioAddressAvailable True")
@@ -270,9 +294,9 @@ class TestNetSdkTests {
         println("testGenericActions: Test getFee")
         try
         {
-            val response = this.aliceFioSdk.getFee(FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress)
+            val response = this.aliceFioSdk.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioAddress)
 
-            assertTrue("Couldn't Get Fee for " + FIOApiEndPoints.EndPointsWithFees.RegisterFioAddress.endpoint,response.fee>=BigInteger.ZERO)
+            assertTrue("Couldn't Get Fee for " + FIOApiEndPoints.FeeEndPoint.RegisterFioAddress.endpoint,response.fee>=BigInteger.ZERO)
         }
         catch (e: FIOError)
         {
@@ -294,9 +318,11 @@ class TestNetSdkTests {
         println("testFundsRequest: Test requestNewFunds")
         try
         {
+            val fee = this.aliceFioSdk.getFeeForNewFundsRequest(this.aliceFioAddress).fee
+
             val response = this.aliceFioSdk.requestFunds(this.bobFioAddress,
                 this.aliceFioAddress,this.alicePublicTokenAddress,"2.0",this.alicePublicTokenCode,
-                this.defaultFee)
+                fee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -316,7 +342,6 @@ class TestNetSdkTests {
         println("testFundsRequest: Test getSentFioRequests")
         try
         {
-
             val sentRequests = this.aliceFioSdk.getSentFioRequests()
 
             if(sentRequests.isNotEmpty())
@@ -325,13 +350,9 @@ class TestNetSdkTests {
 
                 for (req in sentRequests)
                 {
-                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.alicePrivateKey,req.payerFioPublicKey)
-
-                    req.deserializeRequestContent(sharedSecretKey,this.aliceFioSdk.serializationProvider)
-
-                    if(req.requestContent!=null)
+                    if(req.deserializedContent!=null)
                     {
-                        assertTrue("Funds Request Sent by Alice is NOT Valid",req.requestContent != null)
+                        assertTrue("Funds Request Sent by Alice is NOT Valid",req.deserializedContent != null)
                     }
                 }
             }
@@ -348,7 +369,6 @@ class TestNetSdkTests {
 
         println("testFundsRequest: Test getPendingFioRequests")
         try {
-
             val pendingRequests = this.bobFioSdk.getPendingFioRequests()
 
             if(pendingRequests.isNotEmpty())
@@ -357,13 +377,9 @@ class TestNetSdkTests {
 
                 for (req in pendingRequests)
                 {
-                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,req.payeeFioPublicKey)
-
-                    req.deserializeRequestContent(sharedSecretKey,this.bobFioSdk.serializationProvider)
-
-                    if(req.requestContent!=null)
+                    if(req.deserializedContent!=null)
                     {
-                        assertTrue("Pending Requests are Valid",req.requestContent != null)
+                        assertTrue("Pending Requests are Valid",req.deserializedContent != null)
                     }
                 }
             }
@@ -380,8 +396,6 @@ class TestNetSdkTests {
         println("testFundsRequest: Test recordObtData")
         try
         {
-            val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,this.alicePublicKey)
-
             val pendingRequests = this.bobFioSdk!!.getPendingFioRequests()
 
             if(pendingRequests.isNotEmpty())
@@ -390,25 +404,26 @@ class TestNetSdkTests {
 
                 if(firstPendingRequest!=null)
                 {
-                    firstPendingRequest.deserializeRequestContent(sharedSecretKey,this.bobFioSdk.serializationProvider)
-
-                    if(firstPendingRequest.requestContent!=null)
+                    if(firstPendingRequest.deserializedContent!=null)
                     {
                         var recordSendContent = RecordObtDataContent(this.bobPublicTokenAddress,
-                            firstPendingRequest.requestContent!!.payeeTokenPublicAddress,
-                            firstPendingRequest.requestContent!!.amount,
-                            firstPendingRequest.requestContent!!.tokenCode,this.otherBlockChainId)
+                            firstPendingRequest.deserializedContent!!.payeeTokenPublicAddress,
+                            firstPendingRequest.deserializedContent!!.amount,
+                            firstPendingRequest.deserializedContent!!.tokenCode,this.otherBlockChainId)
+
+                        val fee = this.bobFioSdk.getFeeForRecordObtData(firstPendingRequest.payerFioAddress).fee
 
                         val response = this.bobFioSdk.recordObtData(firstPendingRequest.fioRequestId,firstPendingRequest.payerFioAddress
                             ,firstPendingRequest.payeeFioAddress,this.bobPublicTokenAddress,recordSendContent.payeeTokenPublicAddress,
                             recordSendContent.amount.toDouble(),recordSendContent.tokenCode,recordSendContent.status,
-                            recordSendContent.obtId,this.defaultFee)
+                            recordSendContent.obtId,fee)
 
                         println("testFundsRequest: Test recordObtData No RecordId")
+
                         this.bobFioSdk!!.recordObtData(firstPendingRequest.payerFioAddress
                             ,firstPendingRequest.payeeFioAddress,this.bobPublicTokenAddress,recordSendContent.payeeTokenPublicAddress,
                             recordSendContent.amount.toDouble(),recordSendContent.tokenCode,recordSendContent.status,"987654321",
-                            this.defaultFee)
+                            fee)
 
                         val actionTraceResponse = response.getActionTraceResponse()
 
@@ -442,13 +457,13 @@ class TestNetSdkTests {
 
                 for (req in obtDataRecords)
                 {
-                    if(req.obtDataContent!=null)
+                    if(req.deserializedContent!=null)
                     {
-                        println("OBT Data: " + req.obtDataContent!!.toJson())
+                        println("OBT Data: " + req.deserializedContent!!.toJson())
 
                         assertTrue(
                             "Obt Data NOT Valid",
-                            req.obtDataContent != null
+                            req.deserializedContent != null
                         )
                     }
                 }
@@ -477,13 +492,13 @@ class TestNetSdkTests {
 
                 for (req in obtDataRecords)
                 {
-                    if(req.obtDataContent!=null)
+                    if(req.deserializedContent!=null)
                     {
-                        println("OBT Data: " + req.obtDataContent!!.toJson())
+                        println("OBT Data: " + req.deserializedContent!!.toJson())
 
                         Assert.assertTrue(
                             "Obt Data NOT Valid",
-                            req.obtDataContent != null
+                            req.deserializedContent != null
                         )
                     }
                 }
@@ -491,20 +506,22 @@ class TestNetSdkTests {
         }
         catch (e: FIOError)
         {
-            throw AssertionError("Pending Requests Failed: " + e.toJson())
+            throw AssertionError("Test getObtDataByTokenCode Failed: " + e.toJson())
         }
         catch (generalException: Exception)
         {
-            throw AssertionError("Pending Requests Failed: " + generalException.message)
+            throw AssertionError("Test getObtDataByTokenCode Failed: " + generalException.message)
         }
 
         //Set up test for rejecting funds request
         println("testFundsRequest: Test requestNewFunds")
         try
         {
+            val fee = this.aliceFioSdk.getFeeForNewFundsRequest(this.aliceFioAddress).fee
+
             val response = this.aliceFioSdk.requestFunds(this.bobFioAddress,
                 this.aliceFioAddress,this.alicePublicTokenAddress,"2.0",this.alicePublicTokenCode,
-                this.defaultFee)
+                fee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -524,7 +541,6 @@ class TestNetSdkTests {
         println("testFundsRequest: Test getSentFioRequests")
         try
         {
-
             val sentRequests = this.aliceFioSdk.getSentFioRequests()
 
             if(sentRequests.isNotEmpty())
@@ -533,13 +549,9 @@ class TestNetSdkTests {
 
                 for (req in sentRequests)
                 {
-                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.alicePrivateKey,req.payerFioPublicKey)
-
-                    req.deserializeRequestContent(sharedSecretKey,this.aliceFioSdk.serializationProvider)
-
-                    if(req.requestContent!=null)
+                    if(req.deserializedContent!=null)
                     {
-                        assertTrue("Funds Request Sent by Alice is NOT Valid",req.requestContent != null)
+                        assertTrue("Funds Request Sent by Alice is NOT Valid",req.deserializedContent != null)
                     }
                 }
             }
@@ -565,13 +577,9 @@ class TestNetSdkTests {
 
                 for (req in pendingRequests)
                 {
-                    val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,req.payeeFioPublicKey)
-
-                    req.deserializeRequestContent(sharedSecretKey,this.bobFioSdk.serializationProvider)
-
-                    if(req.requestContent!=null)
+                    if(req.deserializedContent!=null)
                     {
-                        assertTrue("Pending Requests are NOT Valid",req.requestContent != null)
+                        assertTrue("Pending Requests are NOT Valid",req.deserializedContent != null)
                     }
                 }
             }
@@ -587,8 +595,6 @@ class TestNetSdkTests {
 
         println("testFundsRequest: Test rejectFundsRequest")
         try {
-            val sharedSecretKey = CryptoUtils.generateSharedSecret(this.bobPrivateKey,this.alicePublicKey)
-
             val pendingRequests = this.bobFioSdk.getPendingFioRequests()
 
             if(pendingRequests.isNotEmpty())
@@ -597,12 +603,11 @@ class TestNetSdkTests {
 
                 if(firstPendingRequest!=null)
                 {
-                    firstPendingRequest.deserializeRequestContent(sharedSecretKey,this.bobFioSdk.serializationProvider)
-
-                    if(firstPendingRequest.requestContent!=null)
+                    if(firstPendingRequest.deserializedContent!=null)
                     {
+                        val fee = this.bobFioSdk.getFeeForRejectFundsRequest(firstPendingRequest.payeeFioAddress).fee
                         val response = this.bobFioSdk.rejectFundsRequest(firstPendingRequest.fioRequestId,
-                            this.defaultFee)
+                            fee)
 
                         val actionTraceResponse = response.getActionTraceResponse()
 
@@ -653,7 +658,8 @@ class TestNetSdkTests {
         println("testTransferFioTokens: Test transferTokens")
         try
         {
-            val response = this.aliceFioSdk.transferTokens(this.bobPublicKey,amountToTransfer,this.defaultFee)
+            val fee = this.bobFioSdk.getFee(FIOApiEndPoints.FeeEndPoint.TransferTokens).fee
+            val response = this.aliceFioSdk.transferTokens(this.bobPublicKey,amountToTransfer,fee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -695,7 +701,9 @@ class TestNetSdkTests {
         {
             var anotherfioAddress = this.generateTestingFioAddress()
 
-            var addressRequestData = RegisterFIOAddressAction.FIOAddressRequestData(anotherfioAddress,this.alicePublicKey,this.defaultFee,
+            val fee = this.bobFioSdk.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioAddress).fee
+
+            var addressRequestData = RegisterFIOAddressAction.FIOAddressRequestData(anotherfioAddress,this.alicePublicKey,fee,
                 Utils.generateActor(this.alicePublicKey),"")
             var requestData = addressRequestData.toJson()
 
