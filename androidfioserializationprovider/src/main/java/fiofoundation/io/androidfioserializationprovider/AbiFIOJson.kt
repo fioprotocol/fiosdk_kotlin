@@ -534,6 +534,10 @@ object AbiFIOJson {
                 "                    \"type\": \"string\"\n" +
                 "                },\n" +
                 "                {\n" +
+                "                    \"name\": \"chain_code\",\n" +
+                "                    \"type\": \"string\"\n" +
+                "                },\n" +
+                "                {\n" +
                 "                    \"name\": \"memo\",\n" +
                 "                    \"type\": \"string?\"\n" +
                 "                },\n" +
@@ -565,6 +569,10 @@ object AbiFIOJson {
                 "                },\n" +
                 "                {\n" +
                 "                    \"name\": \"token_code\",\n" +
+                "                    \"type\": \"string\"\n" +
+                "                },\n" +
+                "                {\n" +
+                "                    \"name\": \"chain_code\",\n" +
                 "                    \"type\": \"string\"\n" +
                 "                },\n" +
                 "                {\n" +

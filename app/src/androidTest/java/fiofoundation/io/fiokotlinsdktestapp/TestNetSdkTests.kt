@@ -321,8 +321,8 @@ class TestNetSdkTests {
             val fee = this.aliceFioSdk.getFeeForNewFundsRequest(this.aliceFioAddress).fee
 
             val response = this.aliceFioSdk.requestFunds(this.bobFioAddress,
-                this.aliceFioAddress,this.alicePublicTokenAddress,"2.0",this.alicePublicTokenCode,
-                fee)
+                this.aliceFioAddress,this.alicePublicTokenAddress,2.0,this.alicePublicTokenCode,
+                this.alicePublicTokenCode,fee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -409,21 +409,22 @@ class TestNetSdkTests {
                         var recordSendContent = RecordObtDataContent(this.bobPublicTokenAddress,
                             firstPendingRequest.deserializedContent!!.payeeTokenPublicAddress,
                             firstPendingRequest.deserializedContent!!.amount,
-                            firstPendingRequest.deserializedContent!!.tokenCode,this.otherBlockChainId)
+                            firstPendingRequest.deserializedContent!!.tokenCode,
+                            firstPendingRequest.deserializedContent!!.chainCode,this.otherBlockChainId)
 
                         val fee = this.bobFioSdk.getFeeForRecordObtData(firstPendingRequest.payerFioAddress).fee
 
                         val response = this.bobFioSdk.recordObtData(firstPendingRequest.fioRequestId,firstPendingRequest.payerFioAddress
                             ,firstPendingRequest.payeeFioAddress,this.bobPublicTokenAddress,recordSendContent.payeeTokenPublicAddress,
-                            recordSendContent.amount.toDouble(),recordSendContent.tokenCode,recordSendContent.status,
-                            recordSendContent.obtId,fee)
+                            recordSendContent.amount.toDouble(),recordSendContent.tokenCode,recordSendContent.chainCode,
+                            recordSendContent.status, recordSendContent.obtId,fee)
 
                         println("testFundsRequest: Test recordObtData No RecordId")
 
                         this.bobFioSdk!!.recordObtData(firstPendingRequest.payerFioAddress
                             ,firstPendingRequest.payeeFioAddress,this.bobPublicTokenAddress,recordSendContent.payeeTokenPublicAddress,
-                            recordSendContent.amount.toDouble(),recordSendContent.tokenCode,recordSendContent.status,"987654321",
-                            fee)
+                            recordSendContent.amount.toDouble(),recordSendContent.tokenCode,
+                            recordSendContent.status,"987654321", fee)
 
                         val actionTraceResponse = response.getActionTraceResponse()
 
@@ -520,8 +521,7 @@ class TestNetSdkTests {
             val fee = this.aliceFioSdk.getFeeForNewFundsRequest(this.aliceFioAddress).fee
 
             val response = this.aliceFioSdk.requestFunds(this.bobFioAddress,
-                this.aliceFioAddress,this.alicePublicTokenAddress,"2.0",this.alicePublicTokenCode,
-                fee)
+                this.aliceFioAddress,this.alicePublicTokenAddress,2.0,this.alicePublicTokenCode, fee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 

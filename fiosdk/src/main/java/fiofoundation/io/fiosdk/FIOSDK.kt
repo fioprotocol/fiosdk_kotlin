@@ -828,6 +828,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param payeeTokenPublicAddress Payee's public address where they want funds sent.
      * @param amount Amount requested.
      * @param tokenCode Code of the token represented in amount requested.
+     * @param chainCode Blockchain code for blockchain hosting this token.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
      * @param walletFioAddress (optional) FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
@@ -837,12 +838,12 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
     fun requestFunds(payerFioAddress:String, payeeFioAddress:String,
-                        payeeTokenPublicAddress:String, amount:String, tokenCode:String,
+                        payeeTokenPublicAddress:String, amount:Double, tokenCode:String,chainCode:String,
                         maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
     {
         val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
-        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount,tokenCode)
+        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),tokenCode,chainCode)
 
         return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,wfa)
     }
@@ -854,7 +855,29 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param payeeFioAddress FIO Address of the payee. This address is sending the request and will receive payment.
      * @param payeeTokenPublicAddress Payee's public address where they want funds sent.
      * @param amount Amount requested.
+     * @param tokenCode Code of the token represented in amount requested.  The chain code will be set to this value as well.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun requestFunds(payerFioAddress:String, payeeFioAddress:String, payeeTokenPublicAddress:String,
+                     amount:Double, tokenCode:String, maxFee:BigInteger): PushTransactionResponse
+    {
+        return requestFunds(payerFioAddress,payeeFioAddress,payeeTokenPublicAddress,amount,tokenCode,tokenCode,maxFee,this.walletFioAddress)
+    }
+
+    /**
+     * Create a new funds request on the FIO chain.
+     *
+     * @param payerFioAddress FIO Address of the payer. This address will receive the request and will initiate payment.
+     * @param payeeFioAddress FIO Address of the payee. This address is sending the request and will receive payment.
+     * @param payeeTokenPublicAddress Payee's public address where they want funds sent.
+     * @param amount Amount requested.
      * @param tokenCode Code of the token represented in amount requested.
+     * @param chainCode Blockchain code for blockchain hosting this token.
      * @param memo (optional)
      * @param hash (optional)
      * @param offlineUrl (optional)
@@ -867,13 +890,13 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
     fun requestFunds(payerFioAddress:String, payeeFioAddress:String,
-                        payeeTokenPublicAddress:String, amount:String, tokenCode:String,
+                        payeeTokenPublicAddress:String, amount:Double, tokenCode:String,chainCode:String,
                         memo: String?=null, hash: String?=null, offlineUrl:String?=null,
                         maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
     {
         val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
-        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount,tokenCode,memo,hash,offlineUrl)
+        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),tokenCode,chainCode,memo,hash,offlineUrl)
 
         return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,wfa)
     }
@@ -885,7 +908,33 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param payeeFioAddress FIO Address of the payee. This address is sending the request and will receive payment.
      * @param payeeTokenPublicAddress Payee's public address where they want funds sent.
      * @param amount Amount requested.
+     * @param tokenCode Code of the token represented in amount requested.  The chain code will be set to this value as well.
+     * @param memo (optional)
+     * @param hash (optional)
+     * @param offlineUrl (optional)
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun requestFunds(payerFioAddress:String, payeeFioAddress:String, payeeTokenPublicAddress:String,
+                     amount:Double, tokenCode:String, memo: String?=null, hash: String?=null,
+                     offlineUrl:String?=null, maxFee:BigInteger): PushTransactionResponse
+    {
+        return requestFunds(payerFioAddress,payeeFioAddress,payeeTokenPublicAddress,amount,tokenCode,tokenCode,memo,hash,offlineUrl,maxFee,this.walletFioAddress)
+    }
+
+    /**
+     * Create a new funds request on the FIO chain.
+     *
+     * @param payerFioAddress FIO Address of the payer. This address will receive the request and will initiate payment.
+     * @param payeeFioAddress FIO Address of the payee. This address is sending the request and will receive payment.
+     * @param payeeTokenPublicAddress Payee's public address where they want funds sent.
+     * @param amount Amount requested.
      * @param tokenCode Code of the token represented in amount requested.
+     * @param chainCode Blockchain code for blockchain hosting this token.
      * @param memo
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
      * @param walletFioAddress (optional) FIO Address of the wallet which generates this transaction.
@@ -896,14 +945,36 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
     fun requestFunds(payerFioAddress:String, payeeFioAddress:String,
-                     payeeTokenPublicAddress:String, amount:String, tokenCode:String,
+                     payeeTokenPublicAddress:String, amount:Double, tokenCode:String, chainCode:String,
                      memo: String, maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
     {
         val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
-        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount,tokenCode,memo)
+        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),tokenCode,chainCode,memo)
 
         return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,wfa)
+    }
+
+    /**
+     * Create a new funds request on the FIO chain.
+     *
+     * @param payerFioAddress FIO Address of the payer. This address will receive the request and will initiate payment.
+     * @param payeeFioAddress FIO Address of the payee. This address is sending the request and will receive payment.
+     * @param payeeTokenPublicAddress Payee's public address where they want funds sent.
+     * @param amount Amount requested.
+     * @param tokenCode Code of the token represented in amount requested.  The chain code will be set to this value as well.
+     * @param memo
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun requestFunds(payerFioAddress:String, payeeFioAddress:String, payeeTokenPublicAddress:String,
+                     amount:Double, tokenCode:String, memo: String, maxFee:BigInteger): PushTransactionResponse
+    {
+        return requestFunds(payerFioAddress,payeeFioAddress,payeeTokenPublicAddress,amount,tokenCode,tokenCode,memo,maxFee,this.walletFioAddress)
     }
 
     /**
@@ -1003,6 +1074,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param payeeTokenPublicAddress Public address on other blockchain of user receiving funds.
      * @param amount Amount sent.
      * @param tokenCode Code of the token represented in Amount requested, i.e. BTC.
+     * @param chainCode Blockchain code for blockchain hosting this token.
      * @param obtId Other Blockchain Transaction ID (OBT ID), i.e Bitcoin transaction ID.
      * @param status Status of this OBT. Allowed statuses are: sent_to_blockchain.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
@@ -1014,12 +1086,12 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @ExperimentalUnsignedTypes
     fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
                    payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
-                   tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
+                   tokenCode:String, chainCode:String,status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
     {
         val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
         val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
-            tokenCode,obtId,status)
+            tokenCode,chainCode,obtId,status)
 
         return this.recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,wfa)
     }
@@ -1035,7 +1107,36 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param payerTokenPublicAddress Public address on other blockchain of user sending funds.
      * @param payeeTokenPublicAddress Public address on other blockchain of user receiving funds.
      * @param amount Amount sent.
+     * @param tokenCode Code of the token represented in Amount requested, i.e. BTC.  The chain code will be set to this value as well.
+     * @param obtId Other Blockchain Transaction ID (OBT ID), i.e Bitcoin transaction ID.
+     * @param status Status of this OBT. Allowed statuses are: sent_to_blockchain.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @ExperimentalUnsignedTypes
+    fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
+                      payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
+                      tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
+    {
+        return recordObtData(fioRequestId,payerFioAddress,payeeFioAddress, payerTokenPublicAddress,
+            payeeTokenPublicAddress,amount,tokenCode,status,obtId,maxFee,this.walletFioAddress)
+    }
+
+    /**
+     *
+     * Records information on the FIO blockchain about a transaction that occurred on other blockchain, i.e. 1 BTC was sent on Bitcoin Blockchain, and both
+     * sender and receiver have FIO Addresses. OBT stands for Other Blockchain Transaction
+     *
+     * @param fioRequestId ID of funds request, if this Record Send transaction is in response to a previously received funds request.  Send empty if no FIO Request ID
+     * @param payerFioAddress FIO Address of the payer. This address initiated payment.
+     * @param payeeFioAddress FIO Address of the payee. This address is receiving payment.
+     * @param payerTokenPublicAddress Public address on other blockchain of user sending funds.
+     * @param payeeTokenPublicAddress Public address on other blockchain of user receiving funds.
+     * @param amount Amount sent.
      * @param tokenCode Code of the token represented in Amount requested, i.e. BTC.
+     * @param chainCode Blockchain code for blockchain hosting this token.
      * @param obtId Other Blockchain Transaction ID (OBT ID), i.e Bitcoin transaction ID.
      * @param status Status of this OBT. Allowed statuses are: sent_to_blockchain.
      * @param memo
@@ -1050,27 +1151,70 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @ExperimentalUnsignedTypes
     fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
                    payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
-                   tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String="",
+                   tokenCode:String, chainCode:String,status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String="",
                    memo:String?=null, hash:String?=null, offlineUrl:String?=null): PushTransactionResponse
     {
         val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
         val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
-            tokenCode,obtId,status,memo,hash,offlineUrl)
+            tokenCode,chainCode,obtId,status,memo,hash,offlineUrl)
 
         return this.recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,wfa)
+    }
+
+    /**
+     *
+     * Records information on the FIO blockchain about a transaction that occurred on other blockchain, i.e. 1 BTC was sent on Bitcoin Blockchain, and both
+     * sender and receiver have FIO Addresses. OBT stands for Other Blockchain Transaction
+     *
+     * @param fioRequestId ID of funds request, if this Record Send transaction is in response to a previously received funds request.  Send empty if no FIO Request ID
+     * @param payerFioAddress FIO Address of the payer. This address initiated payment.
+     * @param payeeFioAddress FIO Address of the payee. This address is receiving payment.
+     * @param payerTokenPublicAddress Public address on other blockchain of user sending funds.
+     * @param payeeTokenPublicAddress Public address on other blockchain of user receiving funds.
+     * @param amount Amount sent.
+     * @param tokenCode Code of the token represented in Amount requested, i.e. BTC.  The chain code will be set to this value as well.
+     * @param obtId Other Blockchain Transaction ID (OBT ID), i.e Bitcoin transaction ID.
+     * @param status Status of this OBT. Allowed statuses are: sent_to_blockchain.
+     * @param memo
+     * @param hash
+     * @param offlineUrl
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @ExperimentalUnsignedTypes
+    fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
+                      payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
+                      tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,
+                      memo:String?=null, hash:String?=null, offlineUrl:String?=null): PushTransactionResponse
+    {
+        return recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,payerTokenPublicAddress,
+            payeeTokenPublicAddress,amount,tokenCode,tokenCode,status,obtId,maxFee,this.walletFioAddress,
+            memo,hash,offlineUrl)
     }
 
     @ExperimentalUnsignedTypes
     fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
                    payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
-                   tokenCode:String, status:String="sent_to_blockchain",obtId:String,
+                   tokenCode:String,chainCode:String, status:String="sent_to_blockchain",obtId:String,
                    maxFee:BigInteger): PushTransactionResponse
     {
         val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,
-            payeeTokenPublicAddress, amount.toString(),tokenCode,obtId,status)
+            payeeTokenPublicAddress, amount.toString(),tokenCode,chainCode,obtId,status)
 
         return this.recordObtData(fioRequestId, payerFioAddress, payeeFioAddress, recordObtDataContent, maxFee,"")
+    }
+
+    @ExperimentalUnsignedTypes
+    fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
+                      payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
+                      tokenCode:String, status:String="sent_to_blockchain",obtId:String,
+                      maxFee:BigInteger): PushTransactionResponse
+    {
+        return recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,payerTokenPublicAddress,
+            payeeTokenPublicAddress,amount,tokenCode,tokenCode,status,obtId,maxFee)
     }
 
     /**
@@ -1095,14 +1239,41 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @ExperimentalUnsignedTypes
     fun recordObtData(payerFioAddress:String, payeeFioAddress:String,
                       payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
-                      tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
+                      tokenCode:String,chainCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
     {
         val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
         val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
-            tokenCode,obtId,status)
+            tokenCode,chainCode,obtId,status)
 
         return this.recordObtData(BigInteger.ZERO,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,wfa)
+    }
+
+    /**
+     *
+     * Records information on the FIO blockchain about a transaction that occurred on other blockchain, i.e. 1 BTC was sent on Bitcoin Blockchain, and both
+     * sender and receiver have FIO Addresses. OBT stands for Other Blockchain Transaction
+     *
+     * @param payerFioAddress FIO Address of the payer. This address initiated payment.
+     * @param payeeFioAddress FIO Address of the payee. This address is receiving payment.
+     * @param payerTokenPublicAddress Public address on other blockchain of user sending funds.
+     * @param payeeTokenPublicAddress Public address on other blockchain of user receiving funds.
+     * @param amount Amount sent.
+     * @param tokenCode Code of the token represented in Amount requested, i.e. BTC.  The chain code value will be to this as well.
+     * @param obtId Other Blockchain Transaction ID (OBT ID), i.e Bitcoin transaction ID.
+     * @param status Status of this OBT. Allowed statuses are: sent_to_blockchain.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @ExperimentalUnsignedTypes
+    fun recordObtData(payerFioAddress:String, payeeFioAddress:String, payerTokenPublicAddress: String,
+                      payeeTokenPublicAddress:String, amount:Double, tokenCode:String,
+                      status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger): PushTransactionResponse
+    {
+        return recordObtData(payerFioAddress,payeeFioAddress,payerTokenPublicAddress,payeeTokenPublicAddress,
+            amount,tokenCode,tokenCode,status,obtId,maxFee,this.walletFioAddress)
     }
 
     /**

@@ -25,6 +25,7 @@ class RecordObtDataContent(
     @field:SerializedName("payee_public_address") var payeeTokenPublicAddress:String,
     @field:SerializedName("amount") var amount:String,
     @field:SerializedName("token_code") var tokenCode: String,
+    @field:SerializedName("chain_code") var chainCode: String,
     @field:SerializedName("obt_id") var obtId:String,
     @field:SerializedName("status") var status:String="sent_to_blockchain",
     @field:SerializedName("memo") var memo:String?=null,

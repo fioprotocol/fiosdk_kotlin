@@ -388,8 +388,8 @@ class DevSdkTests
             val fee = this.aliceFioSdk!!.getFeeForNewFundsRequest(this.aliceFioAddress).fee
 
             val response = this.aliceFioSdk!!.requestFunds(this.bobFioAddress,
-                this.aliceFioAddress,this.alicePublicTokenAddress,"2.0",
-                this.alicePublicTokenCode,"", fee)
+                this.aliceFioAddress,this.alicePublicTokenAddress,2.0,
+                this.alicePublicTokenCode,this.alicePublicTokenCode,"", fee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -510,12 +510,13 @@ class DevSdkTests
                         var recordSendContent = RecordObtDataContent(this.bobPublicTokenAddress,
                             firstPendingRequest.deserializedContent!!.payeeTokenPublicAddress,
                             firstPendingRequest.deserializedContent!!.amount,
-                            firstPendingRequest.deserializedContent!!.tokenCode,this.otherBlockChainId)
+                            firstPendingRequest.deserializedContent!!.tokenCode,firstPendingRequest.deserializedContent!!.chainCode,
+                            this.otherBlockChainId)
 
                         val response = this.bobFioSdk!!.recordObtData(firstPendingRequest.fioRequestId,firstPendingRequest.payerFioAddress
                             ,firstPendingRequest.payeeFioAddress,this.bobPublicTokenAddress,recordSendContent.payeeTokenPublicAddress,
-                            recordSendContent.amount.toDouble(),recordSendContent.tokenCode,recordSendContent.status,recordSendContent.obtId
-                            ,this.defaultFee)
+                            recordSendContent.amount.toDouble(),recordSendContent.tokenCode,recordSendContent.chainCode,
+                            recordSendContent.status,recordSendContent.obtId,this.defaultFee)
 
                         println("testFundsRequest: Test recordObtData No RecordId")
                         this.bobFioSdk!!.recordObtData(firstPendingRequest.payerFioAddress
@@ -628,7 +629,7 @@ class DevSdkTests
             val fee = this.aliceFioSdk!!.getFeeForNewFundsRequest(this.aliceFioAddress).fee
 
             val response = this.aliceFioSdk!!.requestFunds(this.bobFioAddress,
-                this.aliceFioAddress,this.alicePublicTokenAddress,"2.0",this.alicePublicTokenCode,
+                this.aliceFioAddress,this.alicePublicTokenAddress,2.0,this.alicePublicTokenCode,
                 fee)
 
             val actionTraceResponse = response.getActionTraceResponse()
@@ -930,13 +931,13 @@ class DevSdkTests
         Log.i(this.logTag, "Bob's Private Key: " + this.bobPrivateKey)
 
         if(useMockServerForAlice || useMockServerForBob) {
-            this.requestFaucetFunds("25")
+            this.requestFaucetFunds(25.0)
             Thread.sleep(4000)
 
-            this.requestFaucetFunds("25")
+            this.requestFaucetFunds(25.0)
             Thread.sleep(4000)
 
-            this.requestFaucetFunds("25")
+            this.requestFaucetFunds(25.0)
 
             Log.i(this.logTag, "Wait for balance to really be available.")
             Thread.sleep(60000)
@@ -1028,7 +1029,7 @@ class DevSdkTests
         return seedWords
     }
 
-    private fun requestFaucetFunds(requestAmount:String="1"): Boolean
+    private fun requestFaucetFunds(requestAmount:Double=1.0): Boolean
     {
         try
         {
@@ -1036,7 +1037,7 @@ class DevSdkTests
 
             var response = this.aliceFioSdk!!.requestFunds("fio@faucet",
                 this.aliceFioAddress,this.alicePublicKey,requestAmount,"FIO",
-                this.defaultFee,"")
+                this.defaultFee)
 
             var actionTraceResponse = response.getActionTraceResponse()
             if (actionTraceResponse != null && actionTraceResponse.status == "requested")

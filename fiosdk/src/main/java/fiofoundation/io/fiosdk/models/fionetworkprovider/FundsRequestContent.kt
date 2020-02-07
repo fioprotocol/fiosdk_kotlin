@@ -15,6 +15,7 @@ class FundsRequestContent(
     @field:SerializedName("payee_public_address") var payeeTokenPublicAddress:String,
     @field:SerializedName("amount") var amount:String,
     @field:SerializedName("token_code") var tokenCode: String,
+    @field:SerializedName("chain_code") var chainCode: String,
     @field:SerializedName("memo") var memo:String?=null,
     @field:SerializedName("hash") var hash:String?=null,
     @field:SerializedName("offline_url") var offlineUrl:String?=null)
