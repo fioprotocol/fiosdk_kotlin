@@ -532,11 +532,11 @@ object AbiFIOJson {
                 "                    \"type\": \"string\"\n" +
                 "                },\n" +
                 "                {\n" +
-                "                    \"name\": \"token_code\",\n" +
+                "                    \"name\": \"chain_code\",\n" +
                 "                    \"type\": \"string\"\n" +
                 "                },\n" +
                 "                {\n" +
-                "                    \"name\": \"chain_code\",\n" +
+                "                    \"name\": \"token_code\",\n" +
                 "                    \"type\": \"string\"\n" +
                 "                },\n" +
                 "                {\n" +
@@ -570,11 +570,11 @@ object AbiFIOJson {
                 "                    \"type\": \"string\"\n" +
                 "                },\n" +
                 "                {\n" +
-                "                    \"name\": \"token_code\",\n" +
+                "                    \"name\": \"chain_code\",\n" +
                 "                    \"type\": \"string\"\n" +
                 "                },\n" +
                 "                {\n" +
-                "                    \"name\": \"chain_code\",\n" +
+                "                    \"name\": \"token_code\",\n" +
                 "                    \"type\": \"string\"\n" +
                 "                },\n" +
                 "                {\n" +
