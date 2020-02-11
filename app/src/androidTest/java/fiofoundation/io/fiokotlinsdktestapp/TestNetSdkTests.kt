@@ -409,8 +409,8 @@ class TestNetSdkTests {
                         var recordSendContent = RecordObtDataContent(this.bobPublicTokenAddress,
                             firstPendingRequest.deserializedContent!!.payeeTokenPublicAddress,
                             firstPendingRequest.deserializedContent!!.amount,
-                            firstPendingRequest.deserializedContent!!.tokenCode,
-                            firstPendingRequest.deserializedContent!!.chainCode,this.otherBlockChainId)
+                            firstPendingRequest.deserializedContent!!.chainCode,
+                            firstPendingRequest.deserializedContent!!.tokenCode,this.otherBlockChainId)
 
                         val fee = this.bobFioSdk.getFeeForRecordObtData(firstPendingRequest.payerFioAddress).fee
 

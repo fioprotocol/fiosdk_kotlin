@@ -843,7 +843,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     {
         val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
-        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),tokenCode,chainCode)
+        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),chainCode,tokenCode)
 
         return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,wfa)
     }
@@ -896,7 +896,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     {
         val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
-        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),tokenCode,chainCode,memo,hash,offlineUrl)
+        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),chainCode,tokenCode,memo,hash,offlineUrl)
 
         return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,wfa)
     }
@@ -950,7 +950,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     {
         val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
-        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),tokenCode,chainCode,memo)
+        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),chainCode,tokenCode,memo)
 
         return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,wfa)
     }

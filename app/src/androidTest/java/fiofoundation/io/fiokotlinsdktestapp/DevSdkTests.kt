@@ -510,7 +510,7 @@ class DevSdkTests
                         var recordSendContent = RecordObtDataContent(this.bobPublicTokenAddress,
                             firstPendingRequest.deserializedContent!!.payeeTokenPublicAddress,
                             firstPendingRequest.deserializedContent!!.amount,
-                            firstPendingRequest.deserializedContent!!.tokenCode,firstPendingRequest.deserializedContent!!.chainCode,
+                            firstPendingRequest.deserializedContent!!.chainCode,firstPendingRequest.deserializedContent!!.tokenCode,
                             this.otherBlockChainId)
 
                         val response = this.bobFioSdk!!.recordObtData(firstPendingRequest.fioRequestId,firstPendingRequest.payerFioAddress
