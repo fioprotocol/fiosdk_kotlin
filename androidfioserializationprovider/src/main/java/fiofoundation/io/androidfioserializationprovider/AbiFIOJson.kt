@@ -552,7 +552,7 @@ object AbiFIOJson {
                 "            ]\n" +
                 "        },\n" +
                 "        {\n" +
-                "            \"name\": \"record_send_content\",\n" +
+                "            \"name\": \"record_obt_data_content\",\n" +
                 "            \"base\": \"\",\n" +
                 "            \"fields\": [\n" +
                 "                {\n" +

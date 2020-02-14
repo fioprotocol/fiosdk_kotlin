@@ -1,11 +1,7 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider
 
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
-import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
-import fiofoundation.io.fiosdk.utilities.CryptoUtils
-import java.lang.Exception
 import java.math.BigInteger
 
 class ObtDataRecord

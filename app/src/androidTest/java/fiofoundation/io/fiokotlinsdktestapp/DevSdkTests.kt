@@ -37,7 +37,7 @@ class DevSdkTests
     private var aliceFioAddress = ""
     private var bobFioAddress = ""
 
-    private var fioTestDomain = "brd"
+    private var fioTestDomain = "dapixdev"
     private var defaultFee = BigInteger("500000000000")
 
     private val alicePublicTokenAddress = "1PzCN3cBkTL72GPeJmpcueU4wQi9guiLa6"

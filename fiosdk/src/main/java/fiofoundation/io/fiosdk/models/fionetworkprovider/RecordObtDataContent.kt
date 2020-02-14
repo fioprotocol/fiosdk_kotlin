@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
-import fiofoundation.io.fiosdk.utilities.CompressionUtils
 import fiofoundation.io.fiosdk.utilities.CryptoUtils
 import java.lang.Exception
 
@@ -34,7 +33,7 @@ class RecordObtDataContent(
 {
     fun serialize(privateKey: String, publicKey: String, serializationProvider: ISerializationProvider): String
     {
-        val serializedNewFundsContent = serializationProvider.serializeContent(this.toJson(),"record_send_content")
+        val serializedNewFundsContent = serializationProvider.serializeContent(this.toJson(),"record_obt_data_content")
 
         val secretKey = CryptoUtils.generateSharedSecret(privateKey,publicKey)
 
@@ -54,7 +53,7 @@ class RecordObtDataContent(
 
                 val decryptedMessage = CryptoUtils.decryptSharedMessage(serializedRecordObtDataContent,secretKey)
 
-                val deserializedMessage = serializationProvider.deserializeContent(decryptedMessage,"record_send_content")
+                val deserializedMessage = serializationProvider.deserializeContent(decryptedMessage,"record_obt_data_content")
 
                 return Gson().fromJson(deserializedMessage, RecordObtDataContent::class.java)
             }
