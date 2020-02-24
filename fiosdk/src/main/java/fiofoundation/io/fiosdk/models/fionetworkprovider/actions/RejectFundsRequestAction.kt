@@ -6,7 +6,7 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.request.FIORequestData
 import java.math.BigInteger
 
 class RejectFundsRequestAction(fioRequestId: BigInteger,
-                            maxFee: BigInteger, walletFioAddress: String,
+                            maxFee: BigInteger, technologyPartnerId: String,
                             actorPublicKey: String
                             ) : IAction
 {
@@ -23,7 +23,7 @@ class RejectFundsRequestAction(fioRequestId: BigInteger,
                 fioRequestId,
                 maxFee,
                 auth.actor,
-                walletFioAddress
+                technologyPartnerId
             )
 
         this.authorization.add(auth)
@@ -33,5 +33,5 @@ class RejectFundsRequestAction(fioRequestId: BigInteger,
     class RejectFundsRequestData(@field:SerializedName("fio_request_id") var fioRequestId:BigInteger,
                               @field:SerializedName("max_fee") var max_fee:BigInteger,
                               @field:SerializedName("actor") var actor:String,
-                              @field:SerializedName("tpid") var walletFioAddress:String): FIORequestData()
+                              @field:SerializedName("tpid") var technologyPartnerId:String): FIORequestData()
 }

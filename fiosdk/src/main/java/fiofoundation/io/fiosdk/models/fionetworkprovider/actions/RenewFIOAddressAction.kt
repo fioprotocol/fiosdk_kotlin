@@ -5,7 +5,7 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.FIORequestData
 import java.math.BigInteger
 
-class RenewFIOAddressAction(fioAddress: String, maxFee: BigInteger, walletFioAddress: String,
+class RenewFIOAddressAction(fioAddress: String, maxFee: BigInteger, technologyPartnerId: String,
                                actorPublicKey: String) :
     IAction
 {
@@ -22,7 +22,7 @@ class RenewFIOAddressAction(fioAddress: String, maxFee: BigInteger, walletFioAdd
                 fioAddress,
                 maxFee,
                 auth.actor,
-                walletFioAddress
+                technologyPartnerId
             )
 
         this.authorization.add(auth)
@@ -32,5 +32,5 @@ class RenewFIOAddressAction(fioAddress: String, maxFee: BigInteger, walletFioAdd
     class RenewFIOAddressRequestData(@field:SerializedName("fio_address") var fioAddress:String,
                                 @field:SerializedName("max_fee") var max_fee:BigInteger,
                                 @field:SerializedName("actor") var actor:String,
-                                @field:SerializedName("tpid") var walletFioAddress:String): FIORequestData()
+                                @field:SerializedName("tpid") var technologyPartnerId:String): FIORequestData()
 }

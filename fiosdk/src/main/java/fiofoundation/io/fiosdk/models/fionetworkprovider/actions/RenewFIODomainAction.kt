@@ -5,7 +5,7 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.Authorization
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.FIORequestData
 import java.math.BigInteger
 
-class RenewFIODomainAction(fioDomain: String, maxFee: BigInteger, walletFioAddress: String,
+class RenewFIODomainAction(fioDomain: String, maxFee: BigInteger, technologyPartnerId: String,
                            actorPublicKey: String) :
     IAction
 {
@@ -22,7 +22,7 @@ class RenewFIODomainAction(fioDomain: String, maxFee: BigInteger, walletFioAddre
                 fioDomain,
                 maxFee,
                 auth.actor,
-                walletFioAddress
+                technologyPartnerId
             )
 
         this.authorization.add(auth)
@@ -32,5 +32,5 @@ class RenewFIODomainAction(fioDomain: String, maxFee: BigInteger, walletFioAddre
     class RenewFIODomainRequestData(@field:SerializedName("fio_domain") var fioDomain:String,
                                @field:SerializedName("max_fee") var max_fee:BigInteger,
                                @field:SerializedName("actor") var actor:String,
-                               @field:SerializedName("tpid") var walletFioAddress:String): FIORequestData()
+                               @field:SerializedName("tpid") var technologyPartnerId:String): FIORequestData()
 }

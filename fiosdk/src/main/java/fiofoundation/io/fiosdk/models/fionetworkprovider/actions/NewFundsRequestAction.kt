@@ -10,7 +10,7 @@ class NewFundsRequestAction(
     payeefioAddress: String,
     content: String,
     maxFee: BigInteger,
-    walletFioAddress: String,
+    technologyPartnerId: String,
     actorPublicKey: String) : IAction
 {
     override var account = "fio.reqobt"
@@ -28,7 +28,7 @@ class NewFundsRequestAction(
                 content,
                 maxFee,
                 auth.actor,
-                walletFioAddress
+                technologyPartnerId
             )
 
         this.authorization.add(auth)
@@ -40,5 +40,5 @@ class NewFundsRequestAction(
                                 @field:SerializedName("content") var content: String,
                                 @field:SerializedName("max_fee") var max_fee:BigInteger,
                                 @field:SerializedName("actor") var actor:String,
-                                @field:SerializedName("tpid") var walletFioAddress:String): FIORequestData()
+                                @field:SerializedName("tpid") var technologyPartnerId:String): FIORequestData()
 }

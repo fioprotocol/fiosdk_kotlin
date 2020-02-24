@@ -9,7 +9,7 @@ import java.math.BigInteger
 class AddPublicAddressAction(fioAddress: String,
                                tokenPublicAddresses: List<TokenPublicAddress>,
                              maxFee: BigInteger,
-                               walletFioAddress: String,
+                             technologyPartnerId: String,
                                actorPublicKey: String) :
     IAction
 {
@@ -27,7 +27,7 @@ class AddPublicAddressAction(fioAddress: String,
                 tokenPublicAddresses,
                 maxFee,
                 auth.actor,
-                walletFioAddress
+                technologyPartnerId
             )
 
         this.authorization.add(auth)
@@ -38,5 +38,5 @@ class AddPublicAddressAction(fioAddress: String,
                                 @field:SerializedName("public_addresses") var tokenPublicAddresses:List<TokenPublicAddress>,
                                 @field:SerializedName("max_fee") var maxFee:BigInteger,
                                 @field:SerializedName("actor") var actor:String,
-                                @field:SerializedName("tpid") var walletFioAddress:String): FIORequestData()
+                                @field:SerializedName("tpid") var technologyPartnerId:String): FIORequestData()
 }

@@ -35,12 +35,12 @@ import java.math.BigInteger
  *
  * @param privateKey the fio private key of the client sending requests to FIO API.
  * @param publicKey the fio public key of the client sending requests to FIO API.
- * @param walletFioAddress FIO Address of the wallet which generates this transaction.  Set to empty if not known.
+ * @param technologyPartnerId FIO Address of the wallet which generates this transaction.  Set to empty if not known.
  * @param serializationProvider the serialization provider used for abi serialization and deserialization.
  * @param signatureProvider the signature provider used to sign block chain transactions.
  * @param networkBaseUrl the url to the FIO API.
  */
-class FIOSDK(private var privateKey: String, var publicKey: String,var walletFioAddress:String,
+class FIOSDK(private var privateKey: String, var publicKey: String,var technologyPartnerId:String,
              var serializationProvider: ISerializationProvider,
              var signatureProvider: ISignatureProvider, private val networkBaseUrl:String)
 {
@@ -103,16 +103,16 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
          *
          * @param privateKey the fio private key of the client sending requests to FIO API.
          * @param publicKey the fio public key of the client sending requests to FIO API.
-         * @param walletFioAddress FIO Address of the wallet which generates this transaction.  Set to empty if not known.
+         * @param technologyPartnerId FIO Address of the wallet which generates this transaction.  Set to empty if not known.
          * @param serializationProvider the serialization provider used for abi serialization and deserialization.
          * @param signatureProvider the signature provider used to sign block chain transactions.
          * @param networkBaseUrl the url to the FIO API.
          */
-        fun getInstance(privateKey: String,publicKey: String,walletFioAddress: String,
+        fun getInstance(privateKey: String,publicKey: String,technologyPartnerId: String,
                         serializationProvider: ISerializationProvider,
                         signatureProvider: ISignatureProvider,networkBaseUrl:String): FIOSDK
         {
-            fioSdk = FIOSDK(privateKey,publicKey,walletFioAddress,serializationProvider,
+            fioSdk = FIOSDK(privateKey,publicKey,technologyPartnerId,serializationProvider,
                 signatureProvider,networkBaseUrl)
 
             return fioSdk!!
@@ -151,10 +151,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
          *
          * @param privateKey the fio private key of the client sending requests to FIO API.
          * @param publicKey the fio public key of the client sending requests to FIO API.
-         * @param walletFioAddress FIO Address of the wallet which generates this transaction.  Set to empty if not known.
+         * @param technologyPartnerId FIO Address of the wallet which generates this transaction.  Set to empty if not known.
          * @param networkBaseUrl the url to the FIO API.
          */
-        fun getInstance(privateKey: String,publicKey: String,walletFioAddress: String,
+        fun getInstance(privateKey: String,publicKey: String,technologyPartnerId: String,
                         serializationProvider: ISerializationProvider,
                         networkBaseUrl:String): FIOSDK {
 
@@ -166,7 +166,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
             fioSdk = FIOSDK(
                 privateKey,
                 publicKey,
-                walletFioAddress,
+                technologyPartnerId,
                 serializationProvider,
                 signatureProvider,
                 networkBaseUrl
@@ -279,13 +279,13 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param fioAddress FIO Address to register.
      * @param ownerPublicKey Public key which will own the FIO Address after registration. Set to empty if same as sender.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
-     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun registerFioAddress(fioAddress:String ,ownerPublicKey:String, maxFee:BigInteger,
-                           walletFioAddress:String): PushTransactionResponse
+                           technologyPartnerId:String): PushTransactionResponse
     {
         var transactionProcessor = RegisterFIOAddressTrxProcessor(
             this.serializationProvider,
@@ -296,7 +296,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
         try
         {
-            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
             val validator = validateRegisterFioAddress(fioAddress,ownerPublicKey,wfa)
 
@@ -367,15 +367,15 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      *
      * @param fioAddress FIO Address to register.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
-     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun registerFioAddress(fioAddress:String, maxFee:BigInteger, walletFioAddress:String): PushTransactionResponse
+    fun registerFioAddress(fioAddress:String, maxFee:BigInteger, technologyPartnerId:String): PushTransactionResponse
     {
-        return registerFioAddress(fioAddress,"", maxFee, walletFioAddress)
+        return registerFioAddress(fioAddress,"", maxFee, technologyPartnerId)
     }
 
     /**
@@ -399,14 +399,14 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param fioDomain FIO Domain to register.
      * @param ownerPublicKey Public key which will own the FIO Domain after registration. Set to empty if same as sender.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
-     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun registerFioDomain(fioDomain:String, ownerPublicKey:String, maxFee:BigInteger,
-                          walletFioAddress:String): PushTransactionResponse
+                          technologyPartnerId:String): PushTransactionResponse
     {
         var transactionProcessor = RegisterFIODomainTrxProcessor(
             this.serializationProvider,
@@ -417,7 +417,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
         try
         {
-            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
             val validator = validateRegisterFioDomain(fioDomain,ownerPublicKey,wfa)
 
@@ -487,16 +487,16 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      *
      * @param fioDomain FIO Domain to register. The owner will be the public key associated with the FIO SDK instance.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
-     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun registerFioDomain(fioDomain:String, maxFee:BigInteger,
-                          walletFioAddress:String): PushTransactionResponse
+                          technologyPartnerId:String): PushTransactionResponse
     {
-        return registerFioDomain(fioDomain,"",maxFee,walletFioAddress)
+        return registerFioDomain(fioDomain,"",maxFee,technologyPartnerId)
     }
 
     /**
@@ -519,14 +519,14 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      *
      * @param fioDomain FIO Domain to renew.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
-     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun renewFioDomain(fioDomain:String, maxFee:BigInteger,
-                          walletFioAddress:String): PushTransactionResponse
+                       technologyPartnerId:String): PushTransactionResponse
     {
         var transactionProcessor = RegisterFIODomainTrxProcessor(
             this.serializationProvider,
@@ -537,7 +537,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
         try
         {
-            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
             val validator = validateRenewFioDomain(fioDomain,wfa)
 
@@ -605,14 +605,14 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      *
      * @param fioAddress FIO Address to renew.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
-     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun renewFioAddress(fioAddress:String, maxFee:BigInteger,
-                           walletFioAddress:String): PushTransactionResponse
+                        technologyPartnerId:String): PushTransactionResponse
     {
         var transactionProcessor = RenewFIOAddressTrxProcessor(
             this.serializationProvider,
@@ -623,7 +623,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
         try
         {
-            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
             val validator = validateRenewFioAddress(fioAddress,wfa)
 
@@ -695,14 +695,14 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param payeePublicKey FIO public Address of the one receiving the tokens.
      * @param amount Amount sent in SUFs.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
-     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
     fun transferTokens(payeeFioPublicKey:String, amount:BigInteger, maxFee:BigInteger,
-                                  walletFioAddress:String): PushTransactionResponse
+                       technologyPartnerId:String): PushTransactionResponse
     {
         var transactionProcessor = TransTokensPubKeyTrxProcessor(
             this.serializationProvider,
@@ -713,7 +713,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
         try
         {
-            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
             val validator = validateTransferPublicTokens(payeeFioPublicKey,wfa)
 
@@ -830,7 +830,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param tokenCode Code of the token represented in amount requested.
      * @param chainCode Blockchain code for blockchain hosting this token.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
-     * @param walletFioAddress (optional) FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId (optional) FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
@@ -839,9 +839,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @ExperimentalUnsignedTypes
     fun requestFunds(payerFioAddress:String, payeeFioAddress:String,
                         payeeTokenPublicAddress:String, amount:Double, tokenCode:String,chainCode:String,
-                        maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
+                        maxFee:BigInteger, technologyPartnerId:String=""): PushTransactionResponse
     {
-        val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+        val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
         val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),chainCode,tokenCode)
 
@@ -866,7 +866,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     fun requestFunds(payerFioAddress:String, payeeFioAddress:String, payeeTokenPublicAddress:String,
                      amount:Double, tokenCode:String, maxFee:BigInteger): PushTransactionResponse
     {
-        return requestFunds(payerFioAddress,payeeFioAddress,payeeTokenPublicAddress,amount,tokenCode,tokenCode,maxFee,this.walletFioAddress)
+        return requestFunds(payerFioAddress,payeeFioAddress,payeeTokenPublicAddress,amount,tokenCode,tokenCode,maxFee,this.technologyPartnerId)
     }
 
     /**
@@ -882,7 +882,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param hash (optional)
      * @param offlineUrl (optional)
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
-     * @param walletFioAddress (optional) FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId (optional) FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
@@ -892,9 +892,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     fun requestFunds(payerFioAddress:String, payeeFioAddress:String,
                         payeeTokenPublicAddress:String, amount:Double, tokenCode:String,chainCode:String,
                         memo: String?=null, hash: String?=null, offlineUrl:String?=null,
-                        maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
+                        maxFee:BigInteger, technologyPartnerId:String=""): PushTransactionResponse
     {
-        val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+        val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
         val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),chainCode,tokenCode,memo,hash,offlineUrl)
 
@@ -923,7 +923,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
                      amount:Double, tokenCode:String, memo: String?=null, hash: String?=null,
                      offlineUrl:String?=null, maxFee:BigInteger): PushTransactionResponse
     {
-        return requestFunds(payerFioAddress,payeeFioAddress,payeeTokenPublicAddress,amount,tokenCode,tokenCode,memo,hash,offlineUrl,maxFee,this.walletFioAddress)
+        return requestFunds(payerFioAddress,payeeFioAddress,payeeTokenPublicAddress,amount,tokenCode,tokenCode,memo,hash,offlineUrl,maxFee,this.technologyPartnerId)
     }
 
     /**
@@ -937,7 +937,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param chainCode Blockchain code for blockchain hosting this token.
      * @param memo
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
-     * @param walletFioAddress (optional) FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId (optional) FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
@@ -946,9 +946,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @ExperimentalUnsignedTypes
     fun requestFunds(payerFioAddress:String, payeeFioAddress:String,
                      payeeTokenPublicAddress:String, amount:Double, tokenCode:String, chainCode:String,
-                     memo: String, maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
+                     memo: String, maxFee:BigInteger, technologyPartnerId:String=""): PushTransactionResponse
     {
-        val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+        val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
         val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),chainCode,tokenCode,memo)
 
@@ -974,7 +974,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     fun requestFunds(payerFioAddress:String, payeeFioAddress:String, payeeTokenPublicAddress:String,
                      amount:Double, tokenCode:String, memo: String, maxFee:BigInteger): PushTransactionResponse
     {
-        return requestFunds(payerFioAddress,payeeFioAddress,payeeTokenPublicAddress,amount,tokenCode,tokenCode,memo,maxFee,this.walletFioAddress)
+        return requestFunds(payerFioAddress,payeeFioAddress,payeeTokenPublicAddress,amount,tokenCode,tokenCode,memo,maxFee,this.technologyPartnerId)
     }
 
     /**
@@ -982,13 +982,13 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      *
      * @param fioRequestId Existing funds request Id
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
-     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun rejectFundsRequest(fioRequestId:BigInteger, maxFee: BigInteger, walletFioAddress:String): PushTransactionResponse
+    fun rejectFundsRequest(fioRequestId:BigInteger, maxFee: BigInteger, technologyPartnerId:String): PushTransactionResponse
     {
         var transactionProcessor = RejectFundsRequestTrxProcessor(
             this.serializationProvider,
@@ -999,7 +999,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
         try
         {
-            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
             val validator = validateRejectFundsRequest(fioRequestId,wfa)
 
@@ -1078,7 +1078,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param obtId Other Blockchain Transaction ID (OBT ID), i.e Bitcoin transaction ID.
      * @param status Status of this OBT. Allowed statuses are: sent_to_blockchain.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
-     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
@@ -1086,9 +1086,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @ExperimentalUnsignedTypes
     fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
                    payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
-                   tokenCode:String, chainCode:String,status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
+                   tokenCode:String, chainCode:String,status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,technologyPartnerId:String=""): PushTransactionResponse
     {
-        val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+        val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
         val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
             tokenCode,chainCode,obtId,status)
@@ -1118,10 +1118,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @ExperimentalUnsignedTypes
     fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
                       payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
-                      tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
+                      tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,technologyPartnerId:String=""): PushTransactionResponse
     {
         return recordObtData(fioRequestId,payerFioAddress,payeeFioAddress, payerTokenPublicAddress,
-            payeeTokenPublicAddress,amount,tokenCode,status,obtId,maxFee,this.walletFioAddress)
+            payeeTokenPublicAddress,amount,tokenCode,status,obtId,maxFee,this.technologyPartnerId)
     }
 
     /**
@@ -1143,7 +1143,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param hash
      * @param offlineUrl
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
-     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
@@ -1151,10 +1151,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @ExperimentalUnsignedTypes
     fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
                    payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
-                   tokenCode:String, chainCode:String,status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String="",
+                   tokenCode:String, chainCode:String,status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,technologyPartnerId:String="",
                    memo:String?=null, hash:String?=null, offlineUrl:String?=null): PushTransactionResponse
     {
-        val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+        val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
         val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
             tokenCode,chainCode,obtId,status,memo,hash,offlineUrl)
@@ -1191,7 +1191,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
                       memo:String?=null, hash:String?=null, offlineUrl:String?=null): PushTransactionResponse
     {
         return recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,payerTokenPublicAddress,
-            payeeTokenPublicAddress,amount,tokenCode,tokenCode,status,obtId,maxFee,this.walletFioAddress,
+            payeeTokenPublicAddress,amount,tokenCode,tokenCode,status,obtId,maxFee,this.technologyPartnerId,
             memo,hash,offlineUrl)
     }
 
@@ -1231,7 +1231,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param obtId Other Blockchain Transaction ID (OBT ID), i.e Bitcoin transaction ID.
      * @param status Status of this OBT. Allowed statuses are: sent_to_blockchain.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
-     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
@@ -1239,9 +1239,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @ExperimentalUnsignedTypes
     fun recordObtData(payerFioAddress:String, payeeFioAddress:String,
                       payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
-                      tokenCode:String,chainCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
+                      tokenCode:String,chainCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,technologyPartnerId:String=""): PushTransactionResponse
     {
-        val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+        val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
         val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
             tokenCode,chainCode,obtId,status)
@@ -1273,7 +1273,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
                       status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger): PushTransactionResponse
     {
         return recordObtData(payerFioAddress,payeeFioAddress,payerTokenPublicAddress,payeeTokenPublicAddress,
-            amount,tokenCode,tokenCode,status,obtId,maxFee,this.walletFioAddress)
+            amount,tokenCode,tokenCode,status,obtId,maxFee,this.technologyPartnerId)
     }
 
     /**
@@ -1639,7 +1639,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param chainCode Blockchain code for blockchain hosting this token.
      * @param tokenPublicAddress The public address to be added to the FIO Address for the specified token.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
-     * @param walletFioAddress (optional) FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId (optional) FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
@@ -1647,7 +1647,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
     fun addPublicAddress(fioAddress:String, tokenCode:String, chainCode:String, tokenPublicAddress:String,
-                         maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
+                         maxFee:BigInteger, technologyPartnerId:String=""): PushTransactionResponse
     {
         var transactionProcessor = AddPublicAddressTrxProcessor(
             this.serializationProvider,
@@ -1658,7 +1658,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
         try
         {
-            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
             val validator = validateAddPublicAddress(fioAddress,tokenCode,chainCode,tokenPublicAddress,wfa)
 
@@ -1713,7 +1713,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param fioAddress FIO Address to add the public address to.
      * @param tokenPublicAddresses List of public token addresses to add [TokenPublicAddress].
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
-     * @param walletFioAddress (optional) FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId (optional) FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
@@ -1721,7 +1721,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
     fun addPublicAddresses(fioAddress:String, tokenPublicAddresses:List<TokenPublicAddress>,
-                         maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
+                         maxFee:BigInteger, technologyPartnerId:String=""): PushTransactionResponse
     {
         var transactionProcessor = AddPublicAddressTrxProcessor(
             this.serializationProvider,
@@ -1732,9 +1732,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
         try
         {
-            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-            val validator = validateAddPublicAddresses(fioAddress,tokenPublicAddresses,walletFioAddress)
+            val validator = validateAddPublicAddresses(fioAddress,tokenPublicAddresses,technologyPartnerId)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
@@ -1788,7 +1788,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param fioDomain FIO Domain to make public or private.  Default is private.
      * @param visibility [FioDomainVisiblity]
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
-     * @param walletFioAddress (optional) FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId (optional) FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
@@ -1796,7 +1796,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
     fun setFioDomainVisibility(fioDomain:String, visibility:FioDomainVisiblity,
-                         maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
+                         maxFee:BigInteger, technologyPartnerId:String=""): PushTransactionResponse
     {
         var transactionProcessor = SetFioDomainVisibilityTrxProcessor(
             this.serializationProvider,
@@ -1807,7 +1807,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
         try
         {
-            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
             val validator = validateSetFioDomainVisibility(fioDomain,wfa)
 
@@ -1928,7 +1928,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param payeeFioAddress FIO Address of the payee. This address is sending the request and will receive payment.
      * @param fundsRequestContent [FundsRequestContent]
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
-     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
@@ -1937,7 +1937,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @ExperimentalUnsignedTypes
     private fun requestNewFunds(payerFioAddress:String, payeeFioAddress:String,
                         fundsRequestContent: FundsRequestContent, maxFee:BigInteger,
-                        walletFioAddress:String): PushTransactionResponse
+                                technologyPartnerId:String): PushTransactionResponse
     {
         var transactionProcessor = NewFundsRequestTrxProcessor(
             this.serializationProvider,
@@ -1948,7 +1948,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
         try
         {
-            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
             val validator = validateNewFundsRequest(payerFioAddress,payeeFioAddress,fundsRequestContent,wfa)
 
@@ -2055,7 +2055,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @param payeeFioAddress FIO Address of the payee. This address is receiving payment.
      * @param recordObtDataContent [RecordObtDataContent]
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
-     * @param walletFioAddress FIO Address of the wallet which generates this transaction.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
      *
      * @throws [FIOError]
@@ -2064,7 +2064,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @ExperimentalUnsignedTypes
     private fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String,
                            payeeFioAddress:String, recordObtDataContent: RecordObtDataContent,
-                           maxFee:BigInteger, walletFioAddress:String): PushTransactionResponse
+                           maxFee:BigInteger, technologyPartnerId:String): PushTransactionResponse
     {
         var transactionProcessor = RecordObtDataTrxProcessor(
             this.serializationProvider,
@@ -2075,7 +2075,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
         try
         {
-            val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
             val validator = validateRecordObtDataRequest(fioRequestId,payerFioAddress,
                 payeeFioAddress,recordObtDataContent,wfa)
@@ -2232,52 +2232,52 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     }
 
     private fun validateNewFundsRequest(payerFioAddress:String, payeeFioAddress:String,
-                                        fundsRequestContent: FundsRequestContent,walletFioAddress:String): Validator
+                                        fundsRequestContent: FundsRequestContent,technologyPartnerId:String): Validator
     {
         var isValid = (payerFioAddress.isFioAddress() && payeeFioAddress.isFioAddress()
                 && fundsRequestContent.tokenCode.isTokenCode())
 
-        if(walletFioAddress.isNotEmpty())
-            isValid = isValid && walletFioAddress.isFioAddress()
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
 
         return Validator(isValid,if(!isValid) "Invalid New Funds Request" else "")
     }
 
     private fun validateAddPublicAddress(fioAddress:String, tokenCode:String, chainCode:String,
                                          tokenPublicAddress:String,
-                                        walletFioAddress:String=""): Validator
+                                         technologyPartnerId:String=""): Validator
     {
         var isValid = (fioAddress.isFioAddress()
                 && tokenPublicAddress.isNativeBlockChainPublicAddress()
                 && tokenCode.isTokenCode() && chainCode.isTokenCode())
 
-        if(walletFioAddress.isNotEmpty())
-            isValid = isValid && walletFioAddress.isFioAddress()
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
 
         return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")
     }
 
     private fun validateAddPublicAddresses(fioAddress:String,
                                            tokenPublicAddresses:List<TokenPublicAddress>,
-                                           walletFioAddress:String=""): Validator
+                                           technologyPartnerId:String=""): Validator
     {
         var isValid = true
 
         for(address in tokenPublicAddresses)
         {
-            isValid = isValid && this.validateAddPublicAddress(fioAddress,address.tokenCode,address.chainCode,address.publicAddress,walletFioAddress).isValid
+            isValid = isValid && this.validateAddPublicAddress(fioAddress,address.tokenCode,address.chainCode,address.publicAddress,technologyPartnerId).isValid
         }
 
         return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")
     }
 
     private fun validateRegisterFioAddress(fioAddress:String ,ownerPublicKey:String,
-                                           walletFioAddress:String): Validator
+                                           technologyPartnerId:String): Validator
     {
         var isValid = fioAddress.isFioAddress()
 
-        if(walletFioAddress.isNotEmpty())
-            isValid = isValid && walletFioAddress.isFioAddress()
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
 
         if(ownerPublicKey.isNotEmpty())
             isValid = isValid && ownerPublicKey.isFioPublicKey()
@@ -2286,12 +2286,12 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     }
 
     private fun validateRegisterFioDomain(fioDomain:String ,ownerPublicKey:String,
-                                           walletFioAddress:String): Validator
+                                          technologyPartnerId:String): Validator
     {
         var isValid = fioDomain.isFioDomain()
 
-        if(walletFioAddress.isNotEmpty())
-            isValid = isValid && walletFioAddress.isFioAddress()
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
 
         if(ownerPublicKey.isNotEmpty())
             isValid = isValid && ownerPublicKey.isFioPublicKey()
@@ -2299,10 +2299,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
         return Validator(isValid,if(!isValid) "Invalid Register FIO Domain Request" else "")
     }
 
-    private fun validateRenewFioAddress(fioAddress:String, walletFioAddress:String): Validator
+    private fun validateRenewFioAddress(fioAddress:String, technologyPartnerId:String): Validator
     {
         try {
-            return this.validateRegisterFioAddress(fioAddress,"",walletFioAddress)
+            return this.validateRegisterFioAddress(fioAddress,"",technologyPartnerId)
         }
         catch(e:Exception)
         {
@@ -2310,10 +2310,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
         }
     }
 
-    private fun validateRenewFioDomain(fioDomain:String, walletFioAddress:String): Validator
+    private fun validateRenewFioDomain(fioDomain:String, technologyPartnerId:String): Validator
     {
         try {
-            return this.validateRegisterFioDomain(fioDomain,"",walletFioAddress)
+            return this.validateRegisterFioDomain(fioDomain,"",technologyPartnerId)
         }
         catch(e:Exception)
         {
@@ -2321,47 +2321,47 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
         }
     }
 
-    private fun validateSetFioDomainVisibility(fioDomain:String, walletFioAddress:String): Validator
+    private fun validateSetFioDomainVisibility(fioDomain:String, technologyPartnerId:String): Validator
     {
         var isValid = fioDomain.isFioDomain()
 
-        if(walletFioAddress.isNotEmpty())
-            isValid = isValid && walletFioAddress.isFioAddress()
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
 
         return Validator(isValid,if(!isValid) "Invalid Set FIO Domain Visibility Request" else "")
     }
 
-    private fun validateRejectFundsRequest(fioRequestId:BigInteger,walletFioAddress:String): Validator
+    private fun validateRejectFundsRequest(fioRequestId:BigInteger,technologyPartnerId:String): Validator
     {
         var isValid = fioRequestId > BigInteger.ZERO
 
-        if(walletFioAddress.isNotEmpty())
-            isValid = isValid && walletFioAddress.isFioAddress()
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
 
         return Validator(isValid,if(!isValid) "Invalid Reject Funds Request" else "")
     }
 
     private fun validateRecordObtDataRequest(fioRequestId: BigInteger, payerFioAddress:String,
                                           payeeFioAddress:String, recordObtDataContent: RecordObtDataContent,
-                                          walletFioAddress:String): Validator
+                                             technologyPartnerId:String): Validator
     {
         var isValid = fioRequestId >= BigInteger.ZERO
 
         isValid = isValid && (payerFioAddress.isFioAddress() && payeeFioAddress.isFioAddress()
                 && recordObtDataContent.tokenCode.isTokenCode())
 
-        if(walletFioAddress.isNotEmpty())
-            isValid = isValid && walletFioAddress.isFioAddress()
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
 
         return Validator(isValid,if(!isValid) "Invalid Send Record Request" else "")
     }
 
-    private fun validateTransferPublicTokens(payeeFioPublicKey:String, walletFioAddress:String=""): Validator
+    private fun validateTransferPublicTokens(payeeFioPublicKey:String, technologyPartnerId:String=""): Validator
     {
         var isValid = payeeFioPublicKey.isFioPublicKey()
 
-        if(walletFioAddress.isNotEmpty())
-            isValid = isValid && walletFioAddress.isFioAddress()
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
 
         return Validator(isValid,if(!isValid) "Invalid Transfer Public Tokens Request" else "")
     }

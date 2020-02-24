@@ -9,7 +9,7 @@ import java.math.BigInteger
 class SetFioDomainVisibilityAction(fioDomain: String,
                              visibility: FioDomainVisiblity,
                              maxFee: BigInteger,
-                             walletFioAddress: String,
+                                   technologyPartnerId: String,
                              actorPublicKey: String) : IAction
 {
     override var account = "fio.address"
@@ -26,7 +26,7 @@ class SetFioDomainVisibilityAction(fioDomain: String,
                 visibility.visibility,
                 maxFee,
                 auth.actor,
-                walletFioAddress
+                technologyPartnerId
             )
 
         this.authorization.add(auth)
@@ -37,5 +37,5 @@ class SetFioDomainVisibilityAction(fioDomain: String,
                                 @field:SerializedName("is_public") var isPublic:Int,
                                 @field:SerializedName("max_fee") var maxFee:BigInteger,
                                 @field:SerializedName("actor") var actor:String,
-                                @field:SerializedName("tpid") var walletFioAddress:String): FIORequestData()
+                                @field:SerializedName("tpid") var technologyPartnerId:String): FIORequestData()
 }
