@@ -1490,11 +1490,16 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun getFee(endPointName:FIOApiEndPoints.FeeEndPoint): GetFeeResponse
+    fun getFee(endPointName:FIOApiEndPoints.FeeEndPoint,fioAddress:String=""): GetFeeResponse
     {
         try
         {
-            val request = GetFeeRequest(endPointName.endpoint,"")
+            var request:GetFeeRequest?
+
+            if(fioAddress!="" && fioAddress.isFioAddress())
+                request = GetFeeRequest(endPointName.endpoint,fioAddress)
+            else
+                request = GetFeeRequest(endPointName.endpoint,"")
 
             return this.networkProvider.getFee(request)
         }
