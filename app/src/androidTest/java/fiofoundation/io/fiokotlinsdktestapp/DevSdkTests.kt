@@ -258,7 +258,7 @@ class DevSdkTests
 
         try
         {
-            val response = this.aliceFioSdk!!.getPublicAddress(newFioAddress,this.alicePublicTokenCode,this.alicePublicChainCode)
+            val response = this.aliceFioSdk!!.getPublicAddress(newFioAddress,this.alicePublicChainCode,this.alicePublicTokenCode)
 
             Assert.assertTrue(
                 "Couldn't Find Public Address for Alice",

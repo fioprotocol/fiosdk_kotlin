@@ -225,7 +225,7 @@ class TestNetSdkTests {
         println("testGenericActions: Test getPublicAddress")
         try
         {
-            val response = this.aliceFioSdk!!.getPublicAddress(newFioAddress,this.alicePublicTokenCode,this.alicePublicChainCode)
+            val response = this.aliceFioSdk!!.getPublicAddress(newFioAddress,this.alicePublicChainCode,this.alicePublicTokenCode)
 
             assertTrue(
                 "Couldn't Find Public Address for Alice",

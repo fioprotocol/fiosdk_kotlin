@@ -838,7 +838,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
     fun requestFunds(payerFioAddress:String, payeeFioAddress:String,
-                        payeeTokenPublicAddress:String, amount:Double, tokenCode:String,chainCode:String,
+                        payeeTokenPublicAddress:String, amount:Double, chainCode:String, tokenCode:String,
                         maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
     {
         val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
@@ -890,7 +890,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
     fun requestFunds(payerFioAddress:String, payeeFioAddress:String,
-                        payeeTokenPublicAddress:String, amount:Double, tokenCode:String,chainCode:String,
+                        payeeTokenPublicAddress:String, amount:Double, chainCode:String, tokenCode:String,
                         memo: String?=null, hash: String?=null, offlineUrl:String?=null,
                         maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
     {
@@ -945,7 +945,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
     fun requestFunds(payerFioAddress:String, payeeFioAddress:String,
-                     payeeTokenPublicAddress:String, amount:Double, tokenCode:String, chainCode:String,
+                     payeeTokenPublicAddress:String, amount:Double, chainCode:String, tokenCode:String,
                      memo: String, maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
     {
         val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
@@ -1086,12 +1086,12 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @ExperimentalUnsignedTypes
     fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
                    payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
-                   tokenCode:String, chainCode:String,status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
+                      chainCode:String,tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
     {
         val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
         val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
-            tokenCode,chainCode,obtId,status)
+            chainCode,tokenCode,obtId,status)
 
         return this.recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,wfa)
     }
@@ -1151,13 +1151,13 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @ExperimentalUnsignedTypes
     fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
                    payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
-                   tokenCode:String, chainCode:String,status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String="",
+                      chainCode:String,tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String="",
                    memo:String?=null, hash:String?=null, offlineUrl:String?=null): PushTransactionResponse
     {
         val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
         val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
-            tokenCode,chainCode,obtId,status,memo,hash,offlineUrl)
+            chainCode,tokenCode,obtId,status,memo,hash,offlineUrl)
 
         return this.recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,wfa)
     }
@@ -1198,11 +1198,11 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @ExperimentalUnsignedTypes
     fun recordObtData(fioRequestId: BigInteger, payerFioAddress:String, payeeFioAddress:String,
                    payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
-                   tokenCode:String,chainCode:String, status:String="sent_to_blockchain",obtId:String,
+                      chainCode:String,tokenCode:String, status:String="sent_to_blockchain",obtId:String,
                    maxFee:BigInteger): PushTransactionResponse
     {
         val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,
-            payeeTokenPublicAddress, amount.toString(),tokenCode,chainCode,obtId,status)
+            payeeTokenPublicAddress, amount.toString(),chainCode,tokenCode,obtId,status)
 
         return this.recordObtData(fioRequestId, payerFioAddress, payeeFioAddress, recordObtDataContent, maxFee,"")
     }
@@ -1239,12 +1239,12 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
     @ExperimentalUnsignedTypes
     fun recordObtData(payerFioAddress:String, payeeFioAddress:String,
                       payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
-                      tokenCode:String,chainCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
+                      chainCode:String,tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,walletFioAddress:String=""): PushTransactionResponse
     {
         val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
         val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
-            tokenCode,chainCode,obtId,status)
+            chainCode,tokenCode,obtId,status)
 
         return this.recordObtData(BigInteger.ZERO,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,wfa)
     }
@@ -1436,11 +1436,11 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun getPublicAddress(fioAddress:String, tokenCode:String,chainCode:String): GetPublicAddressResponse
+    fun getPublicAddress(fioAddress:String,chainCode:String, tokenCode:String): GetPublicAddressResponse
     {
         try
         {
-            val request = GetPublicAddressRequest(fioAddress,tokenCode,chainCode)
+            val request = GetPublicAddressRequest(fioAddress,chainCode,tokenCode)
 
             return this.networkProvider.getPublicAddress(request)
         }
@@ -1646,7 +1646,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    fun addPublicAddress(fioAddress:String, tokenCode:String, chainCode:String, tokenPublicAddress:String,
+    fun addPublicAddress(fioAddress:String, chainCode:String, tokenCode:String, tokenPublicAddress:String,
                          maxFee:BigInteger, walletFioAddress:String=""): PushTransactionResponse
     {
         var transactionProcessor = AddPublicAddressTrxProcessor(
@@ -1660,7 +1660,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
         {
             val wfa = if(walletFioAddress.isEmpty()) this.walletFioAddress else walletFioAddress
 
-            val validator = validateAddPublicAddress(fioAddress,tokenCode,chainCode,tokenPublicAddress,wfa)
+            val validator = validateAddPublicAddress(fioAddress,chainCode,tokenCode,tokenPublicAddress,wfa)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
@@ -1668,7 +1668,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
             {
                 var addPublicAddressAction = AddPublicAddressAction(
                     fioAddress,
-                    listOf(TokenPublicAddress(tokenPublicAddress,tokenCode,chainCode)),
+                    listOf(TokenPublicAddress(tokenPublicAddress,chainCode,tokenCode)),
                     maxFee,
                     wfa,
                     this.publicKey
@@ -2243,7 +2243,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
         return Validator(isValid,if(!isValid) "Invalid New Funds Request" else "")
     }
 
-    private fun validateAddPublicAddress(fioAddress:String, tokenCode:String, chainCode:String,
+    private fun validateAddPublicAddress(fioAddress:String, chainCode:String, tokenCode:String,
                                          tokenPublicAddress:String,
                                         walletFioAddress:String=""): Validator
     {
@@ -2265,7 +2265,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
 
         for(address in tokenPublicAddresses)
         {
-            isValid = isValid && this.validateAddPublicAddress(fioAddress,address.tokenCode,address.chainCode,address.publicAddress,walletFioAddress).isValid
+            isValid = isValid && this.validateAddPublicAddress(fioAddress,address.chainCode,address.tokenCode,address.publicAddress,walletFioAddress).isValid
         }
 
         return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")
