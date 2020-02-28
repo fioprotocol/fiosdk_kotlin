@@ -5,9 +5,7 @@ import fiofoundation.io.fiosdk.errors.Base58ManipulationError
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.errors.formatters.FIOFormatterError
 import fiofoundation.io.fiosdk.formatters.FIOFormatter
-import fiofoundation.io.fiosdk.hexStringToByteArray
 import fiofoundation.io.fiosdk.models.Cryptography
-import fiofoundation.io.fiosdk.toHexString
 import org.bouncycastle.crypto.agreement.ECDHBasicAgreement
 import org.bouncycastle.crypto.params.ECDomainParameters
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters

@@ -1496,6 +1496,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
         {
             var request:GetFeeRequest?
 
+            if(fioAddress!="" && !fioAddress.isFioAddress())
+                throw FIOError("Invalid FIO Address")
+
             if(fioAddress!="" && fioAddress.isFioAddress())
                 request = GetFeeRequest(endPointName.endpoint,fioAddress)
             else
@@ -1552,12 +1555,12 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun getFeeForRejectFundsRequest(payeeFioAddress:String): GetFeeResponse
+    fun getFeeForRejectFundsRequest(payerFioAddress:String): GetFeeResponse
     {
         try
         {
-            if(payeeFioAddress.isFioAddress()) {
-                val request = GetFeeRequest(FIOApiEndPoints.reject_funds_request, payeeFioAddress)
+            if(payerFioAddress.isFioAddress()) {
+                val request = GetFeeRequest(FIOApiEndPoints.reject_funds_request, payerFioAddress)
 
                 return this.networkProvider.getFee(request)
             }
@@ -1593,7 +1596,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
                 return this.networkProvider.getFee(request)
             }
             else
-                throw Exception("Invalid FIO Public Address")
+                throw Exception("Invalid FIO Address")
         }
         catch(getFeeError: GetFeeError)
         {
@@ -1919,7 +1922,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var walletFio
         }
     }
 
-    fun getMultiplier(): Int
+    fun getMultiplier(): BigInteger
     {
         return Constants.multiplier
     }
