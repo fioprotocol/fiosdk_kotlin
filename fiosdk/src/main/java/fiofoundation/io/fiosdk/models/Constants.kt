@@ -1,5 +1,7 @@
 package fiofoundation.io.fiosdk.models
 
+import java.math.BigInteger
+
 object Constants {
-    const val multiplier = 1000000000
+    val multiplier:BigInteger = BigInteger("1000000000")
 }

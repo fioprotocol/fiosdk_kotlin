@@ -1,7 +1,8 @@
 package fiofoundation.io.fiosdk
 
-import com.google.gson.GsonBuilder
 import java.lang.Exception
+import fiofoundation.io.fiosdk.utilities.SUFUtils
+import java.math.BigInteger
 
 fun ByteArray.toHexString():String
 {
@@ -85,6 +86,21 @@ fun String.isTokenCode(): Boolean
     return false
 }
 
+fun String.isChainCode(): Boolean
+{
+    if(this.isNotEmpty())
+    {
+        if(this.length in 1..10)
+        {
+            val fioRegEx = Regex("^[a-zA-Z0-9]+\$")
+            if(fioRegEx.matchEntire(this)!=null)
+                return true
+        }
+    }
+
+    return false
+}
+
 fun String.isFioPublicKey(): Boolean
 {
     if(this.isNotEmpty())
@@ -146,4 +162,30 @@ fun String.toMultiLevelAddress(): MutableMap<String,String>
 
     }
 
+}
+
+fun String.toFIO(): Double
+{
+    return SUFUtils.fromSUFtoAmount(this)
+}
+
+fun String.toSUF(): BigInteger
+{
+    try {
+        return SUFUtils.amountToSUF(this.toBigDecimal().toDouble())
+    }
+    catch(e:Error)
+    {
+        return BigInteger.ZERO
+    }
+}
+
+fun Double.toSUF(): BigInteger
+{
+    return SUFUtils.amountToSUF(this)
+}
+
+fun BigInteger.toFIO(): Double
+{
+    return SUFUtils.fromSUFtoAmount(this)
 }

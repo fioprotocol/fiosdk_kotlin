@@ -1490,11 +1490,19 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun getFee(endPointName:FIOApiEndPoints.FeeEndPoint): GetFeeResponse
+    fun getFee(endPointName:FIOApiEndPoints.FeeEndPoint,fioAddress:String=""): GetFeeResponse
     {
         try
         {
-            val request = GetFeeRequest(endPointName.endpoint,"")
+            var request:GetFeeRequest?
+
+            if(fioAddress!="" && !fioAddress.isFioAddress())
+                throw FIOError("Invalid FIO Address")
+
+            if(fioAddress!="" && fioAddress.isFioAddress())
+                request = GetFeeRequest(endPointName.endpoint,fioAddress)
+            else
+                request = GetFeeRequest(endPointName.endpoint,"")
 
             return this.networkProvider.getFee(request)
         }
@@ -1547,12 +1555,12 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun getFeeForRejectFundsRequest(payeeFioAddress:String): GetFeeResponse
+    fun getFeeForRejectFundsRequest(payerFioAddress:String): GetFeeResponse
     {
         try
         {
-            if(payeeFioAddress.isFioAddress()) {
-                val request = GetFeeRequest(FIOApiEndPoints.reject_funds_request, payeeFioAddress)
+            if(payerFioAddress.isFioAddress()) {
+                val request = GetFeeRequest(FIOApiEndPoints.reject_funds_request, payerFioAddress)
 
                 return this.networkProvider.getFee(request)
             }
@@ -1588,7 +1596,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 return this.networkProvider.getFee(request)
             }
             else
-                throw Exception("Invalid FIO Public Address")
+                throw Exception("Invalid FIO Address")
         }
         catch(getFeeError: GetFeeError)
         {
@@ -1914,7 +1922,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
-    fun getMultiplier(): Int
+    fun getMultiplier(): BigInteger
     {
         return Constants.multiplier
     }
