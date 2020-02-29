@@ -1,6 +1,7 @@
 package fiofoundation.io.fiokotlinsdktestapp
 
 import android.support.test.runner.AndroidJUnit4
+import android.util.Log
 import fiofoundation.io.fiosdk.FIOSDK
 import fiofoundation.io.fiosdk.enums.FioDomainVisiblity
 import fiofoundation.io.fiosdk.errors.FIOError
@@ -9,6 +10,9 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
 import fiofoundation.io.androidfioserializationprovider.*
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIOAddressAction
+import fiofoundation.io.fiosdk.toFIO
+import fiofoundation.io.fiosdk.toSUF
+import fiofoundation.io.fiosdk.utilities.SUFUtils
 import fiofoundation.io.fiosdk.utilities.Utils
 import org.junit.Assert
 
@@ -54,6 +58,15 @@ class TestNetSdkTests {
     @ExperimentalUnsignedTypes
     fun testGenericActions()
     {
+        println("testGenericActions: SUF Conversion Test")
+
+        val testFioAmount = 2.3
+        val testSUFAmount = 2300000000.toBigInteger()
+
+        Assert.assertTrue("Amount of SUF does not match.", testSUFAmount == SUFUtils.amountToSUF(testFioAmount))
+        Assert.assertTrue("Amount of SUF does not match.", testSUFAmount == testFioAmount.toSUF())
+        Assert.assertTrue("Amount of FIO does not match.", testFioAmount == testSUFAmount.toFIO())
+
         println("testGenericActions: Key Generation Test")
         val genericPrivateTestKey = FIOSDK.createPrivateKey(testMnemonic)
         val genericPublicTestKey = FIOSDK.derivedPublicKey(genericPrivateTestKey)
@@ -637,7 +650,7 @@ class TestNetSdkTests {
     {
         println("testTransferFioTokens: Begin Test for TransferFioTokens")
 
-        val amountToTransfer = BigInteger("1000000000")   //Amount is in SUFs
+        val amountToTransfer = 1.0.toSUF()  //Amount is in SUFs
         var bobBalanceBeforeTransfer = BigInteger.ZERO
         var bobBalanceAfterTransfer = BigInteger.ZERO
 

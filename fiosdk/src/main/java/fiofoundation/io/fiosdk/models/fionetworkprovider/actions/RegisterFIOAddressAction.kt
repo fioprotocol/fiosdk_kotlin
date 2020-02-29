@@ -7,7 +7,7 @@ import java.math.BigInteger
 
 class RegisterFIOAddressAction(fioAddress: String,
                                ownerPublicKey: String,
-                               walletFioAddress: String,
+                               technologyPartnerId: String,
                                maxFee: BigInteger,
                                actorPublicKey: String) :
     IAction
@@ -26,7 +26,7 @@ class RegisterFIOAddressAction(fioAddress: String,
                 ownerPublicKey,
                 maxFee,
                 auth.actor,
-                walletFioAddress
+                technologyPartnerId
             )
 
         this.authorization.add(auth)
@@ -37,5 +37,5 @@ class RegisterFIOAddressAction(fioAddress: String,
                                 @field:SerializedName("owner_fio_public_key") var ownerPublicKey:String,
                                 @field:SerializedName("max_fee") var max_fee:BigInteger,
                                 @field:SerializedName("actor") var actor:String,
-                                @field:SerializedName("tpid") var walletFioAddress:String): FIORequestData()
+                                @field:SerializedName("tpid") var technologyPartnerId:String): FIORequestData()
 }

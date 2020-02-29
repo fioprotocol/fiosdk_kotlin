@@ -10,6 +10,9 @@ import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIOAddressAction
+import fiofoundation.io.fiosdk.toFIO
+import fiofoundation.io.fiosdk.toSUF
+import fiofoundation.io.fiosdk.utilities.SUFUtils
 import fiofoundation.io.fiosdk.utilities.Utils
 import org.bitcoinj.crypto.MnemonicCode
 import org.junit.Assert
@@ -64,6 +67,27 @@ class DevSdkTests
     fun testGenericActions()
     {
         this.setupTestVariables()
+
+        println("testGenericActions: SUF Conversion Test")
+        Log.i(this.logTag,"testGenericActions: SUF Conversion Test")
+
+        val testFioAmount = 2.3
+        val testSUFAmount = 2300000000.toBigInteger()
+
+        Assert.assertTrue(
+            "Amount of SUF does not match.",
+            testSUFAmount == SUFUtils.amountToSUF(testFioAmount)
+        )
+
+        Assert.assertTrue(
+            "Amount of SUF does not match.",
+            testSUFAmount == testFioAmount.toSUF()
+        )
+
+        Assert.assertTrue(
+            "Amount of FIO does not match.",
+            testFioAmount == testSUFAmount.toFIO()
+        )
 
         println("testGenericActions: Key Generation Test")
         Log.i(this.logTag,"testGenericActions: Key Generation Test")

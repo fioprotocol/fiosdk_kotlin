@@ -9,7 +9,7 @@ import java.math.BigInteger
 class TransferTokensPubKeyAction(payeePublicKey: String,
                                  amount: BigInteger,
                                  maxFee: BigInteger,
-                              walletFioAddress: String,
+                                 technologyPartnerId: String,
                               actorPublicKey: String) : IAction
 {
     override var account = "fio.token"
@@ -26,7 +26,7 @@ class TransferTokensPubKeyAction(payeePublicKey: String,
                 amount,
                 maxFee,
                 auth.actor,
-                walletFioAddress
+                technologyPartnerId
             )
 
         this.authorization.add(auth)
@@ -38,5 +38,5 @@ class TransferTokensPubKeyAction(payeePublicKey: String,
         @field:SerializedName("amount") var amount:BigInteger,
         @field:SerializedName("max_fee") var max_fee:BigInteger,
         @field:SerializedName("actor") var actor:String,
-        @field:SerializedName("tpid") var walletFioAddress:String): FIORequestData()
+        @field:SerializedName("tpid") var technologyPartnerId:String): FIORequestData()
 }
