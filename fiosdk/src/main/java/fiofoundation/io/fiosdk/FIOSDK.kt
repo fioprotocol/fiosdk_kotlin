@@ -827,8 +827,8 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
      * @param payeeFioAddress FIO Address of the payee. This address is sending the request and will receive payment.
      * @param payeeTokenPublicAddress Payee's public address where they want funds sent.
      * @param amount Amount requested.
-     * @param tokenCode Code of the token represented in amount requested.
      * @param chainCode Blockchain code for blockchain hosting this token.
+     * @param tokenCode Code of the token represented in amount requested.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
      * @param technologyPartnerId (optional) FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
@@ -876,8 +876,8 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
      * @param payeeFioAddress FIO Address of the payee. This address is sending the request and will receive payment.
      * @param payeeTokenPublicAddress Payee's public address where they want funds sent.
      * @param amount Amount requested.
-     * @param tokenCode Code of the token represented in amount requested.
      * @param chainCode Blockchain code for blockchain hosting this token.
+     * @param tokenCode Code of the token represented in amount requested.
      * @param memo (optional)
      * @param hash (optional)
      * @param offlineUrl (optional)
@@ -933,8 +933,8 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
      * @param payeeFioAddress FIO Address of the payee. This address is sending the request and will receive payment.
      * @param payeeTokenPublicAddress Payee's public address where they want funds sent.
      * @param amount Amount requested.
-     * @param tokenCode Code of the token represented in amount requested.
      * @param chainCode Blockchain code for blockchain hosting this token.
+     * @param tokenCode Code of the token represented in amount requested.
      * @param memo
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
      * @param technologyPartnerId (optional) FIO Address of the wallet which generates this transaction.
@@ -1073,8 +1073,8 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
      * @param payerTokenPublicAddress Public address on other blockchain of user sending funds.
      * @param payeeTokenPublicAddress Public address on other blockchain of user receiving funds.
      * @param amount Amount sent.
-     * @param tokenCode Code of the token represented in Amount requested, i.e. BTC.
      * @param chainCode Blockchain code for blockchain hosting this token.
+     * @param tokenCode Code of the token represented in Amount requested, i.e. BTC.
      * @param obtId Other Blockchain Transaction ID (OBT ID), i.e Bitcoin transaction ID.
      * @param status Status of this OBT. Allowed statuses are: sent_to_blockchain.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
@@ -1135,8 +1135,8 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
      * @param payerTokenPublicAddress Public address on other blockchain of user sending funds.
      * @param payeeTokenPublicAddress Public address on other blockchain of user receiving funds.
      * @param amount Amount sent.
-     * @param tokenCode Code of the token represented in Amount requested, i.e. BTC.
      * @param chainCode Blockchain code for blockchain hosting this token.
+     * @param tokenCode Code of the token represented in Amount requested, i.e. BTC.
      * @param obtId Other Blockchain Transaction ID (OBT ID), i.e Bitcoin transaction ID.
      * @param status Status of this OBT. Allowed statuses are: sent_to_blockchain.
      * @param memo
@@ -1227,9 +1227,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
      * @param payerTokenPublicAddress Public address on other blockchain of user sending funds.
      * @param payeeTokenPublicAddress Public address on other blockchain of user receiving funds.
      * @param amount Amount sent.
+     * @param chainCode Blockchain code for blockchain hosting this token.
      * @param tokenCode Code of the token represented in Amount requested, i.e. BTC.
-     * @param obtId Other Blockchain Transaction ID (OBT ID), i.e Bitcoin transaction ID.
      * @param status Status of this OBT. Allowed statuses are: sent_to_blockchain.
+     * @param obtId Other Blockchain Transaction ID (OBT ID), i.e Bitcoin transaction ID.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
      * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
      * @return [PushTransactionResponse]
@@ -1260,8 +1261,8 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
      * @param payeeTokenPublicAddress Public address on other blockchain of user receiving funds.
      * @param amount Amount sent.
      * @param tokenCode Code of the token represented in Amount requested, i.e. BTC.  The chain code value will be to this as well.
-     * @param obtId Other Blockchain Transaction ID (OBT ID), i.e Bitcoin transaction ID.
      * @param status Status of this OBT. Allowed statuses are: sent_to_blockchain.
+     * @param obtId Other Blockchain Transaction ID (OBT ID), i.e Bitcoin transaction ID.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
      * @return [PushTransactionResponse]
      *
@@ -1429,8 +1430,8 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
      * Returns a token public address for specified token code and FIO Address.
      *
      * @param fioAddress FIO Address for which the token public address is to be returned.
-     * @param tokenCode Token code for which public address is to be returned.
      * @param chainCode Blockchain code for blockchain hosting this token.
+     * @param tokenCode Token code for which public address is to be returned.
      * @return [GetPublicAddressResponse]
      *
      * @throws [FIOError]
@@ -1485,6 +1486,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
      * Compute and return fee amount for specific call
      *
      * @param endPointName Name of API call end point, e.g. add_pub_address.
+     * @param fioAddress FIO Address incurring the fee and owned by signer. Leave blank if not available.
      * @return [GetFeeResponse]
      *
      * @throws [FIOError]
@@ -1549,7 +1551,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
 
     /**
      * Compute and return fee amount for Reject Funds Request
-     * @param payeeFioAddress The payee's FIO Address
+     * @param payerFioAddress The payer's FIO Address
      * @return [GetFeeResponse]
      *
      * @throws [FIOError]
@@ -1643,8 +1645,8 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
      * Adds a public address of the specific blockchain type to the FIO Address.
      *
      * @param fioAddress FIO Address to add the public address to.
-     * @param tokenCode Token code to be used with that public address.
      * @param chainCode Blockchain code for blockchain hosting this token.
+     * @param tokenCode Token code to be used with that public address.
      * @param tokenPublicAddress The public address to be added to the FIO Address for the specified token.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
      * @param technologyPartnerId (optional) FIO Address of the wallet which generates this transaction.
@@ -1920,11 +1922,6 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         {
             throw FIOError(e.message!!,e)
         }
-    }
-
-    fun getMultiplier(): BigInteger
-    {
-        return Constants.multiplier
     }
 
     //Private Methods
