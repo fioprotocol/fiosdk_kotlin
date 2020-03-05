@@ -31,6 +31,7 @@ class RecordObtDataContent(
     @field:SerializedName("hash") var hash:String?=null,
     @field:SerializedName("offline_url") var offlineUrl:String?=null)
 {
+    @ExperimentalUnsignedTypes
     fun serialize(privateKey: String, publicKey: String, serializationProvider: ISerializationProvider): String
     {
         val serializedNewFundsContent = serializationProvider.serializeContent(this.toJson(),"record_obt_data_content")

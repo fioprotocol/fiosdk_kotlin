@@ -17,6 +17,7 @@ class FundsRequestContent(
     @field:SerializedName("offline_url") var offlineUrl:String?=null)
 {
 
+    @ExperimentalUnsignedTypes
     fun serialize(privateKey: String, publicKey: String, serializationProvider: ISerializationProvider): String
     {
         val serializedNewFundsContent = serializationProvider.serializeContent(this.toJson(),"new_funds_content")

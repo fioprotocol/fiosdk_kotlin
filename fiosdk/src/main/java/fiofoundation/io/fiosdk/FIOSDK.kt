@@ -5,7 +5,6 @@ import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.errors.fionetworkprovider.*
 import fiofoundation.io.fiosdk.errors.formatters.FIOFormatterError
 import fiofoundation.io.fiosdk.errors.serializationprovider.DeserializeTransactionError
-import fiofoundation.io.fiosdk.errors.serializationprovider.SerializeTransactionError
 import fiofoundation.io.fiosdk.errors.session.TransactionBroadCastError
 import fiofoundation.io.fiosdk.errors.session.TransactionPrepareError
 import fiofoundation.io.fiosdk.errors.session.TransactionSignError
@@ -16,7 +15,6 @@ import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
-import fiofoundation.io.fiosdk.models.Constants
 import fiofoundation.io.fiosdk.models.TokenPublicAddress
 import fiofoundation.io.fiosdk.models.Validator
 import fiofoundation.io.fiosdk.models.fionetworkprovider.*
@@ -24,8 +22,6 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.*
 import fiofoundation.io.fiosdk.models.fionetworkprovider.request.*
 import fiofoundation.io.fiosdk.models.fionetworkprovider.response.*
 import fiofoundation.io.fiosdk.session.processors.*
-import fiofoundation.io.fiosdk.utilities.CompressionUtils
-import fiofoundation.io.fiosdk.utilities.CryptoUtils
 import fiofoundation.io.fiosdk.utilities.PrivateKeyUtils
 
 import java.math.BigInteger
@@ -359,7 +355,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     @Throws(FIOError::class)
     fun registerFioAddress(fioAddress:String, ownerPublicKey:String, maxFee:BigInteger): PushTransactionResponse
     {
-        return registerFioAddress(fioAddress,ownerPublicKey,maxFee,"")
+        return registerFioAddress(fioAddress,ownerPublicKey,maxFee,this.technologyPartnerId)
     }
 
     /**
@@ -479,7 +475,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     @Throws(FIOError::class)
     fun registerFioDomain(fioDomain:String, ownerPublicKey:String, maxFee:BigInteger): PushTransactionResponse
     {
-        return registerFioDomain(fioDomain, ownerPublicKey, maxFee,"")
+        return registerFioDomain(fioDomain, ownerPublicKey, maxFee,this.technologyPartnerId)
     }
 
     /**
@@ -511,7 +507,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     @Throws(FIOError::class)
     fun registerFioDomain(fioDomain:String, maxFee:BigInteger): PushTransactionResponse
     {
-        return registerFioDomain(fioDomain,maxFee,"")
+        return registerFioDomain(fioDomain,maxFee,this.technologyPartnerId)
     }
 
     /**
@@ -597,7 +593,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     @Throws(FIOError::class)
     fun renewFioDomain(fioDomain:String, maxFee:BigInteger): PushTransactionResponse
     {
-        return renewFioDomain(fioDomain, maxFee,"")
+        return renewFioDomain(fioDomain, maxFee,this.technologyPartnerId)
     }
 
     /**
@@ -684,7 +680,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     @Throws(FIOError::class)
     fun renewFioAddress(fioAddress:String, maxFee:BigInteger): PushTransactionResponse
     {
-        return renewFioAddress(fioAddress,maxFee,"")
+        return renewFioAddress(fioAddress,maxFee,this.technologyPartnerId)
     }
 
     /**
@@ -777,7 +773,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     @Throws(FIOError::class)
     fun transferTokens(payeeFioPublicKey:String, amount:BigInteger, maxFee:BigInteger): PushTransactionResponse
     {
-        return transferTokens(payeeFioPublicKey, amount, maxFee,"")
+        return transferTokens(payeeFioPublicKey, amount, maxFee,this.technologyPartnerId)
     }
 
     /**
@@ -1059,7 +1055,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     @Throws(FIOError::class)
     fun rejectFundsRequest(fioRequestId: BigInteger, maxFee: BigInteger): PushTransactionResponse
     {
-        return rejectFundsRequest(fioRequestId,maxFee,"")
+        return rejectFundsRequest(fioRequestId,maxFee,this.technologyPartnerId)
     }
 
     /**
@@ -1120,8 +1116,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                       payerTokenPublicAddress: String, payeeTokenPublicAddress:String, amount:Double,
                       tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,technologyPartnerId:String=""): PushTransactionResponse
     {
+        val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
+
         return recordObtData(fioRequestId,payerFioAddress,payeeFioAddress, payerTokenPublicAddress,
-            payeeTokenPublicAddress,amount,tokenCode,status,obtId,maxFee,this.technologyPartnerId)
+            payeeTokenPublicAddress,amount,tokenCode,status,obtId,maxFee,wfa)
     }
 
     /**
@@ -1204,7 +1202,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,
             payeeTokenPublicAddress, amount.toString(),chainCode,tokenCode,obtId,status)
 
-        return this.recordObtData(fioRequestId, payerFioAddress, payeeFioAddress, recordObtDataContent, maxFee,"")
+        return this.recordObtData(fioRequestId, payerFioAddress, payeeFioAddress, recordObtDataContent, maxFee,this.technologyPartnerId)
     }
 
     @ExperimentalUnsignedTypes
@@ -2024,7 +2022,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     private fun requestNewFunds(payerFioAddress:String, payeeFioAddress:String,
                         fundsRequestContent: FundsRequestContent, maxFee:BigInteger): PushTransactionResponse
     {
-        return requestNewFunds(payerFioAddress, payeeFioAddress, fundsRequestContent, maxFee,"")
+        return requestNewFunds(payerFioAddress, payeeFioAddress, fundsRequestContent, maxFee,this.technologyPartnerId)
     }
 
     /**
@@ -2047,7 +2045,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                            recordObtDataContent: RecordObtDataContent,
                            maxFee:BigInteger): PushTransactionResponse
     {
-        return recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,"")
+        return recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,this.technologyPartnerId)
     }
 
     /**

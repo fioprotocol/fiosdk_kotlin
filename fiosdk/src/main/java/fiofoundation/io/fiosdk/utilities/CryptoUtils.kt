@@ -101,8 +101,8 @@ object CryptoUtils
 
         var messageBytes:ByteArray = Base64.decode(encryptedMessageString)
 
-        val hmacContent = messageBytes!!.copyOfRange(0,messageBytes.size-32)
-        val messageHmacData = messageBytes!!.copyOfRange(hmacContent.size,messageBytes.size)
+        val hmacContent = messageBytes.copyOfRange(0,messageBytes.size-32)
+        val messageHmacData = messageBytes.copyOfRange(hmacContent.size,messageBytes.size)
 
         val iv = hmacContent.copyOf(16)
         val encryptedMessage = hmacContent.copyOfRange(iv.size,hmacContent.size)
