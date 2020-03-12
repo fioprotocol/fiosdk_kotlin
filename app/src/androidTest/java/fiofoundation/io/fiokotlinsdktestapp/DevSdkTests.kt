@@ -26,8 +26,8 @@ import java.security.SecureRandom
 @RunWith(AndroidJUnit4::class)
 class DevSdkTests
 {
-    private val baseUrl = "http://dev2.fio.dev:8889/v1/"
-    private val baseMockUrl = "http://mock.dapix.io/mockd/DEV2/"
+    private val baseUrl = ""
+    private val baseMockUrl = ""
 
     private var alicePrivateKey = ""
     private var alicePublicKey = ""
@@ -58,8 +58,8 @@ class DevSdkTests
     private var useMockServerForAlice = false
     private var useMockServerForBob = false
 
-    private var whalePrivateKey = "5KF2B21xT5pE5G3LNA6LKJc6AP2pAd2EnfpAUrJH12SFV8NtvCD"
-    private var whalePublicKey = "FIO6zwqqzHQcqCc2MB4jpp1F73MXpisEQe2SDghQFSGQKoAPjvQ3H"
+    private var whalePrivateKey = ""
+    private var whalePublicKey = ""
     private var useWhaleFunds = false
 
     @Test
