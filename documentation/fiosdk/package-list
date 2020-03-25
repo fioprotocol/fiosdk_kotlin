@@ -1,0 +1,39 @@
+$dokka.format:html
+$dokka.linkExtension:html
+$dokka.location:fiofoundation.io.fiosdk$hexStringToByteArray(kotlin.String, kotlin.Boolean)fiofoundation.io.fiosdk/kotlin.-string/hex-string-to-byte-array.html
+$dokka.location:fiofoundation.io.fiosdk$isChainCode(kotlin.String)fiofoundation.io.fiosdk/kotlin.-string/is-chain-code.html
+$dokka.location:fiofoundation.io.fiosdk$isFioAddress(kotlin.String)fiofoundation.io.fiosdk/kotlin.-string/is-fio-address.html
+$dokka.location:fiofoundation.io.fiosdk$isFioDomain(kotlin.String)fiofoundation.io.fiosdk/kotlin.-string/is-fio-domain.html
+$dokka.location:fiofoundation.io.fiosdk$isFioPublicKey(kotlin.String)fiofoundation.io.fiosdk/kotlin.-string/is-fio-public-key.html
+$dokka.location:fiofoundation.io.fiosdk$isNativeBlockChainPublicAddress(kotlin.String)fiofoundation.io.fiosdk/kotlin.-string/is-native-block-chain-public-address.html
+$dokka.location:fiofoundation.io.fiosdk$isTokenCode(kotlin.String)fiofoundation.io.fiosdk/kotlin.-string/is-token-code.html
+$dokka.location:fiofoundation.io.fiosdk$toFIO(java.math.BigInteger)fiofoundation.io.fiosdk/java.math.-big-integer/to-f-i-o.html
+$dokka.location:fiofoundation.io.fiosdk$toFIO(kotlin.String)fiofoundation.io.fiosdk/kotlin.-string/to-f-i-o.html
+$dokka.location:fiofoundation.io.fiosdk$toHexString(kotlin.ByteArray)fiofoundation.io.fiosdk/kotlin.-byte-array/to-hex-string.html
+$dokka.location:fiofoundation.io.fiosdk$toMultiLevelAddress(kotlin.String)fiofoundation.io.fiosdk/kotlin.-string/to-multi-level-address.html
+$dokka.location:fiofoundation.io.fiosdk$toSUF(kotlin.Double)fiofoundation.io.fiosdk/kotlin.-double/to-s-u-f.html
+$dokka.location:fiofoundation.io.fiosdk$toSUF(kotlin.String)fiofoundation.io.fiosdk/kotlin.-string/to-s-u-f.html
+fiofoundation.io.androidfioserializationprovider
+fiofoundation.io.fiosdk
+fiofoundation.io.fiosdk.enums
+fiofoundation.io.fiosdk.errors
+fiofoundation.io.fiosdk.errors.abiprovider
+fiofoundation.io.fiosdk.errors.fionetworkprovider
+fiofoundation.io.fiosdk.errors.formatters
+fiofoundation.io.fiosdk.errors.serializationprovider
+fiofoundation.io.fiosdk.errors.session
+fiofoundation.io.fiosdk.errors.signatureprovider
+fiofoundation.io.fiosdk.formatters
+fiofoundation.io.fiosdk.implementations
+fiofoundation.io.fiosdk.interfaces
+fiofoundation.io.fiosdk.models
+fiofoundation.io.fiosdk.models.fionetworkprovider
+fiofoundation.io.fiosdk.models.fionetworkprovider.actions
+fiofoundation.io.fiosdk.models.fionetworkprovider.request
+fiofoundation.io.fiosdk.models.fionetworkprovider.response
+fiofoundation.io.fiosdk.models.serializationprovider
+fiofoundation.io.fiosdk.models.signatureprovider
+fiofoundation.io.fiosdk.session
+fiofoundation.io.fiosdk.session.processors
+fiofoundation.io.fiosdk.utilities
+fiofoundation.io.javaserializationprovider
