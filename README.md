@@ -13,6 +13,9 @@ Files->Sync Project with Gradle Files
 To build the Kotlin SDK project, select "Build" from the Android Studio menu and select
 "Rebuild Project"
 
+# Documentation
+Documentation is located in the "documentation" folder in the root of the project.
+
 # Generating Documentation
 
 To create the documentation, open a terminal in the root of the project and run ./gradlew dokka
@@ -113,6 +116,7 @@ This is the expected Public Key:
 ## Version 1.0.0
 Added additional Unit Tests for Encryption.  Comparing and Validating results across the kotlin, iOS and typescript SDKs.
 No changes to the SDK code base.
+Documentation folder added to the project
 
 ## Version 0.9.2
 Updated and cleaned up SDK code base.
