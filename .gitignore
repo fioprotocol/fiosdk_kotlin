@@ -4,5 +4,4 @@
 .DS_Store
 **/*/.externalNativeBuild
 **/*/.cxx
-documentation
 /local.properties
