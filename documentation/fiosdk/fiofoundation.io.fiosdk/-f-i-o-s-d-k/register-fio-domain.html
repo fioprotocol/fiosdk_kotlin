@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>FIOSDK.registerFioDomain - fiosdk</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">fiosdk</a>&nbsp;/&nbsp;<a href="../index.html">fiofoundation.io.fiosdk</a>&nbsp;/&nbsp;<a href="index.html">FIOSDK</a>&nbsp;/&nbsp;<a href="./register-fio-domain.html">registerFioDomain</a><br/>
+<br/>
+<h1>registerFioDomain</h1>
+<a name="fiofoundation.io.fiosdk.FIOSDK$registerFioDomain(kotlin.String, kotlin.String, java.math.BigInteger, kotlin.String)"></a>
+<code><span class="keyword">fun </span><span class="identifier">registerFioDomain</span><span class="symbol">(</span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$registerFioDomain(kotlin.String, kotlin.String, java.math.BigInteger, kotlin.String)/fioDomain">fioDomain</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$registerFioDomain(kotlin.String, kotlin.String, java.math.BigInteger, kotlin.String)/ownerPublicKey">ownerPublicKey</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$registerFioDomain(kotlin.String, kotlin.String, java.math.BigInteger, kotlin.String)/maxFee">maxFee</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/math/BigInteger.html"><span class="identifier">BigInteger</span></a><span class="symbol">, </span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$registerFioDomain(kotlin.String, kotlin.String, java.math.BigInteger, kotlin.String)/technologyPartnerId">technologyPartnerId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fiofoundation.io.fiosdk.models.fionetworkprovider.response/-push-transaction-response/index.html"><span class="identifier">PushTransactionResponse</span></a></code>
+<p>Registers a FIO Domain on the FIO blockchain.</p>
+<h3>Parameters</h3>
+<p><a name="fioDomain"></a>
+<code>fioDomain</code> - FIO Domain to register.</p>
+<p><a name="ownerPublicKey"></a>
+<code>ownerPublicKey</code> - Public key which will own the FIO Domain after registration. Set to empty if same as sender.</p>
+<p><a name="maxFee"></a>
+<code>maxFee</code> - Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ <a href="get-fee.html">getFee</a> for correct value.</p>
+<p><a name="technologyPartnerId"></a>
+<code>technologyPartnerId</code> - FIO Address of the wallet which generates this transaction.</p>
+<h3>Exceptions</h3>
+<p><a name="FIOError"></a>
+<code>FIOError</code> - </p>
+<p><strong>Return</strong><br/>
+<a href="../../fiofoundation.io.fiosdk.models.fionetworkprovider.response/-push-transaction-response/index.html">PushTransactionResponse</a></p>
+<a name="fiofoundation.io.fiosdk.FIOSDK$registerFioDomain(kotlin.String, kotlin.String, java.math.BigInteger)"></a>
+<code><span class="keyword">fun </span><span class="identifier">registerFioDomain</span><span class="symbol">(</span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$registerFioDomain(kotlin.String, kotlin.String, java.math.BigInteger)/fioDomain">fioDomain</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$registerFioDomain(kotlin.String, kotlin.String, java.math.BigInteger)/ownerPublicKey">ownerPublicKey</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$registerFioDomain(kotlin.String, kotlin.String, java.math.BigInteger)/maxFee">maxFee</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/math/BigInteger.html"><span class="identifier">BigInteger</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fiofoundation.io.fiosdk.models.fionetworkprovider.response/-push-transaction-response/index.html"><span class="identifier">PushTransactionResponse</span></a></code>
+<p>Registers a FIO Domain on the FIO blockchain.</p>
+<h3>Parameters</h3>
+<p><a name="fioDomain"></a>
+<code>fioDomain</code> - FIO Domain to register.</p>
+<p><a name="ownerPublicKey"></a>
+<code>ownerPublicKey</code> - Public key which will own the FIO Domain after registration. Set to empty if same as sender.</p>
+<p><a name="maxFee"></a>
+<code>maxFee</code> - Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ <a href="get-fee.html">getFee</a> for correct value.</p>
+<h3>Exceptions</h3>
+<p><a name="FIOError"></a>
+<code>FIOError</code> - </p>
+<p><strong>Return</strong><br/>
+<a href="../../fiofoundation.io.fiosdk.models.fionetworkprovider.response/-push-transaction-response/index.html">PushTransactionResponse</a></p>
+<a name="fiofoundation.io.fiosdk.FIOSDK$registerFioDomain(kotlin.String, java.math.BigInteger, kotlin.String)"></a>
+<code><span class="keyword">fun </span><span class="identifier">registerFioDomain</span><span class="symbol">(</span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$registerFioDomain(kotlin.String, java.math.BigInteger, kotlin.String)/fioDomain">fioDomain</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$registerFioDomain(kotlin.String, java.math.BigInteger, kotlin.String)/maxFee">maxFee</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/math/BigInteger.html"><span class="identifier">BigInteger</span></a><span class="symbol">, </span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$registerFioDomain(kotlin.String, java.math.BigInteger, kotlin.String)/technologyPartnerId">technologyPartnerId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fiofoundation.io.fiosdk.models.fionetworkprovider.response/-push-transaction-response/index.html"><span class="identifier">PushTransactionResponse</span></a></code>
+<p>Registers a FIO Domain on the FIO blockchain.</p>
+<h3>Parameters</h3>
+<p><a name="fioDomain"></a>
+<code>fioDomain</code> - FIO Domain to register. The owner will be the public key associated with the FIO SDK instance.</p>
+<p><a name="maxFee"></a>
+<code>maxFee</code> - Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ <a href="get-fee.html">getFee</a> for correct value.</p>
+<p><a name="technologyPartnerId"></a>
+<code>technologyPartnerId</code> - FIO Address of the wallet which generates this transaction.</p>
+<h3>Exceptions</h3>
+<p><a name="FIOError"></a>
+<code>FIOError</code> - </p>
+<p><strong>Return</strong><br/>
+<a href="../../fiofoundation.io.fiosdk.models.fionetworkprovider.response/-push-transaction-response/index.html">PushTransactionResponse</a></p>
+<a name="fiofoundation.io.fiosdk.FIOSDK$registerFioDomain(kotlin.String, java.math.BigInteger)"></a>
+<code><span class="keyword">fun </span><span class="identifier">registerFioDomain</span><span class="symbol">(</span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$registerFioDomain(kotlin.String, java.math.BigInteger)/fioDomain">fioDomain</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$registerFioDomain(kotlin.String, java.math.BigInteger)/maxFee">maxFee</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/math/BigInteger.html"><span class="identifier">BigInteger</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fiofoundation.io.fiosdk.models.fionetworkprovider.response/-push-transaction-response/index.html"><span class="identifier">PushTransactionResponse</span></a></code>
+<p>Registers a FIO Domain on the FIO blockchain.</p>
+<h3>Parameters</h3>
+<p><a name="fioDomain"></a>
+<code>fioDomain</code> - FIO Domain to register. The owner will be the public key associated with the FIO SDK instance.</p>
+<p><a name="maxFee"></a>
+<code>maxFee</code> - Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ <a href="get-fee.html">getFee</a> for correct value.</p>
+<h3>Exceptions</h3>
+<p><a name="FIOError"></a>
+<code>FIOError</code> - </p>
+<p><strong>Return</strong><br/>
+<a href="../../fiofoundation.io.fiosdk.models.fionetworkprovider.response/-push-transaction-response/index.html">PushTransactionResponse</a></p>
+</BODY>
+</HTML>
