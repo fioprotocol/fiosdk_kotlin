@@ -256,10 +256,6 @@ class TestNetSdkTests {
             throw AssertionError("getPublicAddress Failed: " + generalException.message)
         }
 
-        //add test for remove
-
-
-        //add test for remove  listOf(TokenPublicAddress(tokenPublicAddress,chainCode,tokenCode)),
         println("testGenericActions: Test addPublicAddress to alice for removal")
         try
         {
