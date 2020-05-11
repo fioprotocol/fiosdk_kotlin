@@ -28,20 +28,19 @@ import java.math.BigInteger
 @RunWith(AndroidJUnit4::class)
 class TestNetSdkTests {
 
-   // private val baseUrl = "https://testnet.fioprotocol.io:443/v1/"
-   private val baseUrl = "http://10.0.0.248:8889/v1/"
+    private val baseUrl = "https://testnet.fioprotocol.io:443/v1/"
 
-    private var alicePrivateKey = "5HvaoRV9QrbbxhLh6zZHqTzesFEG5vusVJGbUazFi5xQvKMMt6U"
-    private var alicePublicKey = "FIO8NToQB65dZHv28RXSBBiyMCp55M7FRFw6wf4G3GeRt1VsiknrB"
-    private var bobPrivateKey = "5JCpqkvsrCzrAC3YWhx7pnLodr3Wr9dNMULYU8yoUrPRzu269Xz"
-    private var bobPublicKey = "FIO7uRvrLVrZCbCM2DtCgUMospqUMnP3JUC1sKHA8zNoF835kJBvN"
+    private var alicePrivateKey = ""
+    private var alicePublicKey = ""
+    private var bobPrivateKey = ""
+    private var bobPublicKey = ""
 
     private val testPrivateKey = "5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu"
     private val testPublicKey = "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o"
     private val testMnemonic = "valley alien library bread worry brother bundle hammer loyal barely dune brave"
 
-    private var aliceFioAddress = "ed@dapixdev"
-    private var bobFioAddress = "adam@dapixdev"
+    private var aliceFioAddress = ""
+    private var bobFioAddress = ""
 
     private var fioTestNetDomain = "fiotestnet"
     private var defaultFee = BigInteger("400000000000")
