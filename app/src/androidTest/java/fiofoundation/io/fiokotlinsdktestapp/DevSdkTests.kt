@@ -7,6 +7,7 @@ import fiofoundation.io.fiosdk.FIOSDK
 import fiofoundation.io.fiosdk.enums.FioDomainVisiblity
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
+import fiofoundation.io.fiosdk.models.TokenPublicAddress
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIOAddressAction
@@ -299,6 +300,58 @@ class DevSdkTests
         {
             throw AssertionError("getPublicAddress Failed: " + generalException.message)
         }
+
+        println("testGenericActions: Test addPublicAddress to alice for removal")
+        try
+        {
+            val addPublicAddressFee = this.aliceFioSdk!!.getFeeForAddPublicAddress(newFioAddress).fee
+
+            val response = this.aliceFioSdk.addPublicAddress(this.aliceFioAddress,this.alicePublicTokenCode,
+                this.alicePublicTokenCode,this.alicePublicTokenAddress,addPublicAddressFee)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            Assert.assertTrue(
+                "Couldn't Add Public Address for Alice",
+                actionTraceResponse != null && actionTraceResponse.status == "OK"
+            )
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Add Public Address  for Alice Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Add Public Address for Alice Failed: " + generalException.message)
+        }
+
+
+        println("testGenericActions: Test removePublicAddresses")
+        try
+        {
+            val removePublicAddressesFee = this.aliceFioSdk!!.getFeeForRemovePublicAddresses(newFioAddress).fee
+
+            val response = this.aliceFioSdk.removePublicAddresses(this.aliceFioAddress,
+                listOf(TokenPublicAddress(this.alicePublicTokenAddress,this.alicePublicTokenCode,this.alicePublicTokenCode)),
+                removePublicAddressesFee)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            Assert.assertTrue(
+                "Couldn't remove Public Address for Alice",
+                actionTraceResponse != null && actionTraceResponse.status == "OK"
+            )
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("remove Public Address  for Alice Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("remove Public Address for Alice Failed: " + generalException.message)
+        }
+
+
 
         println("testGenericActions: Test isFioAddressAvailable True")
         Log.i(this.logTag,"testGenericActions: Test isFioAddressAvailable True")
