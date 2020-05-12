@@ -1699,7 +1699,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         {
             val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-            val validator = validateAddPublicAddress(fioAddress,chainCode,tokenCode,tokenPublicAddress,wfa)
+            val validator = validatePublicAddressInfo(fioAddress,chainCode,tokenCode,tokenPublicAddress,wfa)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
@@ -2351,7 +2351,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         return Validator(isValid,if(!isValid) "Invalid New Funds Request" else "")
     }
 
-    private fun validateAddPublicAddress(fioAddress:String, chainCode:String, tokenCode:String,
+    private fun validatePublicAddressInfo(fioAddress:String, chainCode:String, tokenCode:String,
                                            tokenPublicAddress:String,
                                            technologyPartnerId:String=""): Validator
 {
@@ -2373,11 +2373,12 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
 
         for(address in tokenPublicAddresses)
         {
-            isValid = isValid && this.validateAddPublicAddress(fioAddress,address.chainCode,address.tokenCode,address.publicAddress,technologyPartnerId).isValid
+            isValid = isValid && this.validatePublicAddressInfo(fioAddress,address.chainCode,address.tokenCode,address.publicAddress,technologyPartnerId).isValid
         }
 
         return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")
     }
+
 
     private fun validateRemovePublicAddresses(fioAddress:String,
                                            tokenPublicAddresses:List<TokenPublicAddress>,
@@ -2387,10 +2388,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
 
         for(address in tokenPublicAddresses)
         {
-            isValid = isValid && this.validateAddPublicAddress(fioAddress,address.chainCode,address.tokenCode,address.publicAddress,technologyPartnerId).isValid
+            isValid = isValid && this.validatePublicAddressInfo(fioAddress,address.chainCode,address.tokenCode,address.publicAddress,technologyPartnerId).isValid
         }
 
-        return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")
+        return Validator(isValid,if(!isValid) "Invalid RemovePublicAddresses Request" else "")
     }
 
     private fun validateRegisterFioAddress(fioAddress:String ,ownerPublicKey:String,

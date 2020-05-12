@@ -306,7 +306,7 @@ class DevSdkTests
         {
             val addPublicAddressFee = this.aliceFioSdk!!.getFeeForAddPublicAddress(newFioAddress).fee
 
-            val response = this.aliceFioSdk.addPublicAddress(this.aliceFioAddress,this.alicePublicTokenCode,
+            val response = this.aliceFioSdk!!.addPublicAddress(this.aliceFioAddress,this.alicePublicTokenCode,
                 this.alicePublicTokenCode,this.alicePublicTokenAddress,addPublicAddressFee)
 
             val actionTraceResponse = response.getActionTraceResponse()
@@ -331,7 +331,7 @@ class DevSdkTests
         {
             val removePublicAddressesFee = this.aliceFioSdk!!.getFeeForRemovePublicAddresses(newFioAddress).fee
 
-            val response = this.aliceFioSdk.removePublicAddresses(this.aliceFioAddress,
+            val response = this.aliceFioSdk!!.removePublicAddresses(this.aliceFioAddress,
                 listOf(TokenPublicAddress(this.alicePublicTokenAddress,this.alicePublicTokenCode,this.alicePublicTokenCode)),
                 removePublicAddressesFee)
 
