@@ -76,9 +76,11 @@ interface IFIONetworkProviderApi {
     @POST(FIOApiEndPoints.get_obt_data)
     fun getObtData(@Body getObtDataRequest: GetObtDataRequest): Call<GetObtDataResponse>
 
-
     @POST(FIOApiEndPoints.add_public_address)
     fun addPublicAddress(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
+
+    @POST(FIOApiEndPoints.remove_public_addresses)
+    fun removePublicAddresses(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
 
     @POST(FIOApiEndPoints.set_domain_visibility)
     fun setFioDomainVisibility(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
