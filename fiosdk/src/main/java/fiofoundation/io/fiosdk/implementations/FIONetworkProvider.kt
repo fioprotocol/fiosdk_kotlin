@@ -354,19 +354,6 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
     }
 
     @Throws(PushTransactionError::class)
-    override fun removePublicAddresses(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
-    {
-        try
-        {
-            val syncCall = this.networkProviderApi.removePublicAddresses(pushTransactionRequest)
-            return processCall(syncCall)
-        }
-        catch(e: FIONetworkProviderCallError){
-            throw PushTransactionError("",e,e.responseError)
-        }
-    }
-
-    @Throws(PushTransactionError::class)
     override fun addPublicAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     {
         try
