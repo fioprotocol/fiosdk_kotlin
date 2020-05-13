@@ -24,6 +24,7 @@ object FIOApiEndPoints {
     const val record_obt_data = "record_obt_data"
     const val register_fio_name_behalf_of_user = "register_fio_name"
     const val add_public_address = "add_pub_address"
+    const val remove_public_addresses = "remove_pub_address"
     const val set_domain_visibility = "set_fio_domain_public"
 
     enum class FeeEndPoint (val endpoint: String) {
