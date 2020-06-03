@@ -3,7 +3,7 @@ package fiofoundation.io.fiokotlinsdktestapp
 import android.support.test.runner.AndroidJUnit4
 import android.util.Log
 import fiofoundation.io.androidfioserializationprovider.AbiFIOSerializationProvider
-import fiofoundation.io.fiosdk.FIOSDK
+import fiofoundation.io.fiosdk.*
 import fiofoundation.io.fiosdk.enums.FioDomainVisiblity
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
@@ -11,8 +11,6 @@ import fiofoundation.io.fiosdk.models.TokenPublicAddress
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIOAddressAction
-import fiofoundation.io.fiosdk.toFIO
-import fiofoundation.io.fiosdk.toSUF
 import fiofoundation.io.fiosdk.utilities.SUFUtils
 import fiofoundation.io.fiosdk.utilities.Utils
 import org.bitcoinj.crypto.MnemonicCode
