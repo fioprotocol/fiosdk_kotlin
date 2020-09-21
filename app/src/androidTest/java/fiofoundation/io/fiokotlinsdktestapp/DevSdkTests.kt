@@ -1,8 +1,10 @@
 package fiofoundation.io.fiokotlinsdktestapp
 
+import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import android.util.Log
 import fiofoundation.io.androidfioserializationprovider.AbiFIOSerializationProvider
+import fiofoundation.io.fiokotlinsdktestapp.Utils.getLocalProperty
 import fiofoundation.io.fiosdk.FIOSDK
 import fiofoundation.io.fiosdk.enums.FioDomainVisiblity
 import fiofoundation.io.fiosdk.errors.FIOError
@@ -26,8 +28,9 @@ import java.security.SecureRandom
 @RunWith(AndroidJUnit4::class)
 class DevSdkTests
 {
-    private val baseUrl = ""
-    private val baseMockUrl = ""
+    private val context = InstrumentationRegistry.getContext()
+    private val baseUrl = getLocalProperty("baseUrl", context)
+    private val baseMockUrl = getLocalProperty("baseMdockUrl", context)
 
     private var alicePrivateKey = ""
     private var alicePublicKey = ""
@@ -58,8 +61,8 @@ class DevSdkTests
     private var useMockServerForAlice = false
     private var useMockServerForBob = false
 
-    private var whalePrivateKey = ""
-    private var whalePublicKey = ""
+    private var whalePrivateKey = getLocalProperty("whalePrivateKey", context)
+    private var whalePublicKey = getLocalProperty("whalePublicKey", context)
     private var useWhaleFunds = false
 
     @Test

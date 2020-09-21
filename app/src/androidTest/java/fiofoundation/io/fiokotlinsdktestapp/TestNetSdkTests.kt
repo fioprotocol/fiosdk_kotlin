@@ -1,5 +1,6 @@
 package fiofoundation.io.fiokotlinsdktestapp
 
+import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import android.util.Log
 import fiofoundation.io.fiosdk.FIOSDK
@@ -8,6 +9,7 @@ import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
 import fiofoundation.io.androidfioserializationprovider.*
+import fiofoundation.io.fiokotlinsdktestapp.Utils.getLocalProperty
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIOAddressAction
 import fiofoundation.io.fiosdk.toFIO
@@ -26,20 +28,20 @@ import java.math.BigInteger
 
 @RunWith(AndroidJUnit4::class)
 class TestNetSdkTests {
-
+    private val context = InstrumentationRegistry.getContext()
     private val baseUrl = "https://testnet.fioprotocol.io:443/v1/"
 
-    private var alicePrivateKey = "your private key"
-    private var alicePublicKey = "your public key"
-    private var bobPrivateKey = "your private key"
-    private var bobPublicKey = "your public key"
+    private var alicePrivateKey = getLocalProperty("alicePrivateKey", context)
+    private var alicePublicKey = getLocalProperty("alicePublicKey", context)
+    private var bobPrivateKey = getLocalProperty("bobPrivateKey", context)
+    private var bobPublicKey = getLocalProperty("bobPublicKey", context)
 
     private val testPrivateKey = "5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu"
     private val testPublicKey = "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o"
     private val testMnemonic = "valley alien library bread worry brother bundle hammer loyal barely dune brave"
 
-    private var aliceFioAddress = "your_registered_address1@fiotestnet"
-    private var bobFioAddress = "your_registered_address2@fiotestnet"
+    private var aliceFioAddress = getLocalProperty("aliceFioAddress", context)
+    private var bobFioAddress = getLocalProperty("bobFioAddress", context)
 
     private var fioTestNetDomain = "fiotestnet"
     private var defaultFee = BigInteger("400000000000")
