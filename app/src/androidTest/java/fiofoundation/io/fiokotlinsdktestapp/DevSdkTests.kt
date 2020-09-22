@@ -28,7 +28,7 @@ class DevSdkTests
 {
     private val context = InstrumentationRegistry.getContext()
     private val baseUrl = getLocalProperty("baseUrl", context)
-    private val baseMockUrl = getLocalProperty("baseMdockUrl", context)
+    private val baseMockUrl = getLocalProperty("baseMockUrl", context)
 
     private var alicePrivateKey = ""
     private var alicePublicKey = ""
