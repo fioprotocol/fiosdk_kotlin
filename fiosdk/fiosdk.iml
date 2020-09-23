@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id=":fiosdk" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" type="JAVA_MODULE" version="4">
+<module external.linked.project.id=":fiosdk" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" external.system.module.group="fiosdk_kotlin" external.system.module.version="1.0.0" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="android-gradle" name="Android-Gradle">
       <configuration>
@@ -84,5 +84,6 @@
     <orderEntry type="library" exported="" scope="TEST" name="Gradle: scrypt-1.4.0" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="Gradle: slf4j-api-1.7.25" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="Gradle: jcip-annotations-1.0" level="project" />
+    <orderEntry type="library" exported="" name="Gradle: fiosdk.fiosdk-1.0.0" level="project" />
   </component>
 </module>
