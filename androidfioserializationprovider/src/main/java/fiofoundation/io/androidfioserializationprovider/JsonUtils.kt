@@ -7,13 +7,13 @@ object JsonUtils {
 
     fun jsonString(map: Map<String, Any>): String?
     {
-        try
+        return try
         {
             val json = getJsonFromMap(map)
-            return json.toString()
+            json.toString()
         }
         catch (ex: JSONException) {
-            return null
+            null
         }
 
     }
