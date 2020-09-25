@@ -9,9 +9,9 @@ class DateFormatter {
 
     companion object {
 
-        const val BACKEND_DATE_PATTERN = "yyyy-MM-dd'T'kk:mm:ss.SSS"
+        const val BACKEND_DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS"
 
-        const val BACKEND_DATE_PATTERN_WITH_TIMEZONE = "yyyy-MM-dd'T'kk:mm:ss.SSS zzz"
+        const val BACKEND_DATE_PATTERN_WITH_TIMEZONE = "yyyy-MM-dd'T'HH:mm:ss.SSS zzz"
 
         const val BACKEND_DATE_TIME_ZONE = "UTC"
 
