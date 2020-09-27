@@ -236,6 +236,8 @@ class TestNetSdkTests {
             throw AssertionError("Add Public Address for Alice Failed: " + generalException.message)
         }
 
+        Thread.sleep(4000)
+
         println("testGenericActions: Test getPublicAddress")
         try
         {

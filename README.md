@@ -113,6 +113,12 @@ This is the expected Public Key:
 
 # Release Notes
 
+## Version 1.1.0
+
+Cleaned up Unit Tests.  Removed Unit Test configuration properties from unit tests.  Properties should now be added to local.properties file in "app/src/androidTest/assets" folder.
+Removed Android Studio project files (*.iml).
+Various minor bug fixes.
+
 ## Version 1.0.0
 Added additional Unit Tests for Encryption.  Comparing and Validating results across the kotlin, iOS and typescript SDKs.
 No changes to the SDK code base.
