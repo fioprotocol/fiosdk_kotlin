@@ -1,13 +1,14 @@
 package fiofoundation.io.fiokotlinsdktestapp
 
+import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
 import android.util.Log
 import fiofoundation.io.androidfioserializationprovider.AbiFIOSerializationProvider
+import fiofoundation.io.fiokotlinsdktestapp.Utils.getLocalProperty
 import fiofoundation.io.fiosdk.*
 import fiofoundation.io.fiosdk.enums.FioDomainVisiblity
 import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
-import fiofoundation.io.fiosdk.models.TokenPublicAddress
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIOAddressAction
@@ -22,11 +23,13 @@ import java.lang.Exception
 import java.math.BigInteger
 import java.security.SecureRandom
 
+@ExperimentalUnsignedTypes
 @RunWith(AndroidJUnit4::class)
 class DevSdkTests
 {
-    private val baseUrl = ""
-    private val baseMockUrl = ""
+    private val context = InstrumentationRegistry.getContext()
+    private val baseUrl = getLocalProperty("baseUrl", context)
+    private val baseMockUrl = getLocalProperty("baseMockUrl", context)
 
     private var alicePrivateKey = ""
     private var alicePublicKey = ""
@@ -57,8 +60,8 @@ class DevSdkTests
     private var useMockServerForAlice = false
     private var useMockServerForBob = false
 
-    private var whalePrivateKey = ""
-    private var whalePublicKey = ""
+    private var whalePrivateKey = getLocalProperty("whalePrivateKey", context)
+    private var whalePublicKey = getLocalProperty("whalePublicKey", context)
     private var useWhaleFunds = false
 
     @Test
@@ -113,8 +116,8 @@ class DevSdkTests
         println("testGenericActions: Begin Test for Generic Actions")
         Log.i(this.logTag,"testGenericActions: Begin Test for Generic Actions")
 
-        var newFioDomain = this.generateTestingFioDomain()
-        var newFioAddress = this.generateTestingFioAddress(newFioDomain)
+        val newFioDomain = this.generateTestingFioDomain()
+        val newFioAddress = this.generateTestingFioAddress(newFioDomain)
 
         val registerAddressFee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioAddress).fee
         val registerDomainFee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioDomain).fee
@@ -128,7 +131,7 @@ class DevSdkTests
 
             Assert.assertTrue(
                 "Balance not Available for Alice.",
-                fioBalance != null && fioBalance >= BigInteger.ZERO
+                fioBalance >= BigInteger.ZERO
             )
 
             Log.i(this.logTag, "Alice's balance: $fioBalance")
@@ -285,10 +288,10 @@ class DevSdkTests
 
             Assert.assertTrue(
                 "Couldn't Find Public Address for Alice",
-                !response.publicAddress.isNullOrEmpty()
+                !response.publicAddress.isEmpty()
             )
 
-            Log.i(this.logTag, "Retrieved public address: ${!response.publicAddress.isNullOrEmpty()}")
+            Log.i(this.logTag, "Retrieved public address: ${!response.publicAddress.isEmpty()}")
         }
         catch (e: FIOError)
         {
@@ -298,58 +301,6 @@ class DevSdkTests
         {
             throw AssertionError("getPublicAddress Failed: " + generalException.message)
         }
-
-        println("testGenericActions: Test addPublicAddress to alice for removal")
-        try
-        {
-            val addPublicAddressFee = this.aliceFioSdk!!.getFeeForAddPublicAddress(newFioAddress).fee
-
-            val response = this.aliceFioSdk!!.addPublicAddress(this.aliceFioAddress,this.alicePublicTokenCode,
-                this.alicePublicTokenCode,this.alicePublicTokenAddress,addPublicAddressFee)
-
-            val actionTraceResponse = response.getActionTraceResponse()
-
-            Assert.assertTrue(
-                "Couldn't Add Public Address for Alice",
-                actionTraceResponse != null && actionTraceResponse.status == "OK"
-            )
-        }
-        catch (e: FIOError)
-        {
-            throw AssertionError("Add Public Address  for Alice Failed: " + e.toJson())
-        }
-        catch (generalException: Exception)
-        {
-            throw AssertionError("Add Public Address for Alice Failed: " + generalException.message)
-        }
-
-
-        println("testGenericActions: Test removePublicAddresses")
-        try
-        {
-            val removePublicAddressesFee = this.aliceFioSdk!!.getFeeForRemovePublicAddresses(newFioAddress).fee
-
-            val response = this.aliceFioSdk!!.removePublicAddresses(this.aliceFioAddress,
-                listOf(TokenPublicAddress(this.alicePublicTokenAddress,this.alicePublicTokenCode,this.alicePublicTokenCode)),
-                removePublicAddressesFee)
-
-            val actionTraceResponse = response.getActionTraceResponse()
-
-            Assert.assertTrue(
-                "Couldn't remove Public Address for Alice",
-                actionTraceResponse != null && actionTraceResponse.status == "OK"
-            )
-        }
-        catch (e: FIOError)
-        {
-            throw AssertionError("remove Public Address  for Alice Failed: " + e.toJson())
-        }
-        catch (generalException: Exception)
-        {
-            throw AssertionError("remove Public Address for Alice Failed: " + generalException.message)
-        }
-
-
 
         println("testGenericActions: Test isFioAddressAvailable True")
         Log.i(this.logTag,"testGenericActions: Test isFioAddressAvailable True")
@@ -361,10 +312,10 @@ class DevSdkTests
 
             Assert.assertTrue(
                 "FioAddress, $testAddress, is NOT Available",
-                response != null && response.isAvailable
+                response.isAvailable
             )
 
-            Log.i(this.logTag, "Is Fio Address Available: ${response != null && response.isAvailable}")
+            Log.i(this.logTag, "Is Fio Address Available: ${response.isAvailable}")
         }
         catch (e: FIOError)
         {
@@ -384,10 +335,10 @@ class DevSdkTests
 
             Assert.assertTrue(
                 "FioAddress, $aliceFioAddress, IS Available (not supposed to be)",
-                response != null && !response.isAvailable
+                !response.isAvailable
             )
 
-            Log.i(this.logTag, "Is Fio Address Available: ${response != null && response.isAvailable}")
+            Log.i(this.logTag, "Is Fio Address Available: ${response.isAvailable}")
         }
         catch (e: FIOError)
         {
@@ -582,7 +533,7 @@ class DevSdkTests
                 {
                     if(firstPendingRequest.deserializedContent!=null)
                     {
-                        var recordSendContent = RecordObtDataContent(this.bobPublicTokenAddress,
+                        val recordSendContent = RecordObtDataContent(this.bobPublicTokenAddress,
                             firstPendingRequest.deserializedContent!!.payeeTokenPublicAddress,
                             firstPendingRequest.deserializedContent!!.amount,
                             firstPendingRequest.deserializedContent!!.chainCode,firstPendingRequest.deserializedContent!!.tokenCode,
@@ -850,8 +801,8 @@ class DevSdkTests
 
 
         val amountToTransfer = BigInteger("1000000000")   //Amount is in SUFs
-        var bobBalanceBeforeTransfer = BigInteger.ZERO
-        var bobBalanceAfterTransfer = BigInteger.ZERO
+        val bobBalanceBeforeTransfer: BigInteger
+        val bobBalanceAfterTransfer: BigInteger
 
         println("testTransferFioTokens: Verify Bob's Current FIO Balance")
         Log.i(this.logTag,"testTransferFioTokens: Verify Bob's Current FIO Balance")
@@ -928,14 +879,14 @@ class DevSdkTests
 
         try
         {
-            var anotherfioAddress = this.generateTestingFioAddress()
+            val anotherfioAddress = this.generateTestingFioAddress()
 
             val fee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioAddress).fee
 
-            var addressRequestData = RegisterFIOAddressAction.FIOAddressRequestData(anotherfioAddress,this.alicePublicKey,fee,
+            val addressRequestData = RegisterFIOAddressAction.FIOAddressRequestData(anotherfioAddress,this.alicePublicKey,fee,
                 Utils.generateActor(this.alicePublicKey),"")
 
-            var requestData = addressRequestData.toJson()
+            val requestData = addressRequestData.toJson()
 
             val response = this.aliceFioSdk!!.pushTransaction("fio.address","regaddress",requestData)
 
@@ -1021,18 +972,18 @@ class DevSdkTests
 
     }
 
-    fun registerFioNameForUser(fioSdk:FIOSDK,fioAddress:String) {
+    private fun registerFioNameForUser(fioSdk:FIOSDK, fioAddress:String) {
 
         Log.i(this.logTag,"Start registerFioNameForUser")
-        Log.i(this.logTag,"Register " + fioAddress)
+        Log.i(this.logTag, "Register $fioAddress")
 
-        var response = fioSdk.registerFioNameOnBehalfOfUser(fioAddress)
+        val response = fioSdk.registerFioNameOnBehalfOfUser(fioAddress)
 
         Log.i(this.logTag,"RegisterFioNameForUser: " + response.status)
 
         Assert.assertTrue(response.status == "OK")
 
-        println("Registered Address: " + fioAddress)
+        println("Registered Address: $fioAddress")
 
         Log.i(this.logTag,"Finish registerFioNameForUser")
     }
@@ -1110,11 +1061,11 @@ class DevSdkTests
         {
             Log.i(this.logTag, "Start requestFaucetFunds")
 
-            var response = this.aliceFioSdk!!.requestFunds("fio@faucet",
+            val response = this.aliceFioSdk!!.requestFunds("fio@faucet",
                 this.aliceFioAddress,this.alicePublicKey,requestAmount,"FIO",
                 this.defaultFee)
 
-            var actionTraceResponse = response.getActionTraceResponse()
+            val actionTraceResponse = response.getActionTraceResponse()
             if (actionTraceResponse != null && actionTraceResponse.status == "requested")
             {
                 Log.i(this.logTag,
@@ -1123,7 +1074,7 @@ class DevSdkTests
 
                 var now = System.currentTimeMillis()
 
-                var check_for_10_minutes = now + (1000 * 60 * 10)
+                val checkFor10Minutes = now + (1000 * 60 * 10)
 
                 do {
                     if(now.rem(10000) == 0L)
@@ -1137,9 +1088,9 @@ class DevSdkTests
 
                     now = System.currentTimeMillis()
 
-                }while(now<check_for_10_minutes)
+                }while(now<checkFor10Minutes)
 
-                if(now>check_for_10_minutes)
+                if(now>checkFor10Minutes)
                 {
                     Log.i(this.logTag, "New Funds Requested by Alice: failed")
                     throw FIOError("New Funds Requested by Alice: failed")

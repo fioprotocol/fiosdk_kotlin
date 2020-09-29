@@ -26,6 +26,8 @@ import fiofoundation.io.fiosdk.utilities.PrivateKeyUtils
 
 import java.math.BigInteger
 
+// this is an SDK. Methods defined here are not being used here but elsewhere later.
+@Suppress("UNUSED")
 /**
  * Kotlin SDK for FIO Foundation API
  *
@@ -206,7 +208,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
      * @throws [FIOError]
      * */
     @Throws(FIOError::class)
-    open fun setPrivateKey(privateKey:String)
+    fun setPrivateKey(privateKey:String)
     {
         this.privateKey = privateKey
 
@@ -283,7 +285,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     fun registerFioAddress(fioAddress:String ,ownerPublicKey:String, maxFee:BigInteger,
                            technologyPartnerId:String): PushTransactionResponse
     {
-        var transactionProcessor = RegisterFIOAddressTrxProcessor(
+        val transactionProcessor = RegisterFIOAddressTrxProcessor(
             this.serializationProvider,
             this.networkProvider,
             this.abiProvider,
@@ -300,7 +302,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 throw FIOError(validator.errorMessage!!)
             else
             {
-                var registerFioAddressAction =
+                val registerFioAddressAction =
                     RegisterFIOAddressAction(
                         fioAddress,
                         ownerPublicKey,
@@ -309,7 +311,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                         this.publicKey
                     )
 
-                var actionList = ArrayList<RegisterFIOAddressAction>()
+                val actionList = ArrayList<RegisterFIOAddressAction>()
                 actionList.add(registerFioAddressAction)
 
                 @Suppress("UNCHECKED_CAST")
@@ -404,7 +406,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     fun registerFioDomain(fioDomain:String, ownerPublicKey:String, maxFee:BigInteger,
                           technologyPartnerId:String): PushTransactionResponse
     {
-        var transactionProcessor = RegisterFIODomainTrxProcessor(
+        val transactionProcessor = RegisterFIODomainTrxProcessor(
             this.serializationProvider,
             this.networkProvider,
             this.abiProvider,
@@ -421,7 +423,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 throw FIOError(validator.errorMessage!!)
             else
             {
-                var registerFioDomainAction = RegisterFIODomainAction(
+                val registerFioDomainAction = RegisterFIODomainAction(
                     fioDomain,
                     ownerPublicKey,
                     wfa,
@@ -429,7 +431,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                     this.publicKey
                 )
 
-                var actionList = ArrayList<RegisterFIODomainAction>()
+                val actionList = ArrayList<RegisterFIODomainAction>()
                 actionList.add(registerFioDomainAction)
 
                 @Suppress("UNCHECKED_CAST")
@@ -524,7 +526,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     fun renewFioDomain(fioDomain:String, maxFee:BigInteger,
                        technologyPartnerId:String): PushTransactionResponse
     {
-        var transactionProcessor = RegisterFIODomainTrxProcessor(
+        val transactionProcessor = RegisterFIODomainTrxProcessor(
             this.serializationProvider,
             this.networkProvider,
             this.abiProvider,
@@ -541,14 +543,14 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 throw FIOError(validator.errorMessage!!)
             else
             {
-                var renewFioDomainAction = RenewFIODomainAction(
+                val renewFioDomainAction = RenewFIODomainAction(
                     fioDomain,
                     maxFee,
                     wfa,
                     this.publicKey
                 )
 
-                var actionList = ArrayList<RenewFIODomainAction>()
+                val actionList = ArrayList<RenewFIODomainAction>()
                 actionList.add(renewFioDomainAction)
 
                 @Suppress("UNCHECKED_CAST")
@@ -610,7 +612,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     fun renewFioAddress(fioAddress:String, maxFee:BigInteger,
                         technologyPartnerId:String): PushTransactionResponse
     {
-        var transactionProcessor = RenewFIOAddressTrxProcessor(
+        val transactionProcessor = RenewFIOAddressTrxProcessor(
             this.serializationProvider,
             this.networkProvider,
             this.abiProvider,
@@ -627,7 +629,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 throw FIOError(validator.errorMessage!!)
             else
             {
-                var renewFioAddressAction =
+                val renewFioAddressAction =
                     RenewFIOAddressAction(
                         fioAddress,
                         maxFee,
@@ -635,7 +637,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                         this.publicKey
                     )
 
-                var actionList = ArrayList<RenewFIOAddressAction>()
+                val actionList = ArrayList<RenewFIOAddressAction>()
                 actionList.add(renewFioAddressAction)
 
                 @Suppress("UNCHECKED_CAST")
@@ -688,7 +690,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
      * Transfers FIO tokens from public key associated with the FIO SDK instance to
      * the payeePublicKey.
      *
-     * @param payeePublicKey FIO public Address of the one receiving the tokens.
+     * @param payeeFioPublicKey FIO public Address of the one receiving the tokens.
      * @param amount Amount sent in SUFs.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
      * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
@@ -700,7 +702,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     fun transferTokens(payeeFioPublicKey:String, amount:BigInteger, maxFee:BigInteger,
                        technologyPartnerId:String): PushTransactionResponse
     {
-        var transactionProcessor = TransTokensPubKeyTrxProcessor(
+        val transactionProcessor = TransTokensPubKeyTrxProcessor(
             this.serializationProvider,
             this.networkProvider,
             this.abiProvider,
@@ -717,7 +719,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 throw FIOError(validator.errorMessage!!)
             else
             {
-                var transferTokensToPublickey = TransferTokensPubKeyAction(
+                val transferTokensToPublickey = TransferTokensPubKeyAction(
                     payeeFioPublicKey,
                     amount,
                     maxFee,
@@ -725,7 +727,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                     this.publicKey
                 )
 
-                var actionList = ArrayList<TransferTokensPubKeyAction>()
+                val actionList = ArrayList<TransferTokensPubKeyAction>()
                 actionList.add(transferTokensToPublickey)
 
                 @Suppress("UNCHECKED_CAST")
@@ -763,7 +765,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
      * Transfers FIO tokens from public key associated with the FIO SDK instance to
      * the payeePublicKey.
      *
-     * @param payeePublicKey FIO public Address of the one receiving the tokens.
+     * @param payeeFioPublicKey FIO public Address of the one receiving the tokens.
      * @param amount Amount sent in SUFs.
      * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
      * @return [PushTransactionResponse]
@@ -986,7 +988,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     @Throws(FIOError::class)
     fun rejectFundsRequest(fioRequestId:BigInteger, maxFee: BigInteger, technologyPartnerId:String): PushTransactionResponse
     {
-        var transactionProcessor = RejectFundsRequestTrxProcessor(
+        val transactionProcessor = RejectFundsRequestTrxProcessor(
             this.serializationProvider,
             this.networkProvider,
             this.abiProvider,
@@ -1003,14 +1005,14 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 throw FIOError(validator.errorMessage!!)
             else
             {
-                var rejectFundsRequestAction = RejectFundsRequestAction(
+                val rejectFundsRequestAction = RejectFundsRequestAction(
                     fioRequestId,
                     maxFee,
                     wfa,
                     this.publicKey
                 )
 
-                var actionList = ArrayList<RejectFundsRequestAction>()
+                val actionList = ArrayList<RejectFundsRequestAction>()
                 actionList.add(rejectFundsRequestAction)
 
                 @Suppress("UNCHECKED_CAST")
@@ -1314,12 +1316,12 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
             if (tokenObtData.size <= limit || offset<=0 || offset>tokenObtData.size)
                 return tokenObtData
 
-            var toIndex = offset + (limit - 1)
+            val toIndex = offset + (limit - 1)
 
-            if(toIndex<=tokenObtData.lastIndex)
-                return tokenObtData.subList(offset,toIndex)
+            return if(toIndex<=tokenObtData.lastIndex)
+                tokenObtData.subList(offset,toIndex)
             else
-                return tokenObtData.subList(offset,tokenObtData.lastIndex)
+                tokenObtData.subList(offset,tokenObtData.lastIndex)
         }
 
         return tokenObtData
@@ -1494,15 +1496,13 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         try
         {
-            var request:GetFeeRequest?
-
             if(fioAddress!="" && !fioAddress.isFioAddress())
                 throw FIOError("Invalid FIO Address")
 
-            if(fioAddress!="" && fioAddress.isFioAddress())
-                request = GetFeeRequest(endPointName.endpoint,fioAddress)
+            val request:GetFeeRequest = if(fioAddress!="" && fioAddress.isFioAddress())
+                GetFeeRequest(endPointName.endpoint,fioAddress)
             else
-                request = GetFeeRequest(endPointName.endpoint,"")
+                GetFeeRequest(endPointName.endpoint,"")
 
             return this.networkProvider.getFee(request)
         }
@@ -1609,37 +1609,6 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     /**
-     * Compute and return fee amount for removing a public address from a fio address.
-
-     * @param fioAddress The FIO Address which will be mapped to public address.
-     * @return [GetFeeResponse]
-     *
-     * @throws [FIOError]
-     */
-    @Throws(FIOError::class)
-    fun getFeeForRemovePublicAddresses(fioAddress:String): GetFeeResponse
-    {
-        try
-        {
-            if(fioAddress.isFioAddress()) {
-                val request = GetFeeRequest(FIOApiEndPoints.remove_public_addresses, fioAddress)
-
-                return this.networkProvider.getFee(request)
-            }
-            else
-                throw Exception("Invalid FIO Address")
-        }
-        catch(getFeeError: GetFeeError)
-        {
-            throw FIOError(getFeeError.message!!,getFeeError)
-        }
-        catch(e:Exception)
-        {
-            throw FIOError(e.message!!,e)
-        }
-    }
-
-    /**
      * Compute and return fee amount for recordObtData
      *
      * @param payerFioAddress The FIO Address of the payer whose transaction is being recorded by the recordObtData call
@@ -1688,7 +1657,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     fun addPublicAddress(fioAddress:String, chainCode:String, tokenCode:String, tokenPublicAddress:String,
                          maxFee:BigInteger, technologyPartnerId:String=""): PushTransactionResponse
     {
-        var transactionProcessor = AddPublicAddressTrxProcessor(
+        val transactionProcessor = AddPublicAddressTrxProcessor(
             this.serializationProvider,
             this.networkProvider,
             this.abiProvider,
@@ -1699,13 +1668,13 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         {
             val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-            val validator = validatePublicAddressInfo(fioAddress,chainCode,tokenCode,tokenPublicAddress,wfa)
+            val validator = validateAddPublicAddress(fioAddress,chainCode,tokenCode,tokenPublicAddress,wfa)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
             else
             {
-                var addPublicAddressAction = AddPublicAddressAction(
+                val addPublicAddressAction = AddPublicAddressAction(
                     fioAddress,
                     listOf(TokenPublicAddress(tokenPublicAddress,chainCode,tokenCode)),
                     maxFee,
@@ -1713,82 +1682,8 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                     this.publicKey
                 )
 
-                var actionList = ArrayList<AddPublicAddressAction>()
+                val actionList = ArrayList<AddPublicAddressAction>()
                 actionList.add(addPublicAddressAction)
-
-                @Suppress("UNCHECKED_CAST")
-                transactionProcessor.prepare(actionList as ArrayList<IAction>)
-
-                transactionProcessor.sign()
-
-                return transactionProcessor.broadcast()
-            }
-        }
-        catch(fioError:FIOError)
-        {
-            throw fioError
-        }
-        catch(prepError: TransactionPrepareError)
-        {
-            throw FIOError(prepError.message!!,prepError)
-        }
-        catch(signError: TransactionSignError)
-        {
-            throw FIOError(signError.message!!,signError)
-        }
-        catch(broadcastError: TransactionBroadCastError)
-        {
-            throw FIOError(broadcastError.message!!,broadcastError)
-        }
-        catch(e:Exception)
-        {
-            throw FIOError(e.message!!,e)
-        }
-    }
-
-    /**
-     * Removes public addresses from the specified the FIO Address.
-     *
-     * @param fioAddress FIO Address to add the public address to.
-     * @param publicAddresses json string containing the chain code token code and public address.
-     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
-     * @param technologyPartnerId (optional) FIO Address of the wallet which generates this transaction.
-     * @return [PushTransactionResponse]
-     *
-     * @throws [FIOError]
-     */
-    @Throws(FIOError::class)
-    @ExperimentalUnsignedTypes
-    fun removePublicAddresses(fioAddress:String, tokenPublicAddresses:List<TokenPublicAddress>,
-                         maxFee:BigInteger, technologyPartnerId:String=""): PushTransactionResponse
-    {
-        var transactionProcessor = RemovePublicAddressesTrxProcessor(
-            this.serializationProvider,
-            this.networkProvider,
-            this.abiProvider,
-            this.signatureProvider
-        )
-
-        try
-        {
-            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
-
-            val validator = validateRemovePublicAddresses(fioAddress,tokenPublicAddresses,wfa)
-
-            if(!validator.isValid)
-                throw FIOError(validator.errorMessage!!)
-            else
-            {
-                var removePublicAddressAction = RemovePublicAddressesAction(
-                    fioAddress,
-                    tokenPublicAddresses,
-                    maxFee,
-                    wfa,
-                    this.publicKey
-                )
-
-                var actionList = ArrayList<RemovePublicAddressesAction>()
-                actionList.add(removePublicAddressAction)
 
                 @Suppress("UNCHECKED_CAST")
                 transactionProcessor.prepare(actionList as ArrayList<IAction>)
@@ -1836,7 +1731,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     fun addPublicAddresses(fioAddress:String, tokenPublicAddresses:List<TokenPublicAddress>,
                          maxFee:BigInteger, technologyPartnerId:String=""): PushTransactionResponse
     {
-        var transactionProcessor = AddPublicAddressTrxProcessor(
+        val transactionProcessor = AddPublicAddressTrxProcessor(
             this.serializationProvider,
             this.networkProvider,
             this.abiProvider,
@@ -1853,7 +1748,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 throw FIOError(validator.errorMessage!!)
             else
             {
-                var addPublicAddressAction = AddPublicAddressAction(
+                val addPublicAddressAction = AddPublicAddressAction(
                     fioAddress,
                     tokenPublicAddresses,
                     maxFee,
@@ -1861,7 +1756,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                     this.publicKey
                 )
 
-                var actionList = ArrayList<AddPublicAddressAction>()
+                val actionList = ArrayList<AddPublicAddressAction>()
                 actionList.add(addPublicAddressAction)
 
                 @Suppress("UNCHECKED_CAST")
@@ -1911,7 +1806,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     fun setFioDomainVisibility(fioDomain:String, visibility:FioDomainVisiblity,
                          maxFee:BigInteger, technologyPartnerId:String=""): PushTransactionResponse
     {
-        var transactionProcessor = SetFioDomainVisibilityTrxProcessor(
+        val transactionProcessor = SetFioDomainVisibilityTrxProcessor(
             this.serializationProvider,
             this.networkProvider,
             this.abiProvider,
@@ -1928,7 +1823,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 throw FIOError(validator.errorMessage!!)
             else
             {
-                var setFioDomainVisibilityAction = SetFioDomainVisibilityAction(
+                val setFioDomainVisibilityAction = SetFioDomainVisibilityAction(
                     fioDomain,
                     visibility,
                     maxFee,
@@ -1937,7 +1832,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 )
 
 
-                var actionList = ArrayList<SetFioDomainVisibilityAction>()
+                val actionList = ArrayList<SetFioDomainVisibilityAction>()
                 actionList.add(setFioDomainVisibilityAction)
 
                 @Suppress("UNCHECKED_CAST")
@@ -1983,7 +1878,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     @Throws(FIOError::class)
     fun pushTransaction(account: String, name: String, data:String): PushTransactionResponse
     {
-        var transactionProcessor = TransactionProcessor(
+        val transactionProcessor = TransactionProcessor(
             this.serializationProvider,
             this.networkProvider,
             this.abiProvider,
@@ -1995,7 +1890,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
             val auth = Authorization(this.publicKey, "active")
             val action = Action(account,name,auth,data)
 
-            var actionList = ArrayList<Action>()
+            val actionList = ArrayList<Action>()
             actionList.add(action)
 
             @Suppress("UNCHECKED_CAST")
@@ -2047,7 +1942,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                         fundsRequestContent: FundsRequestContent, maxFee:BigInteger,
                                 technologyPartnerId:String): PushTransactionResponse
     {
-        var transactionProcessor = NewFundsRequestTrxProcessor(
+        val transactionProcessor = NewFundsRequestTrxProcessor(
             this.serializationProvider,
             this.networkProvider,
             this.abiProvider,
@@ -2068,7 +1963,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
 
                 val encryptedContent = fundsRequestContent.serialize(this.privateKey,payerPublicKey,this.serializationProvider)
 
-                var newFundsRequestAction = NewFundsRequestAction(
+                val newFundsRequestAction = NewFundsRequestAction(
                     payerFioAddress,
                     payeeFioAddress,
                     encryptedContent,
@@ -2078,7 +1973,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 )
 
 
-                var actionList = ArrayList<NewFundsRequestAction>()
+                val actionList = ArrayList<NewFundsRequestAction>()
                 actionList.add(newFundsRequestAction)
 
                 @Suppress("UNCHECKED_CAST")
@@ -2174,7 +2069,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                            payeeFioAddress:String, recordObtDataContent: RecordObtDataContent,
                            maxFee:BigInteger, technologyPartnerId:String): PushTransactionResponse
     {
-        var transactionProcessor = RecordObtDataTrxProcessor(
+        val transactionProcessor = RecordObtDataTrxProcessor(
             this.serializationProvider,
             this.networkProvider,
             this.abiProvider,
@@ -2199,7 +2094,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
 
                 val encryptedContent = recordObtDataContent.serialize(this.privateKey,payeeKey,this.serializationProvider)
 
-                var recordObtDataAction = RecordObtDataAction(
+                val recordObtDataAction = RecordObtDataAction(
                     payerFioAddress,
                     payeeFioAddress,
                     encryptedContent,
@@ -2210,7 +2105,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 )
 
 
-                var actionList = ArrayList<RecordObtDataAction>()
+                val actionList = ArrayList<RecordObtDataAction>()
                 actionList.add(recordObtDataAction)
 
                 @Suppress("UNCHECKED_CAST")
@@ -2351,19 +2246,19 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         return Validator(isValid,if(!isValid) "Invalid New Funds Request" else "")
     }
 
-    private fun validatePublicAddressInfo(fioAddress:String, chainCode:String, tokenCode:String,
-                                           tokenPublicAddress:String,
-                                           technologyPartnerId:String=""): Validator
-{
-    var isValid = (fioAddress.isFioAddress()
-            && tokenPublicAddress.isNativeBlockChainPublicAddress()
-            && tokenCode.isTokenCode() && chainCode.isTokenCode())
+    private fun validateAddPublicAddress(fioAddress:String, chainCode:String, tokenCode:String,
+                                         tokenPublicAddress:String,
+                                         technologyPartnerId:String=""): Validator
+    {
+        var isValid = (fioAddress.isFioAddress()
+                && tokenPublicAddress.isNativeBlockChainPublicAddress()
+                && tokenCode.isTokenCode() && chainCode.isTokenCode())
 
-    if(technologyPartnerId.isNotEmpty())
-        isValid = isValid && technologyPartnerId.isFioAddress()
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
 
-    return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")
-}
+        return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")
+    }
 
     private fun validateAddPublicAddresses(fioAddress:String,
                                            tokenPublicAddresses:List<TokenPublicAddress>,
@@ -2373,25 +2268,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
 
         for(address in tokenPublicAddresses)
         {
-            isValid = isValid && this.validatePublicAddressInfo(fioAddress,address.chainCode,address.tokenCode,address.publicAddress,technologyPartnerId).isValid
+            isValid = isValid && this.validateAddPublicAddress(fioAddress,address.chainCode,address.tokenCode,address.publicAddress,technologyPartnerId).isValid
         }
 
         return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")
-    }
-
-
-    private fun validateRemovePublicAddresses(fioAddress:String,
-                                           tokenPublicAddresses:List<TokenPublicAddress>,
-                                           technologyPartnerId:String=""): Validator
-    {
-        var isValid = true
-
-        for(address in tokenPublicAddresses)
-        {
-            isValid = isValid && this.validatePublicAddressInfo(fioAddress,address.chainCode,address.tokenCode,address.publicAddress,technologyPartnerId).isValid
-        }
-
-        return Validator(isValid,if(!isValid) "Invalid RemovePublicAddresses Request" else "")
     }
 
     private fun validateRegisterFioAddress(fioAddress:String ,ownerPublicKey:String,

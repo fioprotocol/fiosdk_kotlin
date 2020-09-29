@@ -22,7 +22,7 @@ class RecordObtDataAction(payerFioAddress:String,
     {
         val auth = Authorization(actorPublicKey, "active")
         var requestData = RecordObtDataRequestData(
-            payerFioAddress, payeeFioAddress, content, maxFee,fioRequestId,
+            payerFioAddress, payeeFioAddress, content, maxFee,if(fioRequestId <= BigInteger.ZERO) "" else fioRequestId.toString(),
             auth.actor, technologyPartnerId)
 
         this.authorization.add(auth)
@@ -34,7 +34,7 @@ class RecordObtDataAction(payerFioAddress:String,
         @field:SerializedName("payee_fio_address") var payeeFioAddress:String,
         @field:SerializedName("content") var content:String,
         @field:SerializedName("max_fee") var maxFee:BigInteger,
-        @field:SerializedName("fio_request_id") var fioRequestId:BigInteger,
+        @field:SerializedName("fio_request_id") var fioRequestId:String,
         @field:SerializedName("actor") var actor:String,
         @field:SerializedName("tpid") var technologyPartnerId:String): FIORequestData()
 }
