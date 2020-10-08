@@ -343,7 +343,7 @@ class TestNetSdkTests {
 
             val response = aliceFioSdk.requestFunds(
                 bobFioAddress,
-                aliceFioAddress, alicePublicTokenAddress,2.0, alicePublicTokenCode,
+                aliceFioAddress, alicePublicTokenAddress,0.00022, alicePublicTokenCode,
                 alicePublicTokenCode,fee)
 
             val actionTraceResponse = response.getActionTraceResponse()

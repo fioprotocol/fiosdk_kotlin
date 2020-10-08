@@ -841,7 +841,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),chainCode,tokenCode)
+        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),chainCode,tokenCode)
 
         return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,wfa)
     }
@@ -894,7 +894,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),chainCode,tokenCode,memo,hash,offlineUrl)
+        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),chainCode,tokenCode,memo,hash,offlineUrl)
 
         return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,wfa)
     }
@@ -948,7 +948,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),chainCode,tokenCode,memo)
+        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),chainCode,tokenCode,memo)
 
         return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,wfa)
     }
@@ -1088,7 +1088,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),
             chainCode,tokenCode,obtId,status)
 
         return this.recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,wfa)
@@ -1156,7 +1156,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),
             chainCode,tokenCode,obtId,status,memo,hash,offlineUrl)
 
         return this.recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,wfa)
@@ -1202,7 +1202,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                    maxFee:BigInteger): PushTransactionResponse
     {
         val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,
-            payeeTokenPublicAddress, amount.toString(),chainCode,tokenCode,obtId,status)
+            payeeTokenPublicAddress, amount.toBigDecimal().toPlainString(),chainCode,tokenCode,obtId,status)
 
         return this.recordObtData(fioRequestId, payerFioAddress, payeeFioAddress, recordObtDataContent, maxFee,this.technologyPartnerId)
     }
@@ -1244,7 +1244,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),
             chainCode,tokenCode,obtId,status)
 
         return this.recordObtData(BigInteger.ZERO,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,wfa)
