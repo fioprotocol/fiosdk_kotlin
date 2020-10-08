@@ -441,7 +441,7 @@ class TestNetSdkTests {
                         val response = bobFioSdk.recordObtData(firstPendingRequest.fioRequestId,firstPendingRequest.payerFioAddress
                             ,firstPendingRequest.payeeFioAddress,
                             bobPublicTokenAddress,recordSendContent.payeeTokenPublicAddress,
-                            if(recordSendContent.amount!="") recordSendContent.amount.toDouble() else 0.0,recordSendContent.tokenCode,recordSendContent.chainCode,
+                            recordSendContent.amount.toDouble(),recordSendContent.tokenCode,recordSendContent.chainCode,
                             recordSendContent.status, recordSendContent.obtId,fee)
 
                         println("testFundsRequest: Test recordObtData No RecordId")
@@ -449,7 +449,7 @@ class TestNetSdkTests {
                         bobFioSdk.recordObtData(firstPendingRequest.payerFioAddress
                             ,firstPendingRequest.payeeFioAddress,
                             bobPublicTokenAddress,recordSendContent.payeeTokenPublicAddress,
-                            if(recordSendContent.amount!="") recordSendContent.amount.toDouble() else 0.0,recordSendContent.tokenCode,
+                            recordSendContent.amount.toDouble(),recordSendContent.tokenCode,
                             recordSendContent.status,"987654321", fee)
 
                         val actionTraceResponse = response.getActionTraceResponse()
