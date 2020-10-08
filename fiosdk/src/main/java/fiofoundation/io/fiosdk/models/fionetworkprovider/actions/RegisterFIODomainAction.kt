@@ -22,7 +22,7 @@ class RegisterFIODomainAction(fioDomain: String,
         val auth = Authorization(actorPublicKey, "active")
         var requestData =
             FIODomainRequestData(
-                fioDomain,
+                fioDomain.toLowerCase(),
                 ownerPublicKey,
                 maxFee,
                 auth.actor,
