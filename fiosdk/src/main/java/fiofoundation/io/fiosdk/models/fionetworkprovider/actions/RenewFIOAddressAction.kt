@@ -19,7 +19,7 @@ class RenewFIOAddressAction(fioAddress: String, maxFee: BigInteger, technologyPa
         val auth = Authorization(actorPublicKey, "active")
         var requestData =
             RenewFIOAddressRequestData(
-                fioAddress,
+                fioAddress.toLowerCase(),
                 maxFee,
                 auth.actor,
                 technologyPartnerId

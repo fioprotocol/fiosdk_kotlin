@@ -22,7 +22,7 @@ class SetFioDomainVisibilityAction(fioDomain: String,
         val auth = Authorization(actorPublicKey, "active")
         var requestData =
             FioDomainVisibilityData(
-                fioDomain,
+                fioDomain.toLowerCase(),
                 visibility.visibility,
                 maxFee,
                 auth.actor,

@@ -23,8 +23,8 @@ class NewFundsRequestAction(
         val auth = Authorization(actorPublicKey, "active")
         var requestData =
             NewFundsRequestData(
-                payerfioAddress,
-                payeefioAddress,
+                payerfioAddress.toLowerCase(),
+                payeefioAddress.toLowerCase(),
                 content,
                 maxFee,
                 auth.actor,

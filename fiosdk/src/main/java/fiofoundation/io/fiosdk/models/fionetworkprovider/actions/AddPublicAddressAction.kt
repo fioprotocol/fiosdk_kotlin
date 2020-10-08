@@ -23,7 +23,7 @@ class AddPublicAddressAction(fioAddress: String,
         val auth = Authorization(actorPublicKey, "active")
         var requestData =
             FIOAddressRequestData(
-                fioAddress,
+                fioAddress.toLowerCase(),
                 tokenPublicAddresses,
                 maxFee,
                 auth.actor,

@@ -19,7 +19,7 @@ class RenewFIODomainAction(fioDomain: String, maxFee: BigInteger, technologyPart
         val auth = Authorization(actorPublicKey, "active")
         var requestData =
             RenewFIODomainRequestData(
-                fioDomain,
+                fioDomain.toLowerCase(),
                 maxFee,
                 auth.actor,
                 technologyPartnerId

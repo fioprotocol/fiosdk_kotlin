@@ -841,7 +841,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),chainCode,tokenCode)
+        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),chainCode,tokenCode)
 
         return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,wfa)
     }
@@ -894,7 +894,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),chainCode,tokenCode,memo,hash,offlineUrl)
+        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),chainCode,tokenCode,memo,hash,offlineUrl)
 
         return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,wfa)
     }
@@ -948,7 +948,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toString(),chainCode,tokenCode,memo)
+        val fundsRequestContent = FundsRequestContent(payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),chainCode,tokenCode,memo)
 
         return this.requestNewFunds(payerFioAddress,payeeFioAddress,fundsRequestContent,maxFee,wfa)
     }
@@ -1088,7 +1088,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),
             chainCode,tokenCode,obtId,status)
 
         return this.recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,wfa)
@@ -1156,7 +1156,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),
             chainCode,tokenCode,obtId,status,memo,hash,offlineUrl)
 
         return this.recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,wfa)
@@ -1202,7 +1202,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                    maxFee:BigInteger): PushTransactionResponse
     {
         val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,
-            payeeTokenPublicAddress, amount.toString(),chainCode,tokenCode,obtId,status)
+            payeeTokenPublicAddress, amount.toBigDecimal().toPlainString(),chainCode,tokenCode,obtId,status)
 
         return this.recordObtData(fioRequestId, payerFioAddress, payeeFioAddress, recordObtDataContent, maxFee,this.technologyPartnerId)
     }
@@ -1244,7 +1244,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toString(),
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),
             chainCode,tokenCode,obtId,status)
 
         return this.recordObtData(BigInteger.ZERO,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,wfa)
@@ -1441,7 +1441,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         try
         {
-            val request = GetPublicAddressRequest(fioAddress,chainCode,tokenCode)
+            val request = GetPublicAddressRequest(fioAddress.toLowerCase(),chainCode,tokenCode)
 
             return this.networkProvider.getPublicAddress(request)
         }
@@ -1468,7 +1468,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         try
         {
-            val request = FIONameAvailabilityCheckRequest(fioName)
+            val request = FIONameAvailabilityCheckRequest(fioName.toLowerCase())
 
             return this.networkProvider.isFIONameAvailable(request)
         }
@@ -1500,7 +1500,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 throw FIOError("Invalid FIO Address")
 
             val request:GetFeeRequest = if(fioAddress!="" && fioAddress.isFioAddress())
-                GetFeeRequest(endPointName.endpoint,fioAddress)
+                GetFeeRequest(endPointName.endpoint,fioAddress.toLowerCase())
             else
                 GetFeeRequest(endPointName.endpoint,"")
 
@@ -1530,7 +1530,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         try
         {
             if(payeeFioAddress.isFioAddress()) {
-                val request = GetFeeRequest(FIOApiEndPoints.new_funds_request, payeeFioAddress)
+                val request = GetFeeRequest(FIOApiEndPoints.new_funds_request, payeeFioAddress.toLowerCase())
 
                 return this.networkProvider.getFee(request)
             }
@@ -1560,7 +1560,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         try
         {
             if(payerFioAddress.isFioAddress()) {
-                val request = GetFeeRequest(FIOApiEndPoints.reject_funds_request, payerFioAddress)
+                val request = GetFeeRequest(FIOApiEndPoints.reject_funds_request, payerFioAddress.toLowerCase())
 
                 return this.networkProvider.getFee(request)
             }
@@ -1591,7 +1591,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         try
         {
             if(fioAddress.isFioAddress()) {
-                val request = GetFeeRequest(FIOApiEndPoints.add_public_address, fioAddress)
+                val request = GetFeeRequest(FIOApiEndPoints.add_public_address, fioAddress.toLowerCase())
 
                 return this.networkProvider.getFee(request)
             }
@@ -1622,7 +1622,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         try
         {
             if(payerFioAddress.isFioAddress()) {
-                val request = GetFeeRequest(FIOApiEndPoints.record_obt_data, payerFioAddress)
+                val request = GetFeeRequest(FIOApiEndPoints.record_obt_data, payerFioAddress.toLowerCase())
 
                 return this.networkProvider.getFee(request)
             }
