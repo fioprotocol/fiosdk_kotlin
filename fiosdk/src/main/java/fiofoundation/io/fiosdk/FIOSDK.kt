@@ -1441,7 +1441,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         try
         {
-            val request = GetPublicAddressRequest(fioAddress,chainCode,tokenCode)
+            val request = GetPublicAddressRequest(fioAddress.toLowerCase(),chainCode,tokenCode)
 
             return this.networkProvider.getPublicAddress(request)
         }
@@ -1468,7 +1468,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         try
         {
-            val request = FIONameAvailabilityCheckRequest(fioName)
+            val request = FIONameAvailabilityCheckRequest(fioName.toLowerCase())
 
             return this.networkProvider.isFIONameAvailable(request)
         }
@@ -1500,7 +1500,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 throw FIOError("Invalid FIO Address")
 
             val request:GetFeeRequest = if(fioAddress!="" && fioAddress.isFioAddress())
-                GetFeeRequest(endPointName.endpoint,fioAddress)
+                GetFeeRequest(endPointName.endpoint,fioAddress.toLowerCase())
             else
                 GetFeeRequest(endPointName.endpoint,"")
 
@@ -1530,7 +1530,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         try
         {
             if(payeeFioAddress.isFioAddress()) {
-                val request = GetFeeRequest(FIOApiEndPoints.new_funds_request, payeeFioAddress)
+                val request = GetFeeRequest(FIOApiEndPoints.new_funds_request, payeeFioAddress.toLowerCase())
 
                 return this.networkProvider.getFee(request)
             }
@@ -1560,7 +1560,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         try
         {
             if(payerFioAddress.isFioAddress()) {
-                val request = GetFeeRequest(FIOApiEndPoints.reject_funds_request, payerFioAddress)
+                val request = GetFeeRequest(FIOApiEndPoints.reject_funds_request, payerFioAddress.toLowerCase())
 
                 return this.networkProvider.getFee(request)
             }
@@ -1591,7 +1591,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         try
         {
             if(fioAddress.isFioAddress()) {
-                val request = GetFeeRequest(FIOApiEndPoints.add_public_address, fioAddress)
+                val request = GetFeeRequest(FIOApiEndPoints.add_public_address, fioAddress.toLowerCase())
 
                 return this.networkProvider.getFee(request)
             }
@@ -1622,7 +1622,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         try
         {
             if(payerFioAddress.isFioAddress()) {
-                val request = GetFeeRequest(FIOApiEndPoints.record_obt_data, payerFioAddress)
+                val request = GetFeeRequest(FIOApiEndPoints.record_obt_data, payerFioAddress.toLowerCase())
 
                 return this.networkProvider.getFee(request)
             }

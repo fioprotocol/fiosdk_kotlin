@@ -22,7 +22,7 @@ class RegisterFIOAddressAction(fioAddress: String,
         val auth = Authorization(actorPublicKey, "active")
         var requestData =
             FIOAddressRequestData(
-                fioAddress,
+                fioAddress.toLowerCase(),
                 ownerPublicKey,
                 maxFee,
                 auth.actor,

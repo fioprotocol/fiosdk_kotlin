@@ -22,7 +22,7 @@ class RecordObtDataAction(payerFioAddress:String,
     {
         val auth = Authorization(actorPublicKey, "active")
         var requestData = RecordObtDataRequestData(
-            payerFioAddress, payeeFioAddress, content, maxFee,if(fioRequestId <= BigInteger.ZERO) "" else fioRequestId.toString(),
+            payerFioAddress.toLowerCase(), payeeFioAddress.toLowerCase(), content, maxFee,if(fioRequestId <= BigInteger.ZERO) "" else fioRequestId.toString(),
             auth.actor, technologyPartnerId)
 
         this.authorization.add(auth)
