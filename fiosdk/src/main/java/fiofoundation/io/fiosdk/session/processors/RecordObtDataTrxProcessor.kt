@@ -26,7 +26,7 @@ class RecordObtDataTrxProcessor(serializationProvider: ISerializationProvider,
         {
             throw TransactionPushTransactionError(
                 ErrorConstants.TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION,
-                pushTransactionError)
+                pushTransactionError,pushTransactionRequest)
         }
     }
 

@@ -975,6 +975,13 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         return requestFunds(payerFioAddress,payeeFioAddress,payeeTokenPublicAddress,amount,tokenCode,tokenCode,memo,maxFee,this.technologyPartnerId)
     }
 
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun requestFunds(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        return requestNewFunds(pushTransactionRequest)
+    }
+
     /**
      * Reject funds request.
      *
@@ -2210,6 +2217,43 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
 
                 return transactionProcessor.broadcast()
             }
+        }
+        catch(fioError:FIOError)
+        {
+            throw fioError
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    private fun requestNewFunds(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = NewFundsRequestTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+           return transactionProcessor.rebroadcast(pushTransactionRequest)
         }
         catch(fioError:FIOError)
         {

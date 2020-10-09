@@ -9,6 +9,7 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
 import fiofoundation.io.androidfioserializationprovider.*
 import fiofoundation.io.fiokotlinsdktestapp.Utils.getLocalProperty
+import fiofoundation.io.fiosdk.errors.session.TransactionBroadCastError
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.models.TokenPublicAddress
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIOAddressAction
@@ -16,6 +17,7 @@ import fiofoundation.io.fiosdk.toFIO
 import fiofoundation.io.fiosdk.toSUF
 import fiofoundation.io.fiosdk.utilities.SUFUtils
 import fiofoundation.io.fiosdk.utilities.Utils
+import org.bitcoinj.core.TransactionBroadcast
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -394,6 +396,10 @@ class TestNetSdkTests {
             val actionTraceResponse = response.getActionTraceResponse()
 
             assertTrue("Alice Couldn't Request Funds from Bob: " + response.toJson(),actionTraceResponse!=null && actionTraceResponse.status == "requested")
+        }
+        catch (broadcastError: TransactionBroadCastError)
+        {
+            throw AssertionError("Alice's Funds Request Failed: " + broadcastError.toJson())
         }
         catch (e: FIOError)
         {

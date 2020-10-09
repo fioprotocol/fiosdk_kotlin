@@ -8,4 +8,5 @@ class PushTransactionError : FIONetworkProviderError{
     constructor(message: String, exception: Exception,responseError: ResponseError?): super(message,exception){
         this.responseError = responseError
     }
+
 }
