@@ -26,7 +26,7 @@ class SetFioDomainVisibilityTrxProcessor(serializationProvider: ISerializationPr
         {
             throw TransactionPushTransactionError(
                 ErrorConstants.TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION,
-                pushTransactionError,pushTransactionRequest)
+                pushTransactionError)
         }
     }
 }

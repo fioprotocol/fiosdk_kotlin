@@ -28,7 +28,7 @@ class RenewFIODomainTrxProcessor(serializationProvider: ISerializationProvider,
         {
             throw TransactionPushTransactionError(
                 ErrorConstants.TRANSACTION_PROCESSOR_RPC_PUSH_TRANSACTION,
-                pushTransactionError,pushTransactionRequest)
+                pushTransactionError)
         }
     }
 }
