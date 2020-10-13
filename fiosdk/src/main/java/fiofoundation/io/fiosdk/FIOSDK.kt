@@ -340,9 +340,16 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
+    /**
+     * Registers a FIO Address on the FIO blockchain.
+     *
+     * @param pushTransactionRequest A packed and signed registerFioAddress push transaction request.
+     * @return [PushTransactionResponse]
+     * @throws [FIOError]
+     */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun registerFioAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun registerFioAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     {
         val transactionProcessor = RegisterFIOAddressTrxProcessor(
             this.serializationProvider,
@@ -372,6 +379,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
             throw FIOError(e.message!!,e)
         }
     }
+
     /**
      * Registers a FIO Address on the FIO blockchain.
      *
@@ -488,9 +496,17 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
+    /**
+     * Registers a FIO Domain on the FIO blockchain.
+     *
+     * @param pushTransactionRequest A packed and signed registerFioDomain push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun registerFioDomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun registerFioDomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     {
         val transactionProcessor = RegisterFIODomainTrxProcessor(
             this.serializationProvider,
@@ -636,9 +652,17 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
+    /**
+     * Renew a FIO Domain on the FIO blockchain.
+     *
+     * @param pushTransactionRequest A packed and signed renewFioDomain push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun renewFioDomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun renewFioDomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     {
         val transactionProcessor = RegisterFIODomainTrxProcessor(
             this.serializationProvider,
@@ -752,9 +776,17 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
+    /**
+     * Renew a FIO Address on the FIO blockchain.
+     *
+     * @param pushTransactionRequest A packed and signed renewFioAddress push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun renewFioAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun renewFioAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     {
         val transactionProcessor = RenewFIOAddressTrxProcessor(
             this.serializationProvider,
@@ -871,9 +903,19 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
+    /**
+     *
+     * Transfers FIO tokens from public key associated with the FIO SDK instance to
+     * the payeePublicKey.
+     *
+     * @param pushTransactionRequest A packed and signed transferTokens push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun transferTokens(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun transferTokens(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     {
         val transactionProcessor = TransTokensPubKeyTrxProcessor(
             this.serializationProvider,
@@ -1119,6 +1161,14 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         return requestFunds(payerFioAddress,payeeFioAddress,payeeTokenPublicAddress,amount,tokenCode,tokenCode,memo,maxFee,this.technologyPartnerId)
     }
 
+    /**
+     * Create a new funds request on the FIO chain.
+     *
+     * @param pushTransactionRequest A packed and signed requestNewFunds push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
     fun requestFunds(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
@@ -1192,9 +1242,17 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
+    /**
+     * Reject funds request.
+     *
+     * @param pushTransactionRequest A packed and signed rejectFunds push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun rejectFundsRequest(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun rejectFundsRequest(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     {
         val transactionProcessor = RejectFundsRequestTrxProcessor(
             this.serializationProvider,
@@ -1534,9 +1592,19 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         return this.recordObtData(BigInteger.ZERO,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,this.technologyPartnerId)
     }
 
+    /**
+     *
+     * Records information on the FIO blockchain about a transaction that occurred on other blockchain, i.e. 1 BTC was sent on Bitcoin Blockchain, and both
+     * sender and receiver have FIO Addresses. OBT stands for Other Blockchain Transaction
+     *
+     * @param pushTransactionRequest A packed and signed recordObtData push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun recordObtData(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun recordObtData(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     {
         val transactionProcessor = RecordObtDataTrxProcessor(
             this.serializationProvider,
@@ -2077,9 +2145,17 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
+    /**
+     * Adds a public address of the specific blockchain type to the FIO Address.
+     *
+     * @param pushTransactionRequest A packed and signed addPublicAddress push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun addPublicAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun addPublicAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     {
         val transactionProcessor = AddPublicAddressTrxProcessor(
             this.serializationProvider,
@@ -2254,9 +2330,17 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
+    /**
+     * Adds public addresses of specific blockchain types to the FIO Address.
+     *
+     * @param pushTransactionRequest A packed and signed addPublicAddresses push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun addPublicAddresses(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun addPublicAddresses(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     {
         val transactionProcessor = AddPublicAddressTrxProcessor(
             this.serializationProvider,
@@ -2359,9 +2443,18 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
+    /**
+     * By default all FIO Domains are non-public, meaning only the owner can register FIO Addresses on that domain.
+     * Setting them to public allows anyone to register a FIO Address on that domain.
+     *
+     * @param pushTransactionRequest A packed and signed setFioDomainVisibility push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun setFioDomainVisibility(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun setFioDomainVisibility(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     {
         val transactionProcessor = SetFioDomainVisibilityTrxProcessor(
             this.serializationProvider,
@@ -2445,9 +2538,17 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
+    /**
+     * Allows users to send their own content directly to FIO contracts
+     *
+     * @param pushTransactionRequest A packed and signed push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
     @Throws(FIOError::class)
     @ExperimentalUnsignedTypes
-    private fun pushTransaction(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun pushTransaction(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     {
         val transactionProcessor = TransactionProcessor(
             this.serializationProvider,
