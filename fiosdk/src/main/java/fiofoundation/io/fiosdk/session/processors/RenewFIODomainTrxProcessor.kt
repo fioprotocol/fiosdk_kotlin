@@ -22,7 +22,7 @@ class RenewFIODomainTrxProcessor(serializationProvider: ISerializationProvider,
     override fun pushTransaction(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse {
         try
         {
-            return fioNetworkProvider.registerFioDomain(pushTransactionRequest)
+            return fioNetworkProvider.renewFioDomain(pushTransactionRequest)
         }
         catch (pushTransactionError: PushTransactionError)
         {

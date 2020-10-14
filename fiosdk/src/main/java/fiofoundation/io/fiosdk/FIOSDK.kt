@@ -526,7 +526,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     fun renewFioDomain(fioDomain:String, maxFee:BigInteger,
                        technologyPartnerId:String): PushTransactionResponse
     {
-        val transactionProcessor = RegisterFIODomainTrxProcessor(
+        val transactionProcessor = RenewFIODomainTrxProcessor(
             this.serializationProvider,
             this.networkProvider,
             this.abiProvider,
