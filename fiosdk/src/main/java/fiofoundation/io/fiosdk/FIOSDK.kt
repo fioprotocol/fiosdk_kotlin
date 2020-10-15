@@ -1120,8 +1120,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-        return recordObtData(fioRequestId,payerFioAddress,payeeFioAddress, payerTokenPublicAddress,
-            payeeTokenPublicAddress,amount,tokenCode,status,obtId,maxFee,wfa)
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),
+            tokenCode,tokenCode,obtId,status)
+
+        return this.recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,wfa)
     }
 
     /**
@@ -1190,9 +1192,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                       tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,
                       memo:String?=null, hash:String?=null, offlineUrl:String?=null): PushTransactionResponse
     {
-        return recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,payerTokenPublicAddress,
-            payeeTokenPublicAddress,amount,tokenCode,tokenCode,status,obtId,maxFee,this.technologyPartnerId,
-            memo,hash,offlineUrl)
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),
+            tokenCode,tokenCode,obtId,status,memo,hash,offlineUrl)
+
+        return this.recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,this.technologyPartnerId)
     }
 
     @ExperimentalUnsignedTypes
@@ -1213,8 +1216,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                       tokenCode:String, status:String="sent_to_blockchain",obtId:String,
                       maxFee:BigInteger): PushTransactionResponse
     {
-        return recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,payerTokenPublicAddress,
-            payeeTokenPublicAddress,amount,tokenCode,tokenCode,status,obtId,maxFee)
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,
+            payeeTokenPublicAddress, amount.toBigDecimal().toPlainString(),tokenCode,tokenCode,obtId,status)
+
+        return this.recordObtData(fioRequestId, payerFioAddress, payeeFioAddress, recordObtDataContent, maxFee)
     }
 
     /**
@@ -1273,8 +1278,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                       payeeTokenPublicAddress:String, amount:Double, tokenCode:String,
                       status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger): PushTransactionResponse
     {
-        return recordObtData(payerFioAddress,payeeFioAddress,payerTokenPublicAddress,payeeTokenPublicAddress,
-            amount,tokenCode,tokenCode,status,obtId,maxFee,this.technologyPartnerId)
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),
+            tokenCode,tokenCode,obtId,status)
+
+        return this.recordObtData(BigInteger.ZERO,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,this.technologyPartnerId)
     }
 
     /**
