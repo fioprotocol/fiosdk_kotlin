@@ -28,6 +28,7 @@ object FIOApiEndPoints {
     const val set_domain_visibility = "set_fio_domain_public"
     const val cancel_funds_request = "cancel_funds_request"
     const val get_cancelled_fio_requests = "get_cancelled_fio_requests"
+    const val get_account = "get_account"
 
     enum class FeeEndPoint (val endpoint: String) {
         RegisterFioDomain(register_fio_domain),

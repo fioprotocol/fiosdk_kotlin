@@ -414,6 +414,15 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
         }
         catch(e: FIONetworkProviderCallError){
             throw GetSentFIORequestsError("",e,e.responseError)
+    @Throws(GetAccountError::class)
+    override fun getAccount(getAccountRequest: GetAccountRequest): GetAccountResponse{
+        try
+        {
+            val syncCall = this.networkProviderApi.getAccount(getAccountRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw GetFeeError("",e,e.responseError)
         }
     }
 

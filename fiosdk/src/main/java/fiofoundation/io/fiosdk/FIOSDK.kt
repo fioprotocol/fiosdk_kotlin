@@ -2149,6 +2149,34 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
+    /**
+     * Get FIO account information.
+     *
+     * @param accountName Name of FIO account. Example: 5jfctnozulcb
+     * @return [GetAccountResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getAccount(accountName:String): GetAccountResponse
+    {
+        try
+        {
+            val request = GetAccountRequest(accountName)
+
+            return this.networkProvider.getAccount(request)
+        }
+        catch(getAccountError: GetAccountError)
+        {
+            throw FIOError(getAccountError.message!!,getAccountError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+
     //Private Methods
 
     /**
