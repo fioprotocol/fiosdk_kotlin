@@ -31,5 +31,6 @@ interface IFIONetworkProvider {
     fun recordObtData(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun getObtData(getObtDataRequest: GetObtDataRequest): GetObtDataResponse
     fun addPublicAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun removePublicAddresses(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun setFioDomainVisibility(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
 }

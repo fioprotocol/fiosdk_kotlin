@@ -1609,6 +1609,36 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     /**
+     * Compute and return fee amount for removing a public address from a fio address.
+     * @param fioAddress The FIO Address which will be mapped to public address.
+     * @return [GetFeeResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFeeForRemovePublicAddresses(fioAddress:String): GetFeeResponse
+    {
+        try
+        {
+            if(fioAddress.isFioAddress()) {
+                val request = GetFeeRequest(FIOApiEndPoints.remove_public_addresses, fioAddress)
+
+                return this.networkProvider.getFee(request)
+            }
+            else
+                throw Exception("Invalid FIO Address")
+        }
+        catch(getFeeError: GetFeeError)
+        {
+            throw FIOError(getFeeError.message!!,getFeeError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
      * Compute and return fee amount for recordObtData
      *
      * @param payerFioAddress The FIO Address of the payer whose transaction is being recorded by the recordObtData call
@@ -1668,7 +1698,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         {
             val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-            val validator = validateAddPublicAddress(fioAddress,chainCode,tokenCode,tokenPublicAddress,wfa)
+            val validator = validatePublicAddressInfo(fioAddress,chainCode,tokenCode,tokenPublicAddress,wfa)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
@@ -1684,6 +1714,80 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
 
                 val actionList = ArrayList<AddPublicAddressAction>()
                 actionList.add(addPublicAddressAction)
+
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
+        }
+        catch(fioError:FIOError)
+        {
+            throw fioError
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Removes public addresses from the specified the FIO Address.
+     *
+     * @param fioAddress FIO Address to add the public address to.
+     * @param publicAddresses json string containing the chain code token code and public address.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
+     * @param technologyPartnerId (optional) FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun removePublicAddresses(fioAddress:String, tokenPublicAddresses:List<TokenPublicAddress>,
+                         maxFee:BigInteger, technologyPartnerId:String=""): PushTransactionResponse
+    {
+        var transactionProcessor = RemovePublicAddressesTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
+
+            val validator = validateRemovePublicAddresses(fioAddress,tokenPublicAddresses,wfa)
+
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                var removePublicAddressAction = RemovePublicAddressesAction(
+                    fioAddress,
+                    tokenPublicAddresses,
+                    maxFee,
+                    wfa,
+                    this.publicKey
+                )
+
+                var actionList = ArrayList<RemovePublicAddressesAction>()
+                actionList.add(removePublicAddressAction)
 
                 @Suppress("UNCHECKED_CAST")
                 transactionProcessor.prepare(actionList as ArrayList<IAction>)
@@ -2246,9 +2350,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         return Validator(isValid,if(!isValid) "Invalid New Funds Request" else "")
     }
 
-    private fun validateAddPublicAddress(fioAddress:String, chainCode:String, tokenCode:String,
-                                         tokenPublicAddress:String,
-                                         technologyPartnerId:String=""): Validator
+    private fun validatePublicAddressInfo(fioAddress:String, chainCode:String, tokenCode:String,
+                                               tokenPublicAddress:String,
+                                               technologyPartnerId:String=""): Validator
     {
         var isValid = (fioAddress.isFioAddress()
                 && tokenPublicAddress.isNativeBlockChainPublicAddress()
@@ -2260,7 +2364,21 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")
     }
 
-    private fun validateAddPublicAddresses(fioAddress:String,
+        private fun validateAddPublicAddresses(fioAddress:String,
+                                               tokenPublicAddresses:List<TokenPublicAddress>,
+                                               technologyPartnerId:String=""): Validator
+    {
+        var isValid = true;
+
+        for(address in tokenPublicAddresses)
+        {
+            isValid = isValid && this.validatePublicAddressInfo(fioAddress,address.chainCode,address.tokenCode,address.publicAddress,technologyPartnerId).isValid
+        }
+
+        return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")
+    }
+
+    private fun validateRemovePublicAddresses(fioAddress:String,
                                            tokenPublicAddresses:List<TokenPublicAddress>,
                                            technologyPartnerId:String=""): Validator
     {
@@ -2268,7 +2386,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
 
         for(address in tokenPublicAddresses)
         {
-            isValid = isValid && this.validateAddPublicAddress(fioAddress,address.chainCode,address.tokenCode,address.publicAddress,technologyPartnerId).isValid
+            isValid = isValid && this.validatePublicAddressInfo(fioAddress,address.chainCode,address.tokenCode,address.publicAddress,technologyPartnerId).isValid
         }
 
         return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")
