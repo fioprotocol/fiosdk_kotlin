@@ -33,7 +33,11 @@ object FIOApiEndPoints {
         RenewFioDomain(renew_fio_domain),
         RenewFioAddress(renew_fio_address),
         TransferTokens(transfer_tokens_pub_key),
-        SetDomainVisibility(set_domain_visibility)
+        SetDomainVisibility(set_domain_visibility),
+        RecordObtData(record_obt_data),
+        RejectFunds(reject_funds_request),
+        AddPublicAddress(add_public_address),
+        RemovePublicAddresses(remove_public_addresses)
     }
 }
 
