@@ -379,5 +379,29 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
         }
     }
 
+    @Throws(PushTransactionError::class)
+    override fun cancelFundsRequest(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.cancelFundsRequest(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
+    @Throws(GetCancelledFIORequestsError::class)
+    override fun getCancelledFIORequests(getCancelledFioRequests: GetCancelledFIORequestsRequest): GetCancelledFIORequestsResponse{
+        try
+        {
+            val syncCall = this.networkProviderApi.getCancelledFIORequests(getCancelledFioRequests)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw GetSentFIORequestsError("",e,e.responseError)
+        }
+    }
 
 }

@@ -540,6 +540,52 @@ class TestNetSdkTests {
             throw AssertionError("Test getObtDataByTokenCode Failed: " + generalException.message)
         }
 
+        println("testFundsRequest: Test Test Cancel Funds Request")
+        try
+        {
+            var fee = aliceFioSdk.getFeeForNewFundsRequest(aliceFioAddress).fee
+
+            var response = aliceFioSdk.requestFunds(
+                bobFioAddress,
+                aliceFioAddress, alicePublicTokenAddress,2.0, alicePublicTokenCode, fee)
+
+            var actionTraceResponse = response.getActionTraceResponse()
+            val fioRequestIdToCancel = actionTraceResponse!!.fioRequestId
+
+            fee = aliceFioSdk.getFeeForCancelFundsRequest(aliceFioAddress).fee
+
+            response = aliceFioSdk.cancelFundsRequest(fioRequestIdToCancel,fee)
+
+            actionTraceResponse = response.getActionTraceResponse()
+
+            assertTrue("Alice Couldn't Cancel Funds Request: "+ response.toJson(),actionTraceResponse!=null && actionTraceResponse.status == "cancelled")
+
+            println("testFundsRequest: Test getCancelledFioRequests")
+            Thread.sleep(4000)
+            val cancelledRequests = aliceFioSdk.getCancelledFioRequests()
+
+            if(cancelledRequests.isNotEmpty())
+            {
+                assertTrue("Alice's Cancelled Requests are NOT Available",cancelledRequests.isNotEmpty())
+
+                for (req in cancelledRequests)
+                {
+                    if(req.deserializedContent!=null)
+                    {
+                        assertTrue("Alice's Cancel Funds Request is NOT Valid",req.deserializedContent != null)
+                    }
+                }
+            }
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError(e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError(generalException.message)
+        }
+
         //Set up test for rejecting funds request
         println("testFundsRequest: Test requestNewFunds")
         try
