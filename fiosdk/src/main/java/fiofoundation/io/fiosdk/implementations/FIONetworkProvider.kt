@@ -406,14 +406,14 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
     }
 
     @Throws(GetCancelledFIORequestsError::class)
-    override fun getCancelledFIORequests(getCancelledFioRequests: GetCancelledFIORequestsRequest): GetCancelledFIORequestsResponse{
-        try
-        {
+    override fun getCancelledFIORequests(getCancelledFioRequests: GetCancelledFIORequestsRequest): GetCancelledFIORequestsResponse {
+        try {
             val syncCall = this.networkProviderApi.getCancelledFIORequests(getCancelledFioRequests)
             return processCall(syncCall)
+        } catch (e: FIONetworkProviderCallError) {
+            throw GetSentFIORequestsError("", e, e.responseError)
         }
-        catch(e: FIONetworkProviderCallError){
-            throw GetSentFIORequestsError("",e,e.responseError)
+    }
     @Throws(GetAccountError::class)
     override fun getAccount(getAccountRequest: GetAccountRequest): GetAccountResponse{
         try
