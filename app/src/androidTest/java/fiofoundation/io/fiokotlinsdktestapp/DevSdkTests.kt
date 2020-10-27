@@ -449,6 +449,39 @@ class DevSdkTests
             throw AssertionError("Get Fee Call Failed for Alice: " + generalException.message)
         }
 
+        println("testGenericActions: Test getAccount")
+        Log.i(this.logTag,"testGenericActions: Test getAccount")
+
+        try
+        {
+            val accountName = Utils.generateActor(alicePublicKey)
+            val response = this.aliceFioSdk!!.getAccount(accountName)
+
+            val keys = response.getKeys()
+            val activeKeys = response.getKeys("active")
+            val ownerKeys = response.getKeys("owner")
+
+            println("testGenericActions: Total Key Count: ${keys.size}")
+            Log.i(this.logTag,"testGenericActions: Total Key Count: ${keys.size}")
+            println("testGenericActions: Active Permission keys: ${activeKeys.size}")
+            Log.i(this.logTag,"testGenericActions: Active Permission keys: ${activeKeys.size}")
+            println("testGenericActions: Owner Permission keys: ${ownerKeys.size}")
+            Log.i(this.logTag,"testGenericActions: Owner Permission keys: ${ownerKeys.size}")
+
+            Assert.assertTrue(
+                "Couldn't Get Account for $alicePublicKey",
+                response.accountName != ""
+            )
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Get Account Call Failed for Alice: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Get Account Call Failed for Alice: " + generalException.message)
+        }
+
         println("testGenericActions: End Test for Generic Actions")
         Log.i(this.logTag,"testGenericActions: End Test for Generic Actions")
     }

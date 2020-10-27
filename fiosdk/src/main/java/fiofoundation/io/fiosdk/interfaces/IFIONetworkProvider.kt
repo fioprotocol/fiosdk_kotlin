@@ -35,3 +35,5 @@ interface IFIONetworkProvider {
     fun setFioDomainVisibility(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun cancelFundsRequest(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun getCancelledFIORequests(getCancelledFioRequests: GetCancelledFIORequestsRequest): GetCancelledFIORequestsResponse
+    fun getAccount(getAccountRequest: GetAccountRequest): GetAccountResponse
+}
