@@ -26,6 +26,8 @@ object FIOApiEndPoints {
     const val add_public_address = "add_pub_address"
     const val remove_public_addresses = "remove_pub_address"
     const val set_domain_visibility = "set_fio_domain_public"
+    const val cancel_funds_request = "cancel_funds_request"
+    const val get_cancelled_fio_requests = "get_cancelled_fio_requests"
 
     enum class FeeEndPoint (val endpoint: String) {
         RegisterFioDomain(register_fio_domain),
@@ -38,6 +40,7 @@ object FIOApiEndPoints {
         RejectFunds(reject_funds_request),
         AddPublicAddress(add_public_address),
         RemovePublicAddresses(remove_public_addresses)
+        CancelFundsRequest(cancel_funds_request)
     }
 }
 

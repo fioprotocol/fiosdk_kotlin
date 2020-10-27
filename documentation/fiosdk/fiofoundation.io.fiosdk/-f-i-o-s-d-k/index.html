@@ -94,6 +94,22 @@
 </tr>
 <tr>
 <td>
+<h4><a href="cancel-funds-request.html">cancelFundsRequest</a></h4>
+</td>
+<td>
+<p>Cancel funds request.</p>
+<code><span class="keyword">fun </span><span class="identifier">cancelFundsRequest</span><span class="symbol">(</span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$cancelFundsRequest(java.math.BigInteger, java.math.BigInteger, kotlin.String)/fioRequestId">fioRequestId</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/math/BigInteger.html"><span class="identifier">BigInteger</span></a><span class="symbol">, </span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$cancelFundsRequest(java.math.BigInteger, java.math.BigInteger, kotlin.String)/maxFee">maxFee</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/math/BigInteger.html"><span class="identifier">BigInteger</span></a><span class="symbol">, </span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$cancelFundsRequest(java.math.BigInteger, java.math.BigInteger, kotlin.String)/technologyPartnerId">technologyPartnerId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;""<span class="symbol">)</span><span class="symbol">: </span><a href="../../fiofoundation.io.fiosdk.models.fionetworkprovider.response/-push-transaction-response/index.html"><span class="identifier">PushTransactionResponse</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="get-cancelled-fio-requests.html">getCancelledFioRequests</a></h4>
+</td>
+<td>
+<p>Polls for any cancelled requests sent by public key associated with the FIO SDK instance.</p>
+<code><span class="keyword">fun </span><span class="identifier">getCancelledFioRequests</span><span class="symbol">(</span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$getCancelledFioRequests(kotlin.Int, kotlin.Int)/limit">limit</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$getCancelledFioRequests(kotlin.Int, kotlin.Int)/offset">offset</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../fiofoundation.io.fiosdk.models.fionetworkprovider/-f-i-o-request-content/index.html"><span class="identifier">FIORequestContent</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
 <h4><a href="get-fee.html">getFee</a></h4>
 </td>
 <td>
@@ -107,6 +123,14 @@
 <td>
 <p>Compute and return fee amount for mapping a fio address to a block chain public address</p>
 <code><span class="keyword">fun </span><span class="identifier">getFeeForAddPublicAddress</span><span class="symbol">(</span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$getFeeForAddPublicAddress(kotlin.String)/fioAddress">fioAddress</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fiofoundation.io.fiosdk.models.fionetworkprovider.response/-get-fee-response/index.html"><span class="identifier">GetFeeResponse</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="get-fee-for-cancel-funds-request.html">getFeeForCancelFundsRequest</a></h4>
+</td>
+<td>
+<p>Compute and return fee amount for Cancel Funds Request</p>
+<code><span class="keyword">fun </span><span class="identifier">getFeeForCancelFundsRequest</span><span class="symbol">(</span><span class="identifier" id="fiofoundation.io.fiosdk.FIOSDK$getFeeForCancelFundsRequest(kotlin.String)/payeeFioAddress">payeeFioAddress</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fiofoundation.io.fiosdk.models.fionetworkprovider.response/-get-fee-response/index.html"><span class="identifier">GetFeeResponse</span></a></code></td>
 </tr>
 <tr>
 <td>

@@ -85,5 +85,10 @@ interface IFIONetworkProviderApi {
     @POST(FIOApiEndPoints.set_domain_visibility)
     fun setFioDomainVisibility(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
 
+    @POST(FIOApiEndPoints.cancel_funds_request)
+    fun cancelFundsRequest(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
+
+    @POST(FIOApiEndPoints.get_cancelled_fio_requests)
+    fun getCancelledFIORequests(@Body getCancelledFioRequests: GetCancelledFIORequestsRequest): Call<GetCancelledFIORequestsResponse>
 
 }

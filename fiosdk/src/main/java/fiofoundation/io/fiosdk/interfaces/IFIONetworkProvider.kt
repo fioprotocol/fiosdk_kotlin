@@ -33,4 +33,5 @@ interface IFIONetworkProvider {
     fun addPublicAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun removePublicAddresses(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun setFioDomainVisibility(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
-}
+    fun cancelFundsRequest(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun getCancelledFIORequests(getCancelledFioRequests: GetCancelledFIORequestsRequest): GetCancelledFIORequestsResponse

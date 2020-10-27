@@ -1061,6 +1061,76 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     /**
+     * Cancel funds request.
+     *
+     * @param fioRequestId Existing funds request Id
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun cancelFundsRequest(fioRequestId:BigInteger, maxFee: BigInteger, technologyPartnerId:String=""): PushTransactionResponse
+    {
+        val transactionProcessor = CancelFundsRequestTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
+
+            val validator = validateCancelFundsRequest(fioRequestId,wfa)
+
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                val cancelFundsRequestAction = CancelFundsRequestAction(
+                    fioRequestId,
+                    maxFee,
+                    wfa,
+                    this.publicKey
+                )
+
+                val actionList = ArrayList<CancelFundsRequestAction>()
+                actionList.add(cancelFundsRequestAction)
+
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
+        }
+        catch(fioError:FIOError)
+        {
+            throw fioError
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
      *
      * Records information on the FIO blockchain about a transaction that occurred on other blockchain, i.e. 1 BTC was sent on Bitcoin Blockchain, and both
      * sender and receiver have FIO Addresses. OBT stands for Other Blockchain Transaction
@@ -1360,6 +1430,22 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     /**
+     * Polls for any cancelled requests sent by public key associated with the FIO SDK instance.
+     *
+     * @param limit Number of request to return. If omitted, all requests will be returned.
+     * @param offset First request from list to return. If omitted, 0 is assumed.
+     *
+     * @return [List<FIORequestContent>]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getCancelledFioRequests(limit:Int?=null,offset:Int?=null): List<FIORequestContent>
+    {
+        return this.getCancelledFioRequests(this.publicKey,limit,offset)
+    }
+
+    /**
      * Returns FIO Addresses and FIO Domains owned by this public key.
      *
      * @param fioPublicKey FIO public key of owner.
@@ -1526,6 +1612,36 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
      */
     @Throws(FIOError::class)
     fun getFeeForNewFundsRequest(payeeFioAddress:String): GetFeeResponse
+    {
+        try
+        {
+            if(payeeFioAddress.isFioAddress()) {
+                val request = GetFeeRequest(FIOApiEndPoints.new_funds_request, payeeFioAddress.toLowerCase())
+
+                return this.networkProvider.getFee(request)
+            }
+            else
+                throw Exception("Invalid FIO Address")
+        }
+        catch(getFeeError: GetFeeError)
+        {
+            throw FIOError(getFeeError.message!!,getFeeError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Compute and return fee amount for Cancel Funds Request
+     * @param payeeFioAddress The payee's FIO Address
+     * @return [GetFeeResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFeeForCancelFundsRequest(payeeFioAddress:String): GetFeeResponse
     {
         try
         {
@@ -2338,6 +2454,38 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
+    @Throws(FIOError::class)
+    private fun getCancelledFioRequests(senderFioPublicKey:String,limit:Int?=null,offset:Int?=null): List<FIORequestContent>
+    {
+        try
+        {
+            val request = GetCancelledFIORequestsRequest(senderFioPublicKey,limit,offset)
+            val response = this.networkProvider.getCancelledFIORequests(request)
+
+            for (item in response.requests)
+            {
+                try
+                {
+                    item.deserializedContent = FundsRequestContent.deserialize(this.privateKey,item.payerFioPublicKey,this.serializationProvider,item.content)
+                }
+                catch(deserializationError: DeserializeTransactionError)
+                {
+                    //eat this error.  We do not want this error to stop the process.
+                }
+            }
+
+            return response.requests
+        }
+        catch(getCancelledFIORequestsError: GetCancelledFIORequestsError)
+        {
+            throw FIOError(getCancelledFIORequestsError.message!!,getCancelledFIORequestsError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
     private fun validateNewFundsRequest(payerFioAddress:String, payeeFioAddress:String,
                                         fundsRequestContent: FundsRequestContent,technologyPartnerId:String): Validator
     {
@@ -2460,6 +2608,16 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
             isValid = isValid && technologyPartnerId.isFioAddress()
 
         return Validator(isValid,if(!isValid) "Invalid Reject Funds Request" else "")
+    }
+
+    private fun validateCancelFundsRequest(fioRequestId:BigInteger,technologyPartnerId:String): Validator
+    {
+        var isValid = fioRequestId > BigInteger.ZERO
+
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
+
+        return Validator(isValid,if(!isValid) "Invalid Cancel Funds Request" else "")
     }
 
     private fun validateRecordObtDataRequest(fioRequestId: BigInteger, payerFioAddress:String,
