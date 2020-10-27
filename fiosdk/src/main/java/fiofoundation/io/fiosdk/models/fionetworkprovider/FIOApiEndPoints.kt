@@ -40,7 +40,7 @@ object FIOApiEndPoints {
         RecordObtData(record_obt_data),
         RejectFunds(reject_funds_request),
         AddPublicAddress(add_public_address),
-        RemovePublicAddresses(remove_public_addresses)
+        RemovePublicAddresses(remove_public_addresses),
         CancelFundsRequest(cancel_funds_request)
     }
 }
