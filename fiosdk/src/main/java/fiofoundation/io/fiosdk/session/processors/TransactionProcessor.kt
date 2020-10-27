@@ -561,9 +561,23 @@ open class TransactionProcessor(val serializationProvider: ISerializationProvide
         {
             throw TransactionBroadCastError(
                 ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR,
-                transactionPushTransactionError)
+                transactionPushTransactionError,pushTransactionRequest)
         }
+    }
 
+    @Throws(TransactionBroadCastError::class)
+    fun rebroadcast(packedAndSignedPushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            return this.pushTransaction(packedAndSignedPushTransactionRequest)
+        }
+        catch (transactionPushTransactionError: TransactionPushTransactionError)
+        {
+            throw TransactionBroadCastError(
+                ErrorConstants.TRANSACTION_PROCESSOR_BROADCAST_TRANS_ERROR,
+                transactionPushTransactionError,packedAndSignedPushTransactionRequest)
+        }
     }
 
     @Throws(TransactionSignAndBroadCastError::class)

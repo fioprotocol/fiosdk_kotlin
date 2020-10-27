@@ -20,7 +20,7 @@ class RegisterFIOAddressTrxProcessor(serializationProvider: ISerializationProvid
     override fun pushTransaction(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse {
         try
         {
-            return fioNetworkProvider.registerFioAddress(pushTransactionRequest)
+            return fioNetworkProvider.registerFioAddress(pushTransactionRequest);
         }
         catch (pushTransactionError: PushTransactionError)
         {

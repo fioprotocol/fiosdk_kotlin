@@ -8,6 +8,7 @@ import fiofoundation.io.fiokotlinsdktestapp.Utils.getLocalProperty
 import fiofoundation.io.fiosdk.*
 import fiofoundation.io.fiosdk.enums.FioDomainVisiblity
 import fiofoundation.io.fiosdk.errors.FIOError
+import fiofoundation.io.fiosdk.errors.session.TransactionBroadCastError
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.models.TokenPublicAddress
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
@@ -32,16 +33,17 @@ class DevSdkTests
     private val baseUrl = getLocalProperty("baseUrl", context)
     private val baseMockUrl = getLocalProperty("baseMockUrl", context)
 
-    private var alicePrivateKey = ""
-    private var alicePublicKey = ""
-    private var bobPrivateKey = ""
-    private var bobPublicKey = ""
+    private var alicePrivateKey = getLocalProperty("alicePrivateKey", context)
+    private var alicePublicKey = getLocalProperty("alicePublicKey", context)
+    private var bobPrivateKey = getLocalProperty("bobPrivateKey", context)
+    private var bobPublicKey = getLocalProperty("bobPublicKey", context)
+
     private val testPrivateKey = "5Kbb37EAqQgZ9vWUHoPiC2uXYhyGSFNbL6oiDp24Ea1ADxV1qnu"
     private val testPublicKey = "FIO5kJKNHwctcfUM5XZyiWSqSTM5HTzznJP9F3ZdbhaQAHEVq575o"
     private val testMnemonic = "valley alien library bread worry brother bundle hammer loyal barely dune brave"
 
-    private var aliceFioAddress = ""
-    private var bobFioAddress = ""
+    private var aliceFioAddress = getLocalProperty("aliceFioAddress", context)
+    private var bobFioAddress = getLocalProperty("bobFioAddress", context)
 
     private var fioTestDomain = "dapixdev"
     private var defaultFee = BigInteger("500000000000")
@@ -213,6 +215,10 @@ class DevSdkTests
 
             Log.i(this.logTag, "Registered FioAddress: ${actionTraceResponse != null && actionTraceResponse.status == "OK"}")
 
+        }
+        catch (broadcastError: TransactionBroadCastError)
+        {
+            throw AssertionError("Alice's Funds Request Failed: " + broadcastError.toJson())
         }
         catch (e: FIOError)
         {
@@ -947,6 +953,10 @@ class DevSdkTests
                 actionTraceResponse != null && actionTraceResponse.status == "OK"
             )
         }
+        catch (broadcastError: TransactionBroadCastError)
+        {
+            throw AssertionError(broadcastError.toJson())
+        }
         catch (e: FIOError)
         {
             throw AssertionError("Generic Push Transaction for Alice Failed: " + e.toJson())
@@ -954,6 +964,47 @@ class DevSdkTests
         catch (generalException: Exception)
         {
             throw AssertionError("Generic Push Transaction for Alice Failed: " + generalException.message)
+        }
+    }
+
+    @Test
+    fun testFailedPushTransaction()
+    {
+
+
+        println("testFailedPushTransaction: Test Failed Push Transaction")
+        Log.i(this.logTag,"testFailedPushTransaction: Test Failed Push Transaction")
+
+        try
+        {
+            this.setupTestVariables()
+
+            val fee = BigInteger("5000000000")
+
+            for (i in 1..10) {
+                val anotherfioAddress = this.generateTestingFioAddress()
+                val response = this.aliceFioSdk!!.registerFioAddress(anotherfioAddress,fee)
+            }
+
+            println("testFailedPushTransaction: Finished - Failure check did not occur.")
+            Log.i(this.logTag,"testFailedPushTransaction: Finished - Failure check did not occur.")
+        }
+        catch (broadcastError: TransactionBroadCastError)
+        {
+            Assert.assertTrue(
+                "Transaction failure check successful",
+                broadcastError.originalPushTransactionRequest!=null
+            )
+        }
+        catch (e: FIOError)
+        {
+            println("testFailedPushTransaction: Finished - Failure check did not occur.")
+            Log.i(this.logTag,"testFailedPushTransaction: Finished - Failure check did not occur.")
+        }
+        catch (generalException: Exception)
+        {
+            println("testFailedPushTransaction: Finished - Failure check did not occur.")
+            Log.i(this.logTag,"testFailedPushTransaction: Finished - Failure check did not occur.")
         }
     }
 
@@ -982,6 +1033,7 @@ class DevSdkTests
         {
             val fee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioAddress).fee
             this.aliceFioSdk!!.registerFioAddress(initialFioAddressForAlice, fee)
+
         }
 
         val initialFioAddressForBob = this.generateTestingFioAddress()
@@ -992,6 +1044,7 @@ class DevSdkTests
         {
             val fee = this.bobFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioAddress).fee
             this.bobFioSdk!!.registerFioAddress(initialFioAddressForBob, fee)
+
         }
 
         this.aliceFioAddress = initialFioAddressForAlice
