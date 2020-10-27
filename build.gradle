@@ -39,6 +39,7 @@ dokka {
     outputFormat = 'html'
     outputDirectory = "$projectDir/documentation"
 
+    cacheRoot = 'default'
     configuration {
         moduleName="fiosdk"
         subProjects = ["fiosdk","javaserializationprovider","androidfioserializationprovider"]

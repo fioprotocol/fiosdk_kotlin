@@ -24,6 +24,7 @@ object FIOApiEndPoints {
     const val record_obt_data = "record_obt_data"
     const val register_fio_name_behalf_of_user = "register_fio_name"
     const val add_public_address = "add_pub_address"
+    const val remove_public_addresses = "remove_pub_address"
     const val set_domain_visibility = "set_fio_domain_public"
     const val cancel_funds_request = "cancel_funds_request"
     const val get_cancelled_fio_requests = "get_cancelled_fio_requests"
@@ -35,6 +36,10 @@ object FIOApiEndPoints {
         RenewFioAddress(renew_fio_address),
         TransferTokens(transfer_tokens_pub_key),
         SetDomainVisibility(set_domain_visibility),
+        RecordObtData(record_obt_data),
+        RejectFunds(reject_funds_request),
+        AddPublicAddress(add_public_address),
+        RemovePublicAddresses(remove_public_addresses)
         CancelFundsRequest(cancel_funds_request)
     }
 }
