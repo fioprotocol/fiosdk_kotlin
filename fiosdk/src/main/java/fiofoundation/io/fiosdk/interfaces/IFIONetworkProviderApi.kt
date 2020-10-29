@@ -90,7 +90,11 @@ interface IFIONetworkProviderApi {
 
     @POST(FIOApiEndPoints.get_cancelled_fio_requests)
     fun getCancelledFIORequests(@Body getCancelledFioRequests: GetCancelledFIORequestsRequest): Call<GetCancelledFIORequestsResponse>
+
     @POST(FIOApiEndPoints.get_account)
     fun getAccount(@Body getAccountRequest: GetAccountRequest): Call<GetAccountResponse>
+
+    @POST(FIOApiEndPoints.transfer_fio_domain)
+    fun transferFIODomain(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
 
 }

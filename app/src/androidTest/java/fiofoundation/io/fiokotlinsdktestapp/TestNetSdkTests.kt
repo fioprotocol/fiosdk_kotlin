@@ -904,6 +904,42 @@ class TestNetSdkTests {
         }
     }
 
+    @Test
+    fun testTransferFioNames()
+    {
+        println("testTransferFioNames: Begin Test of Transfer FioNames")
+
+        println("testTransferFioNames: Test Transfer FIO Domain")
+        try
+        {
+            val newFioDomain = generateTestingFioDomain()
+            val registerDomainFee = aliceFioSdk.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioDomain).fee
+
+            aliceFioSdk.registerFioDomain(newFioDomain, registerDomainFee)
+
+            Thread.sleep(4000)
+
+            val transferFee = aliceFioSdk.getFee(FIOApiEndPoints.FeeEndPoint.TransferFIODomain).fee
+
+            val response = aliceFioSdk.transferFioDomain(newFioDomain,bobPublicKey,transferFee)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            assertTrue("Alice couldn't transfer $newFioDomain to Bob: " + response.toJson(),actionTraceResponse!=null && actionTraceResponse.status == "OK")
+        }
+        catch (broadcastError: TransactionBroadCastError)
+        {
+            throw AssertionError("Alice's Domain Transfer Failed: " + broadcastError.toJson())
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Alice's Domain Transfer Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Alice's Domain Transfer Failed: " + generalException.message)
+        }
+    }
 
     //Helper Methods
     private fun generateTestingFioDomain():String

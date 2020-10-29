@@ -36,4 +36,5 @@ interface IFIONetworkProvider {
     fun cancelFundsRequest(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun getCancelledFIORequests(getCancelledFioRequests: GetCancelledFIORequestsRequest): GetCancelledFIORequestsResponse
     fun getAccount(getAccountRequest: GetAccountRequest): GetAccountResponse
+    fun transferFIODomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
 }
