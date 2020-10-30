@@ -38,4 +38,6 @@ interface IFIONetworkProvider {
     fun getAccount(getAccountRequest: GetAccountRequest): GetAccountResponse
     fun getFioDomains(getFioDomainsRequest: GetFIODomainsRequest): GetFIODomainsResponse
     fun getFioAddresses(getFioAddressesRequest: GetFIOAddressesRequest): GetFIOAddressesResponse
+    fun transferFIODomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+
 }

@@ -448,7 +448,18 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
         }
         catch(e: FIONetworkProviderCallError){
             throw GetFIOAddressesError("",e,e.responseError)
+
+    @Throws(PushTransactionError::class)
+    override fun transferFIODomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.transferFIODomain(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+
         }
     }
-
 }
