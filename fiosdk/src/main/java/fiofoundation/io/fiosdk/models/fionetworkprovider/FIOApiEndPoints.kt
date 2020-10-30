@@ -29,6 +29,8 @@ object FIOApiEndPoints {
     const val cancel_funds_request = "cancel_funds_request"
     const val get_cancelled_fio_requests = "get_cancelled_fio_requests"
     const val get_account = "get_account"
+    const val get_fio_domains = "get_fio_domains"
+    const val get_fio_addresses = "get_fio_addresses"
 
     enum class FeeEndPoint (val endpoint: String) {
         RegisterFioDomain(register_fio_domain),

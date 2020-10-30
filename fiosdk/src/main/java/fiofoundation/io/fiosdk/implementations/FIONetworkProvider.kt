@@ -414,6 +414,7 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
             throw GetSentFIORequestsError("", e, e.responseError)
         }
     }
+
     @Throws(GetAccountError::class)
     override fun getAccount(getAccountRequest: GetAccountRequest): GetAccountResponse{
         try
@@ -423,6 +424,30 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
         }
         catch(e: FIONetworkProviderCallError){
             throw GetFeeError("",e,e.responseError)
+        }
+    }
+
+    @Throws(GetFIODomainsError::class)
+    override fun getFioDomains(getFioDomainsRequest: GetFIODomainsRequest): GetFIODomainsResponse{
+        try
+        {
+            val syncCall = this.networkProviderApi.getFioDomains(getFioDomainsRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw GetFIODomainsError("",e,e.responseError)
+        }
+    }
+
+    @Throws(GetFIOAddressesError::class)
+    override fun getFioAddresses(getFioAddressesRequest: GetFIOAddressesRequest): GetFIOAddressesResponse{
+        try
+        {
+            val syncCall = this.networkProviderApi.getFioAddresses(getFioAddressesRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw GetFIOAddressesError("",e,e.responseError)
         }
     }
 
