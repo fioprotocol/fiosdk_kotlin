@@ -1830,6 +1830,51 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         return getFioDomains(this.publicKey,limit,offset)
     }
+
+    /**
+     * Returns FIO Addresses owned by FIO public key.
+     *
+     * @param fioPublicKey Valid WIF public key with FIO prefix.
+     * @param limit Number of addresses to return.  If omitted, all addresses will be returned.
+     * @param offset First address from list to return.  If omitted, 0 is assumed.
+     * @return [GetFIOAddressesResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFioAddresses(fioPublicKey:String,limit:Int?=null,offset:Int?=null): GetFIOAddressesResponse
+    {
+        try
+        {
+            val request = GetFIOAddressesRequest(fioPublicKey,limit,offset)
+
+            return this.networkProvider.getFioAddresses(request)
+        }
+        catch(getFioAddressesError: GetFIODomainsError)
+        {
+            throw FIOError(getFioAddressesError.message!!,getFioAddressesError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Returns FIO Addresses owned by the FIO public key associated with the FIO SDK instance.
+     *
+     * @param limit Number of addresses to return.  If omitted, all addresses will be returned.
+     * @param offset First address from list to return.  If omitted, 0 is assumed.
+     * @return [GetFIOAddressesResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFioAddresses(limit:Int?=null,offset:Int?=null): GetFIOAddressesResponse
+    {
+        return getFioAddresses(this.publicKey,limit,offset)
+    }
+
     /**
      * Returns the FIO token public address for specified FIO Address.
      *

@@ -37,4 +37,5 @@ interface IFIONetworkProvider {
     fun getCancelledFIORequests(getCancelledFioRequests: GetCancelledFIORequestsRequest): GetCancelledFIORequestsResponse
     fun getAccount(getAccountRequest: GetAccountRequest): GetAccountResponse
     fun getFioDomains(getFioDomainsRequest: GetFIODomainsRequest): GetFIODomainsResponse
+    fun getFioAddresses(getFioAddressesRequest: GetFIOAddressesRequest): GetFIOAddressesResponse
 }

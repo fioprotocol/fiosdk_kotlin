@@ -374,6 +374,22 @@ class TestNetSdkTests {
             throw AssertionError("Get FIO Domains for Alice Failed: " + generalException.message)
         }
 
+        println("testGenericActions: Test getFioAddresses")
+        try
+        {
+            val response = aliceFioSdk.getFioAddresses()
+
+            assertTrue("Couldn't Get FIO Addresses for Alice",response.fioAddresses!!.isNotEmpty())
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Get FIO Addresses for Alice Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Get FIO Addresses for Alice Failed: " + generalException.message)
+        }
+
         println("testGenericActions: Test getFee")
         try
         {

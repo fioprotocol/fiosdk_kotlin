@@ -439,4 +439,16 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
         }
     }
 
+    @Throws(GetFIOAddressesError::class)
+    override fun getFioAddresses(getFioAddressesRequest: GetFIOAddressesRequest): GetFIOAddressesResponse{
+        try
+        {
+            val syncCall = this.networkProviderApi.getFioAddresses(getFioAddressesRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw GetFIOAddressesError("",e,e.responseError)
+        }
+    }
+
 }
