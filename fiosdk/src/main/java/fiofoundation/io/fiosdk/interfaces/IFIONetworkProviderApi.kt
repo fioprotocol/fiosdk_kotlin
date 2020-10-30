@@ -93,4 +93,7 @@ interface IFIONetworkProviderApi {
     @POST(FIOApiEndPoints.get_account)
     fun getAccount(@Body getAccountRequest: GetAccountRequest): Call<GetAccountResponse>
 
+    @POST(FIOApiEndPoints.get_fio_domains)
+    fun getFioDomains(@Body getFioDomainsRequest: GetFIODomainsRequest): Call<GetFIODomainsResponse>
+
 }

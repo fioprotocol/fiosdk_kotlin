@@ -15,6 +15,7 @@ import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
+import fiofoundation.io.fiosdk.models.FIODomain
 import fiofoundation.io.fiosdk.models.TokenPublicAddress
 import fiofoundation.io.fiosdk.models.Validator
 import fiofoundation.io.fiosdk.models.fionetworkprovider.*
@@ -1786,6 +1787,49 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
+    /**
+     * Returns FIO Domains owned by FIO public key.
+     *
+     * @param fioPublicKey Valid WIF public key with FIO prefix.
+     * @param limit Number of domains to return.  If omitted, all domains will be returned.
+     * @param offset First domain from list to return.  If omitted, 0 is assumed.
+     * @return [GetFIODomainsResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFioDomains(fioPublicKey:String,limit:Int?=null,offset:Int?=null): GetFIODomainsResponse
+    {
+        try
+        {
+            val request = GetFIODomainsRequest(fioPublicKey,limit,offset)
+
+            return this.networkProvider.getFioDomains(request)
+        }
+        catch(getFioDomainsError: GetFIODomainsError)
+        {
+            throw FIOError(getFioDomainsError.message!!,getFioDomainsError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Returns FIO Domains owned by the FIO public key associated with the FIO SDK instance.
+     *
+     * @param limit Number of domains to return.  If omitted, all domains will be returned.
+     * @param offset First domain from list to return.  If omitted, 0 is assumed.
+     * @return [GetFIODomainsResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFioDomains(limit:Int?=null,offset:Int?=null): GetFIODomainsResponse
+    {
+        return getFioDomains(this.publicKey,limit,offset)
+    }
     /**
      * Returns the FIO token public address for specified FIO Address.
      *
