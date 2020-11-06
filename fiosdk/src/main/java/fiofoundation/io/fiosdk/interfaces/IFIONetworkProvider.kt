@@ -39,5 +39,6 @@ interface IFIONetworkProvider {
     fun getFioDomains(getFioDomainsRequest: GetFIODomainsRequest): GetFIODomainsResponse
     fun getFioAddresses(getFioAddressesRequest: GetFIOAddressesRequest): GetFIOAddressesResponse
     fun transferFIODomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun addBundledTransactions(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
 
 }

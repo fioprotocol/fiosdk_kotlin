@@ -2704,6 +2704,135 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     /**
+     *
+     * Adds bundles of transactions to FIO Address.
+     *
+     * @param fioAddress FIO Address.  Please note that FIO Address is case insensitive. If upper case characters are passed in, they will be converted to lower case.
+     * @param bundleSets Number of bundle sets.  Number of sets of bundles to add to FIO Address.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun addBundledTransactions(fioAddress:String, bundleSets:BigInteger, maxFee:BigInteger,
+                          technologyPartnerId:String): PushTransactionResponse
+    {
+        val transactionProcessor = AddBundledTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
+
+            val validator = validateAddBundled(fioAddress,bundleSets,wfa)
+
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                val addBundledTransactions = AddBundledAction(
+                    fioAddress,
+                    bundleSets,
+                    maxFee,
+                    wfa,
+                    this.publicKey
+                )
+
+                val actionList = ArrayList<AddBundledAction>()
+                actionList.add(addBundledTransactions)
+
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     *
+     * Adds bundles of transactions to FIO Address.
+     *
+     * @param pushTransactionRequest A packed and signed transfer fio domain request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun addBundledTransactions(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = AddBundledTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            return transactionProcessor.rebroadcast(pushTransactionRequest)
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     *
+     * Adds bundles of transactions to FIO Address.
+     *
+     * @param fioAddress FIO Address.  Please note that FIO Address is case insensitive. If upper case characters are passed in, they will be converted to lower case.
+     * @param bundleSets Number of bundle sets.  Number of sets of bundles to add to FIO Address.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun addBundledTransactions(fioAddress:String, bundleSets:BigInteger, maxFee:BigInteger): PushTransactionResponse
+    {
+        return transferFioDomain(fioAddress,bundleSets, maxFee,this.technologyPartnerId)
+    }
+
+    /**
      * Allows users to send their own content directly to FIO contracts
      *
      * @param account FIO account name
@@ -3363,5 +3492,17 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
             isValid = isValid && technologyPartnerId.isFioAddress()
 
         return Validator(isValid,if(!isValid) "Invalid Transfer Fio Domain Request" else "")
+    }
+
+    private fun validateAddBundled(fioAddress:String, addBundle:BigInteger, technologyPartnerId:String=""): Validator
+    {
+        var isValid = addBundle > BigInteger.ZERO
+
+        isValid = isValid && fioAddress.isFioAddress()
+
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
+
+        return Validator(isValid,if(!isValid) "Invalid Add Bundled Transaction Request" else "")
     }
 }

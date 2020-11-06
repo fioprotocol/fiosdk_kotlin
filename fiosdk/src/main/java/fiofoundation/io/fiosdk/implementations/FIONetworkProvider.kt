@@ -462,4 +462,20 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
 
         }
     }
+
+    @Throws(PushTransactionError::class)
+    override fun addBundledTransactions(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.addBundledTransactions(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+
+        }
+    }
+
+
 }
