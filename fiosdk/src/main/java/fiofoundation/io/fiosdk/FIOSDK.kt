@@ -15,7 +15,6 @@ import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
-import fiofoundation.io.fiosdk.models.FIODomain
 import fiofoundation.io.fiosdk.models.LockPeriod
 import fiofoundation.io.fiosdk.models.TokenPublicAddress
 import fiofoundation.io.fiosdk.models.Validator
@@ -905,7 +904,6 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
-
     /**
      *
      * Transfers FIO tokens from public key associated with the FIO SDK instance to
@@ -948,6 +946,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
             throw FIOError(e.message!!,e)
         }
     }
+
+
+
 
     /**
      *
@@ -1740,6 +1741,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         return this.recordObtData(BigInteger.ZERO,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,this.technologyPartnerId)
     }
 
+
+
+
     /**
      *
      * Records information on the FIO blockchain about a transaction that occurred on other blockchain, i.e. 1 BTC was sent on Bitcoin Blockchain, and both
@@ -2422,6 +2426,155 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
+
+    /**
+     * Adds public addresses of specific blockchain types to the FIO Address.
+     *
+     * @param fioAddress FIO Address to add the public address to.
+     * @param tokenPublicAddresses List of public token addresses to add [TokenPublicAddress].
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
+     * @param technologyPartnerId (optional) FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun addPublicAddresses(fioAddress:String, tokenPublicAddresses:List<TokenPublicAddress>,
+                         maxFee:BigInteger, technologyPartnerId:String=""): PushTransactionResponse
+    {
+        val transactionProcessor = AddPublicAddressTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
+
+            val validator = validateAddPublicAddresses(fioAddress,tokenPublicAddresses,technologyPartnerId)
+
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                val addPublicAddressAction = AddPublicAddressAction(
+                    fioAddress,
+                    tokenPublicAddresses,
+                    maxFee,
+                    wfa,
+                    this.publicKey
+                )
+
+                val actionList = ArrayList<AddPublicAddressAction>()
+                actionList.add(addPublicAddressAction)
+
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+
+
+    /**
+     * By default all FIO Domains are non-public, meaning only the owner can register FIO Addresses on that domain.
+     * Setting them to public allows anyone to register a FIO Address on that domain.
+     *
+     * @param fioDomain FIO Domain to make public or private.  Default is private.
+     * @param visibility [FioDomainVisiblity]
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
+     * @param technologyPartnerId (optional) FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun setFioDomainVisibility(fioDomain:String, visibility:FioDomainVisiblity,
+                         maxFee:BigInteger, technologyPartnerId:String=""): PushTransactionResponse
+    {
+        val transactionProcessor = SetFioDomainVisibilityTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
+
+            val validator = validateSetFioDomainVisibility(fioDomain,wfa)
+
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                val setFioDomainVisibilityAction = SetFioDomainVisibilityAction(
+                    fioDomain,
+                    visibility,
+                    maxFee,
+                    wfa,
+                    this.publicKey
+                )
+
+
+                val actionList = ArrayList<SetFioDomainVisibilityAction>()
+                actionList.add(setFioDomainVisibilityAction)
+
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+
+
+
+
     /**
      * Removes public addresses from the specified the FIO Address.
      *
@@ -2496,75 +2649,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
-    /**
-     * Adds public addresses of specific blockchain types to the FIO Address.
-     *
-     * @param fioAddress FIO Address to add the public address to.
-     * @param tokenPublicAddresses List of public token addresses to add [TokenPublicAddress].
-     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
-     * @param technologyPartnerId (optional) FIO Address of the wallet which generates this transaction.
-     * @return [PushTransactionResponse]
-     *
-     * @throws [FIOError]
-     */
-    @Throws(FIOError::class)
-    @ExperimentalUnsignedTypes
-    fun addPublicAddresses(fioAddress:String, tokenPublicAddresses:List<TokenPublicAddress>,
-                         maxFee:BigInteger, technologyPartnerId:String=""): PushTransactionResponse
-    {
-        val transactionProcessor = AddPublicAddressTrxProcessor(
-            this.serializationProvider,
-            this.networkProvider,
-            this.abiProvider,
-            this.signatureProvider
-        )
 
-        try
-        {
-            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
-
-            val validator = validateAddPublicAddresses(fioAddress,tokenPublicAddresses,technologyPartnerId)
-
-            if(!validator.isValid)
-                throw FIOError(validator.errorMessage!!)
-            else
-            {
-                val addPublicAddressAction = AddPublicAddressAction(
-                    fioAddress,
-                    tokenPublicAddresses,
-                    maxFee,
-                    wfa,
-                    this.publicKey
-                )
-
-                val actionList = ArrayList<AddPublicAddressAction>()
-                actionList.add(addPublicAddressAction)
-
-                @Suppress("UNCHECKED_CAST")
-                transactionProcessor.prepare(actionList as ArrayList<IAction>)
-
-                transactionProcessor.sign()
-
-                return transactionProcessor.broadcast()
-            }
-        }
-        catch(prepError: TransactionPrepareError)
-        {
-            throw FIOError(prepError.message!!,prepError)
-        }
-        catch(signError: TransactionSignError)
-        {
-            throw FIOError(signError.message!!,signError)
-        }
-        catch(broadcastError: TransactionBroadCastError)
-        {
-            throw FIOError(broadcastError.message!!,broadcastError)
-        }
-        catch(e:Exception)
-        {
-            throw FIOError(e.message!!,e)
-        }
-    }
 
     /**
      * Adds public addresses of specific blockchain types to the FIO Address.
@@ -2607,77 +2692,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
-    /**
-     * By default all FIO Domains are non-public, meaning only the owner can register FIO Addresses on that domain.
-     * Setting them to public allows anyone to register a FIO Address on that domain.
-     *
-     * @param fioDomain FIO Domain to make public or private.  Default is private.
-     * @param visibility [FioDomainVisiblity]
-     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
-     * @param technologyPartnerId (optional) FIO Address of the wallet which generates this transaction.
-     * @return [PushTransactionResponse]
-     *
-     * @throws [FIOError]
-     */
-    @Throws(FIOError::class)
-    @ExperimentalUnsignedTypes
-    fun setFioDomainVisibility(fioDomain:String, visibility:FioDomainVisiblity,
-                         maxFee:BigInteger, technologyPartnerId:String=""): PushTransactionResponse
-    {
-        val transactionProcessor = SetFioDomainVisibilityTrxProcessor(
-            this.serializationProvider,
-            this.networkProvider,
-            this.abiProvider,
-            this.signatureProvider
-        )
-
-        try
-        {
-            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
-
-            val validator = validateSetFioDomainVisibility(fioDomain,wfa)
-
-            if(!validator.isValid)
-                throw FIOError(validator.errorMessage!!)
-            else
-            {
-                val setFioDomainVisibilityAction = SetFioDomainVisibilityAction(
-                    fioDomain,
-                    visibility,
-                    maxFee,
-                    wfa,
-                    this.publicKey
-                )
-
-
-                val actionList = ArrayList<SetFioDomainVisibilityAction>()
-                actionList.add(setFioDomainVisibilityAction)
-
-                @Suppress("UNCHECKED_CAST")
-                transactionProcessor.prepare(actionList as ArrayList<IAction>)
-
-                transactionProcessor.sign()
-
-                return transactionProcessor.broadcast()
-            }
-        }
-        catch(prepError: TransactionPrepareError)
-        {
-            throw FIOError(prepError.message!!,prepError)
-        }
-        catch(signError: TransactionSignError)
-        {
-            throw FIOError(signError.message!!,signError)
-        }
-        catch(broadcastError: TransactionBroadCastError)
-        {
-            throw FIOError(broadcastError.message!!,broadcastError)
-        }
-        catch(e:Exception)
-        {
-            throw FIOError(e.message!!,e)
-        }
-    }
+   
 
     /**
      * By default all FIO Domains are non-public, meaning only the owner can register FIO Addresses on that domain.
@@ -3511,6 +3526,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
 
         return Validator(isValid,if(!isValid) "Invalid Transfer Public Tokens Request" else "")
     }
+
 
     private fun validateTransferFioDomain(fioDomain:String, newOwnerFioPublicKey:String, technologyPartnerId:String=""): Validator
     {
