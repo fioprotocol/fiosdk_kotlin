@@ -354,6 +354,19 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
     }
 
     @Throws(PushTransactionError::class)
+    override fun removePublicAddresses(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.removePublicAddresses(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
+    @Throws(PushTransactionError::class)
     override fun addPublicAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     {
         try
@@ -379,5 +392,74 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
         }
     }
 
+    @Throws(PushTransactionError::class)
+    override fun cancelFundsRequest(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.cancelFundsRequest(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
 
+    @Throws(GetCancelledFIORequestsError::class)
+    override fun getCancelledFIORequests(getCancelledFioRequests: GetCancelledFIORequestsRequest): GetCancelledFIORequestsResponse {
+        try {
+            val syncCall = this.networkProviderApi.getCancelledFIORequests(getCancelledFioRequests)
+            return processCall(syncCall)
+        } catch (e: FIONetworkProviderCallError) {
+            throw GetSentFIORequestsError("", e, e.responseError)
+        }
+    }
+
+    @Throws(GetAccountError::class)
+    override fun getAccount(getAccountRequest: GetAccountRequest): GetAccountResponse{
+        try
+        {
+            val syncCall = this.networkProviderApi.getAccount(getAccountRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw GetFeeError("",e,e.responseError)
+        }
+    }
+
+    @Throws(GetFIODomainsError::class)
+    override fun getFioDomains(getFioDomainsRequest: GetFIODomainsRequest): GetFIODomainsResponse{
+        try
+        {
+            val syncCall = this.networkProviderApi.getFioDomains(getFioDomainsRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw GetFIODomainsError("",e,e.responseError)
+        }
+    }
+
+    @Throws(GetFIOAddressesError::class)
+    override fun getFioAddresses(getFioAddressesRequest: GetFIOAddressesRequest): GetFIOAddressesResponse {
+        try {
+            val syncCall = this.networkProviderApi.getFioAddresses(getFioAddressesRequest)
+            return processCall(syncCall)
+        } catch (e: FIONetworkProviderCallError) {
+            throw GetFIOAddressesError("", e, e.responseError)
+        }
+    }
+
+    @Throws(PushTransactionError::class)
+    override fun transferFIODomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.transferFIODomain(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+
+        }
+    }
 }

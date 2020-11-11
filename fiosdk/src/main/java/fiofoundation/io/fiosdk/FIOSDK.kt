@@ -15,6 +15,7 @@ import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
+import fiofoundation.io.fiosdk.models.FIODomain
 import fiofoundation.io.fiosdk.models.TokenPublicAddress
 import fiofoundation.io.fiosdk.models.Validator
 import fiofoundation.io.fiosdk.models.fionetworkprovider.*
@@ -322,9 +323,45 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 return transactionProcessor.broadcast()
             }
         }
-        catch(fioError:FIOError)
+        catch(prepError: TransactionPrepareError)
         {
-            throw fioError
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Registers a FIO Address on the FIO blockchain.
+     *
+     * @param pushTransactionRequest A packed and signed registerFioAddress push transaction request.
+     * @return [PushTransactionResponse]
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun registerFioAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = RegisterFIOAddressTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            return transactionProcessor.rebroadcast(pushTransactionRequest)
         }
         catch(prepError: TransactionPrepareError)
         {
@@ -442,9 +479,46 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 return transactionProcessor.broadcast()
             }
         }
-        catch(fioError:FIOError)
+        catch(prepError: TransactionPrepareError)
         {
-            throw fioError
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Registers a FIO Domain on the FIO blockchain.
+     *
+     * @param pushTransactionRequest A packed and signed registerFioDomain push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun registerFioDomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = RegisterFIODomainTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            return transactionProcessor.rebroadcast(pushTransactionRequest)
         }
         catch(prepError: TransactionPrepareError)
         {
@@ -526,7 +600,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     fun renewFioDomain(fioDomain:String, maxFee:BigInteger,
                        technologyPartnerId:String): PushTransactionResponse
     {
-        val transactionProcessor = RegisterFIODomainTrxProcessor(
+        val transactionProcessor = RenewFIODomainTrxProcessor(
             this.serializationProvider,
             this.networkProvider,
             this.abiProvider,
@@ -561,9 +635,46 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 return transactionProcessor.broadcast()
             }
         }
-        catch(fioError:FIOError)
+        catch(prepError: TransactionPrepareError)
         {
-            throw fioError
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Renew a FIO Domain on the FIO blockchain.
+     *
+     * @param pushTransactionRequest A packed and signed renewFioDomain push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun renewFioDomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = RenewFIODomainTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            return transactionProcessor.rebroadcast(pushTransactionRequest)
         }
         catch(prepError: TransactionPrepareError)
         {
@@ -648,9 +759,46 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 return transactionProcessor.broadcast()
             }
         }
-        catch(fioError:FIOError)
+        catch(prepError: TransactionPrepareError)
         {
-            throw fioError
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Renew a FIO Address on the FIO blockchain.
+     *
+     * @param pushTransactionRequest A packed and signed renewFioAddress push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun renewFioAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = RenewFIOAddressTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            return transactionProcessor.rebroadcast(pushTransactionRequest)
         }
         catch(prepError: TransactionPrepareError)
         {
@@ -738,9 +886,48 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 return transactionProcessor.broadcast()
             }
         }
-        catch(fioError:FIOError)
+        catch(prepError: TransactionPrepareError)
         {
-            throw fioError
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     *
+     * Transfers FIO tokens from public key associated with the FIO SDK instance to
+     * the payeePublicKey.
+     *
+     * @param pushTransactionRequest A packed and signed transferTokens push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun transferTokens(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = TransTokensPubKeyTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            return transactionProcessor.rebroadcast(pushTransactionRequest)
         }
         catch(prepError: TransactionPrepareError)
         {
@@ -976,6 +1163,21 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     /**
+     * Create a new funds request on the FIO chain.
+     *
+     * @param pushTransactionRequest A packed and signed requestNewFunds push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun requestFunds(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        return requestNewFunds(pushTransactionRequest)
+    }
+
+    /**
      * Reject funds request.
      *
      * @param fioRequestId Existing funds request Id
@@ -1023,9 +1225,46 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 return transactionProcessor.broadcast()
             }
         }
-        catch(fioError:FIOError)
+        catch(prepError: TransactionPrepareError)
         {
-            throw fioError
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Reject funds request.
+     *
+     * @param pushTransactionRequest A packed and signed rejectFunds push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun rejectFundsRequest(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = RejectFundsRequestTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            return transactionProcessor.rebroadcast(pushTransactionRequest)
         }
         catch(prepError: TransactionPrepareError)
         {
@@ -1058,6 +1297,76 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     fun rejectFundsRequest(fioRequestId: BigInteger, maxFee: BigInteger): PushTransactionResponse
     {
         return rejectFundsRequest(fioRequestId,maxFee,this.technologyPartnerId)
+    }
+
+    /**
+     * Cancel funds request.
+     *
+     * @param fioRequestId Existing funds request Id
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun cancelFundsRequest(fioRequestId:BigInteger, maxFee: BigInteger, technologyPartnerId:String=""): PushTransactionResponse
+    {
+        val transactionProcessor = CancelFundsRequestTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
+
+            val validator = validateCancelFundsRequest(fioRequestId,wfa)
+
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                val cancelFundsRequestAction = CancelFundsRequestAction(
+                    fioRequestId,
+                    maxFee,
+                    wfa,
+                    this.publicKey
+                )
+
+                val actionList = ArrayList<CancelFundsRequestAction>()
+                actionList.add(cancelFundsRequestAction)
+
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
+        }
+        catch(fioError:FIOError)
+        {
+            throw fioError
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
     }
 
     /**
@@ -1120,8 +1429,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-        return recordObtData(fioRequestId,payerFioAddress,payeeFioAddress, payerTokenPublicAddress,
-            payeeTokenPublicAddress,amount,tokenCode,status,obtId,maxFee,wfa)
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),
+            tokenCode,tokenCode,obtId,status)
+
+        return this.recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,wfa)
     }
 
     /**
@@ -1190,9 +1501,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                       tokenCode:String, status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger,
                       memo:String?=null, hash:String?=null, offlineUrl:String?=null): PushTransactionResponse
     {
-        return recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,payerTokenPublicAddress,
-            payeeTokenPublicAddress,amount,tokenCode,tokenCode,status,obtId,maxFee,this.technologyPartnerId,
-            memo,hash,offlineUrl)
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),
+            tokenCode,tokenCode,obtId,status,memo,hash,offlineUrl)
+
+        return this.recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,this.technologyPartnerId)
     }
 
     @ExperimentalUnsignedTypes
@@ -1213,8 +1525,10 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                       tokenCode:String, status:String="sent_to_blockchain",obtId:String,
                       maxFee:BigInteger): PushTransactionResponse
     {
-        return recordObtData(fioRequestId,payerFioAddress,payeeFioAddress,payerTokenPublicAddress,
-            payeeTokenPublicAddress,amount,tokenCode,tokenCode,status,obtId,maxFee)
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,
+            payeeTokenPublicAddress, amount.toBigDecimal().toPlainString(),tokenCode,tokenCode,obtId,status)
+
+        return this.recordObtData(fioRequestId, payerFioAddress, payeeFioAddress, recordObtDataContent, maxFee)
     }
 
     /**
@@ -1273,8 +1587,53 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                       payeeTokenPublicAddress:String, amount:Double, tokenCode:String,
                       status:String="sent_to_blockchain", obtId:String, maxFee:BigInteger): PushTransactionResponse
     {
-        return recordObtData(payerFioAddress,payeeFioAddress,payerTokenPublicAddress,payeeTokenPublicAddress,
-            amount,tokenCode,tokenCode,status,obtId,maxFee,this.technologyPartnerId)
+        val recordObtDataContent = RecordObtDataContent(payerTokenPublicAddress,payeeTokenPublicAddress,amount.toBigDecimal().toPlainString(),
+            tokenCode,tokenCode,obtId,status)
+
+        return this.recordObtData(BigInteger.ZERO,payerFioAddress,payeeFioAddress,recordObtDataContent,maxFee,this.technologyPartnerId)
+    }
+
+    /**
+     *
+     * Records information on the FIO blockchain about a transaction that occurred on other blockchain, i.e. 1 BTC was sent on Bitcoin Blockchain, and both
+     * sender and receiver have FIO Addresses. OBT stands for Other Blockchain Transaction
+     *
+     * @param pushTransactionRequest A packed and signed recordObtData push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun recordObtData(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = RecordObtDataTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            return transactionProcessor.rebroadcast(pushTransactionRequest)
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
     }
 
     /**
@@ -1360,6 +1719,22 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     /**
+     * Polls for any cancelled requests sent by public key associated with the FIO SDK instance.
+     *
+     * @param limit Number of request to return. If omitted, all requests will be returned.
+     * @param offset First request from list to return. If omitted, 0 is assumed.
+     *
+     * @return [List<FIORequestContent>]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getCancelledFioRequests(limit:Int?=null,offset:Int?=null): List<FIORequestContent>
+    {
+        return this.getCancelledFioRequests(this.publicKey,limit,offset)
+    }
+
+    /**
      * Returns FIO Addresses and FIO Domains owned by this public key.
      *
      * @param fioPublicKey FIO public key of owner.
@@ -1410,6 +1785,94 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         {
             throw FIOError(e.message!!,e)
         }
+    }
+
+    /**
+     * Returns FIO Domains owned by FIO public key.
+     *
+     * @param fioPublicKey Valid WIF public key with FIO prefix.
+     * @param limit Number of domains to return.  If omitted, all domains will be returned.
+     * @param offset First domain from list to return.  If omitted, 0 is assumed.
+     * @return [GetFIODomainsResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFioDomains(fioPublicKey:String,limit:Int?=null,offset:Int?=null): GetFIODomainsResponse
+    {
+        try
+        {
+            val request = GetFIODomainsRequest(fioPublicKey,limit,offset)
+
+            return this.networkProvider.getFioDomains(request)
+        }
+        catch(getFioDomainsError: GetFIODomainsError)
+        {
+            throw FIOError(getFioDomainsError.message!!,getFioDomainsError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Returns FIO Domains owned by the FIO public key associated with the FIO SDK instance.
+     *
+     * @param limit Number of domains to return.  If omitted, all domains will be returned.
+     * @param offset First domain from list to return.  If omitted, 0 is assumed.
+     * @return [GetFIODomainsResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFioDomains(limit:Int?=null,offset:Int?=null): GetFIODomainsResponse
+    {
+        return getFioDomains(this.publicKey,limit,offset)
+    }
+
+    /**
+     * Returns FIO Addresses owned by FIO public key.
+     *
+     * @param fioPublicKey Valid WIF public key with FIO prefix.
+     * @param limit Number of addresses to return.  If omitted, all addresses will be returned.
+     * @param offset First address from list to return.  If omitted, 0 is assumed.
+     * @return [GetFIOAddressesResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFioAddresses(fioPublicKey:String,limit:Int?=null,offset:Int?=null): GetFIOAddressesResponse
+    {
+        try
+        {
+            val request = GetFIOAddressesRequest(fioPublicKey,limit,offset)
+
+            return this.networkProvider.getFioAddresses(request)
+        }
+        catch(getFioAddressesError: GetFIODomainsError)
+        {
+            throw FIOError(getFioAddressesError.message!!,getFioAddressesError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Returns FIO Addresses owned by the FIO public key associated with the FIO SDK instance.
+     *
+     * @param limit Number of addresses to return.  If omitted, all addresses will be returned.
+     * @param offset First address from list to return.  If omitted, 0 is assumed.
+     * @return [GetFIOAddressesResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFioAddresses(limit:Int?=null,offset:Int?=null): GetFIOAddressesResponse
+    {
+        return getFioAddresses(this.publicKey,limit,offset)
     }
 
     /**
@@ -1548,6 +2011,36 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     /**
+     * Compute and return fee amount for Cancel Funds Request
+     * @param payeeFioAddress The payee's FIO Address
+     * @return [GetFeeResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFeeForCancelFundsRequest(payeeFioAddress:String): GetFeeResponse
+    {
+        try
+        {
+            if(payeeFioAddress.isFioAddress()) {
+                val request = GetFeeRequest(FIOApiEndPoints.new_funds_request, payeeFioAddress.toLowerCase())
+
+                return this.networkProvider.getFee(request)
+            }
+            else
+                throw Exception("Invalid FIO Address")
+        }
+        catch(getFeeError: GetFeeError)
+        {
+            throw FIOError(getFeeError.message!!,getFeeError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
      * Compute and return fee amount for Reject Funds Request
      * @param payerFioAddress The payer's FIO Address
      * @return [GetFeeResponse]
@@ -1592,6 +2085,36 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         {
             if(fioAddress.isFioAddress()) {
                 val request = GetFeeRequest(FIOApiEndPoints.add_public_address, fioAddress.toLowerCase())
+
+                return this.networkProvider.getFee(request)
+            }
+            else
+                throw Exception("Invalid FIO Address")
+        }
+        catch(getFeeError: GetFeeError)
+        {
+            throw FIOError(getFeeError.message!!,getFeeError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Compute and return fee amount for removing a public address from a fio address.
+     * @param fioAddress The FIO Address which will be mapped to public address.
+     * @return [GetFeeResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFeeForRemovePublicAddresses(fioAddress:String): GetFeeResponse
+    {
+        try
+        {
+            if(fioAddress.isFioAddress()) {
+                val request = GetFeeRequest(FIOApiEndPoints.remove_public_addresses, fioAddress)
 
                 return this.networkProvider.getFee(request)
             }
@@ -1668,7 +2191,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         {
             val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
 
-            val validator = validateAddPublicAddress(fioAddress,chainCode,tokenCode,tokenPublicAddress,wfa)
+            val validator = validatePublicAddressInfo(fioAddress,chainCode,tokenCode,tokenPublicAddress,wfa)
 
             if(!validator.isValid)
                 throw FIOError(validator.errorMessage!!)
@@ -1684,6 +2207,117 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
 
                 val actionList = ArrayList<AddPublicAddressAction>()
                 actionList.add(addPublicAddressAction)
+
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Adds a public address of the specific blockchain type to the FIO Address.
+     *
+     * @param pushTransactionRequest A packed and signed addPublicAddress push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun addPublicAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = AddPublicAddressTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            return transactionProcessor.rebroadcast(pushTransactionRequest)
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Removes public addresses from the specified the FIO Address.
+     *
+     * @param fioAddress FIO Address to add the public address to.
+     * @param publicAddresses json string containing the chain code token code and public address.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
+     * @param technologyPartnerId (optional) FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun removePublicAddresses(fioAddress:String, tokenPublicAddresses:List<TokenPublicAddress>,
+                         maxFee:BigInteger, technologyPartnerId:String=""): PushTransactionResponse
+    {
+        var transactionProcessor = RemovePublicAddressesTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
+
+            val validator = validateRemovePublicAddresses(fioAddress,tokenPublicAddresses,wfa)
+
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                var removePublicAddressAction = RemovePublicAddressesAction(
+                    fioAddress,
+                    tokenPublicAddresses,
+                    maxFee,
+                    wfa,
+                    this.publicKey
+                )
+
+                var actionList = ArrayList<RemovePublicAddressesAction>()
+                actionList.add(removePublicAddressAction)
 
                 @Suppress("UNCHECKED_CAST")
                 transactionProcessor.prepare(actionList as ArrayList<IAction>)
@@ -1767,9 +2401,46 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 return transactionProcessor.broadcast()
             }
         }
-        catch(fioError:FIOError)
+        catch(prepError: TransactionPrepareError)
         {
-            throw fioError
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Adds public addresses of specific blockchain types to the FIO Address.
+     *
+     * @param pushTransactionRequest A packed and signed addPublicAddresses push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun addPublicAddresses(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = AddPublicAddressTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            return transactionProcessor.rebroadcast(pushTransactionRequest)
         }
         catch(prepError: TransactionPrepareError)
         {
@@ -1843,9 +2514,47 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 return transactionProcessor.broadcast()
             }
         }
-        catch(fioError:FIOError)
+        catch(prepError: TransactionPrepareError)
         {
-            throw fioError
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * By default all FIO Domains are non-public, meaning only the owner can register FIO Addresses on that domain.
+     * Setting them to public allows anyone to register a FIO Address on that domain.
+     *
+     * @param pushTransactionRequest A packed and signed setFioDomainVisibility push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun setFioDomainVisibility(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = SetFioDomainVisibilityTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            return transactionProcessor.rebroadcast(pushTransactionRequest)
         }
         catch(prepError: TransactionPrepareError)
         {
@@ -1863,6 +2572,135 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         {
             throw FIOError(e.message!!,e)
         }
+    }
+
+    /**
+     *
+     * Transfers a FIO Domain to a new owner.
+     *
+     * @param fioDomain FIO Domain.  Please note that FIO Domain is case insensitive. If upper case characters are passed in, they will be converted to lower case.
+     * @param newOwnerFioPublicKey FIO Public Key.  FIO Public Key of the new owner. If account for that key does not exist, it will be created as part of this call.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun transferFioDomain(fioDomain:String, newOwnerFioPublicKey:String, maxFee:BigInteger,
+                       technologyPartnerId:String): PushTransactionResponse
+    {
+        val transactionProcessor = TransferFIODomainTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
+
+            val validator = validateTransferFioDomain(fioDomain,newOwnerFioPublicKey,wfa)
+
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                val transferFioDomain = TransferFIODomainAction(
+                    fioDomain,
+                    newOwnerFioPublicKey,
+                    maxFee,
+                    wfa,
+                    this.publicKey
+                )
+
+                val actionList = ArrayList<TransferFIODomainAction>()
+                actionList.add(transferFioDomain)
+
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     *
+     * Transfers a FIO Domain to a new owner.
+     *
+     * @param pushTransactionRequest A packed and signed transfer fio domain request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun transferFioDomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = TransferFIODomainTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            return transactionProcessor.rebroadcast(pushTransactionRequest)
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     *
+     * Transfers a FIO Domain to a new owner.
+     *
+     * @param fioDomain FIO Domain.  Please note that FIO Domain is case insensitive. If upper case characters are passed in, they will be converted to lower case.
+     * @param newOwnerFioPublicKey FIO Public Key.  FIO Public Key of the new owner. If account for that key does not exist, it will be created as part of this call.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun transferFioDomain(fioDomain:String, newOwnerFioPublicKey:String, maxFee:BigInteger): PushTransactionResponse
+    {
+        return transferFioDomain(fioDomain,newOwnerFioPublicKey, maxFee,this.technologyPartnerId)
     }
 
     /**
@@ -1900,9 +2738,46 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
 
             return transactionProcessor.broadcast()
         }
-        catch(fioError:FIOError)
+        catch(prepError: TransactionPrepareError)
         {
-            throw fioError
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Allows users to send their own content directly to FIO contracts
+     *
+     * @param pushTransactionRequest A packed and signed push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun pushTransaction(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = TransactionProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            return transactionProcessor.rebroadcast(pushTransactionRequest)
         }
         catch(prepError: TransactionPrepareError)
         {
@@ -1921,6 +2796,34 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
             throw FIOError(e.message!!,e)
         }
     }
+
+    /**
+     * Get FIO account information.
+     *
+     * @param accountName Name of FIO account. Example: 5jfctnozulcb
+     * @return [GetAccountResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getAccount(accountName:String): GetAccountResponse
+    {
+        try
+        {
+            val request = GetAccountRequest(accountName)
+
+            return this.networkProvider.getAccount(request)
+        }
+        catch(getAccountError: GetAccountError)
+        {
+            throw FIOError(getAccountError.message!!,getAccountError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
 
     //Private Methods
 
@@ -1984,9 +2887,38 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 return transactionProcessor.broadcast()
             }
         }
-        catch(fioError:FIOError)
+        catch(prepError: TransactionPrepareError)
         {
-            throw fioError
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    private fun requestNewFunds(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = NewFundsRequestTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+           return transactionProcessor.rebroadcast(pushTransactionRequest)
         }
         catch(prepError: TransactionPrepareError)
         {
@@ -2116,10 +3048,6 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 return transactionProcessor.broadcast()
             }
         }
-        catch(fioError:FIOError)
-        {
-            throw fioError
-        }
         catch(prepError: TransactionPrepareError)
         {
             throw FIOError(prepError.message!!,prepError)
@@ -2234,6 +3162,38 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
+    @Throws(FIOError::class)
+    private fun getCancelledFioRequests(senderFioPublicKey:String,limit:Int?=null,offset:Int?=null): List<FIORequestContent>
+    {
+        try
+        {
+            val request = GetCancelledFIORequestsRequest(senderFioPublicKey,limit,offset)
+            val response = this.networkProvider.getCancelledFIORequests(request)
+
+            for (item in response.requests)
+            {
+                try
+                {
+                    item.deserializedContent = FundsRequestContent.deserialize(this.privateKey,item.payerFioPublicKey,this.serializationProvider,item.content)
+                }
+                catch(deserializationError: DeserializeTransactionError)
+                {
+                    //eat this error.  We do not want this error to stop the process.
+                }
+            }
+
+            return response.requests
+        }
+        catch(getCancelledFIORequestsError: GetCancelledFIORequestsError)
+        {
+            throw FIOError(getCancelledFIORequestsError.message!!,getCancelledFIORequestsError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
     private fun validateNewFundsRequest(payerFioAddress:String, payeeFioAddress:String,
                                         fundsRequestContent: FundsRequestContent,technologyPartnerId:String): Validator
     {
@@ -2246,9 +3206,9 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         return Validator(isValid,if(!isValid) "Invalid New Funds Request" else "")
     }
 
-    private fun validateAddPublicAddress(fioAddress:String, chainCode:String, tokenCode:String,
-                                         tokenPublicAddress:String,
-                                         technologyPartnerId:String=""): Validator
+    private fun validatePublicAddressInfo(fioAddress:String, chainCode:String, tokenCode:String,
+                                               tokenPublicAddress:String,
+                                               technologyPartnerId:String=""): Validator
     {
         var isValid = (fioAddress.isFioAddress()
                 && tokenPublicAddress.isNativeBlockChainPublicAddress()
@@ -2260,7 +3220,21 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")
     }
 
-    private fun validateAddPublicAddresses(fioAddress:String,
+        private fun validateAddPublicAddresses(fioAddress:String,
+                                               tokenPublicAddresses:List<TokenPublicAddress>,
+                                               technologyPartnerId:String=""): Validator
+    {
+        var isValid = true;
+
+        for(address in tokenPublicAddresses)
+        {
+            isValid = isValid && this.validatePublicAddressInfo(fioAddress,address.chainCode,address.tokenCode,address.publicAddress,technologyPartnerId).isValid
+        }
+
+        return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")
+    }
+
+    private fun validateRemovePublicAddresses(fioAddress:String,
                                            tokenPublicAddresses:List<TokenPublicAddress>,
                                            technologyPartnerId:String=""): Validator
     {
@@ -2268,7 +3242,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
 
         for(address in tokenPublicAddresses)
         {
-            isValid = isValid && this.validateAddPublicAddress(fioAddress,address.chainCode,address.tokenCode,address.publicAddress,technologyPartnerId).isValid
+            isValid = isValid && this.validatePublicAddressInfo(fioAddress,address.chainCode,address.tokenCode,address.publicAddress,technologyPartnerId).isValid
         }
 
         return Validator(isValid,if(!isValid) "Invalid AddPublicAddress Request" else "")
@@ -2344,6 +3318,16 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         return Validator(isValid,if(!isValid) "Invalid Reject Funds Request" else "")
     }
 
+    private fun validateCancelFundsRequest(fioRequestId:BigInteger,technologyPartnerId:String): Validator
+    {
+        var isValid = fioRequestId > BigInteger.ZERO
+
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
+
+        return Validator(isValid,if(!isValid) "Invalid Cancel Funds Request" else "")
+    }
+
     private fun validateRecordObtDataRequest(fioRequestId: BigInteger, payerFioAddress:String,
                                           payeeFioAddress:String, recordObtDataContent: RecordObtDataContent,
                                              technologyPartnerId:String): Validator
@@ -2367,5 +3351,17 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
             isValid = isValid && technologyPartnerId.isFioAddress()
 
         return Validator(isValid,if(!isValid) "Invalid Transfer Public Tokens Request" else "")
+    }
+
+    private fun validateTransferFioDomain(fioDomain:String, newOwnerFioPublicKey:String, technologyPartnerId:String=""): Validator
+    {
+        var isValid = newOwnerFioPublicKey.isFioPublicKey()
+
+        isValid = isValid && fioDomain.isFioDomain()
+
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
+
+        return Validator(isValid,if(!isValid) "Invalid Transfer Fio Domain Request" else "")
     }
 }

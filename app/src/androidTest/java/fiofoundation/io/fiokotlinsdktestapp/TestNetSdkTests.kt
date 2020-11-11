@@ -9,12 +9,15 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
 import fiofoundation.io.androidfioserializationprovider.*
 import fiofoundation.io.fiokotlinsdktestapp.Utils.getLocalProperty
+import fiofoundation.io.fiosdk.errors.session.TransactionBroadCastError
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
+import fiofoundation.io.fiosdk.models.TokenPublicAddress
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIOAddressAction
 import fiofoundation.io.fiosdk.toFIO
 import fiofoundation.io.fiosdk.toSUF
 import fiofoundation.io.fiosdk.utilities.SUFUtils
 import fiofoundation.io.fiosdk.utilities.Utils
+import org.bitcoinj.core.TransactionBroadcast
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -52,7 +55,6 @@ class TestNetSdkTests {
 
     private var aliceFioSdk = createSdkInstance(alicePrivateKey,alicePublicKey)
     private var bobFioSdk = createSdkInstance(bobPrivateKey,bobPublicKey)
-
 
     @Test
     @ExperimentalUnsignedTypes
@@ -261,6 +263,50 @@ class TestNetSdkTests {
             throw AssertionError("getPublicAddress Failed: " + generalException.message)
         }
 
+        println("testGenericActions: Test addPublicAddress to alice for removal")
+        try
+        {
+            val addPublicAddressFee = this.aliceFioSdk!!.getFeeForAddPublicAddress(newFioAddress).fee
+
+            val response = this.aliceFioSdk.addPublicAddress(this.aliceFioAddress,this.alicePublicTokenCode,
+                this.alicePublicTokenCode,this.alicePublicTokenAddress,addPublicAddressFee)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            assertTrue("Couldn't Add Public Address for Alice",actionTraceResponse!=null && actionTraceResponse.status == "OK")
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Add Public Address  for Alice Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Add Public Address for Alice Failed: " + generalException.message)
+        }
+
+
+        println("testGenericActions: Test removePublicAddresses")
+        try
+        {
+            val removePublicAddressesFee = this.aliceFioSdk!!.getFeeForRemovePublicAddresses(newFioAddress).fee
+
+            val response = this.aliceFioSdk.removePublicAddresses(this.aliceFioAddress,
+                listOf(TokenPublicAddress(this.alicePublicTokenAddress,this.alicePublicTokenCode,this.alicePublicTokenCode)),
+                removePublicAddressesFee)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            assertTrue("Couldn't remove Public Address for Alice",actionTraceResponse!=null && actionTraceResponse.status == "OK")
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("remove Public Address  for Alice Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("remove Public Address for Alice Failed: " + generalException.message)
+        }
+
         println("testGenericActions: Test isFioAddressAvailable True")
         try
         {
@@ -312,6 +358,38 @@ class TestNetSdkTests {
             throw AssertionError("Get FioNames for Alice Failed: " + generalException.message)
         }
 
+        println("testGenericActions: Test getFioDomains")
+        try
+        {
+            val response = aliceFioSdk.getFioDomains()
+
+            assertTrue("Couldn't Get FIO Domains for Alice",response.fioDomains!!.isNotEmpty())
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Get FIO Domains for Alice Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Get FIO Domains for Alice Failed: " + generalException.message)
+        }
+
+        println("testGenericActions: Test getFioAddresses")
+        try
+        {
+            val response = aliceFioSdk.getFioAddresses()
+
+            assertTrue("Couldn't Get FIO Addresses for Alice",response.fioAddresses!!.isNotEmpty())
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Get FIO Addresses for Alice Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Get FIO Addresses for Alice Failed: " + generalException.message)
+        }
+
         println("testGenericActions: Test getFee")
         try
         {
@@ -326,6 +404,31 @@ class TestNetSdkTests {
         catch (generalException: Exception)
         {
             throw AssertionError("Get Fee Call Failed for Alice: " + generalException.message)
+        }
+
+        println("testGenericActions: Test getAccount")
+        try
+        {
+            val accountName = Utils.generateActor(alicePublicKey)
+            val response = aliceFioSdk.getAccount(accountName)
+
+            val keys = response.getKeys()
+            val activeKeys = response.getKeys("active")
+            val ownerKeys = response.getKeys("owner")
+
+            println("testGenericActions: Total Key Count: ${keys.size}")
+            println("testGenericActions: Active Permission keys: ${activeKeys.size}")
+            println("testGenericActions: Owner Permission keys: ${ownerKeys.size}")
+
+            assertTrue("Couldn't Get Account for $alicePublicKey",response.accountName !="")
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Get Account Call Failed for Alice: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Get Account Call Failed for Alice: " + generalException.message)
         }
 
         println("testGenericActions: End Test for Generic Actions")
@@ -349,6 +452,10 @@ class TestNetSdkTests {
             val actionTraceResponse = response.getActionTraceResponse()
 
             assertTrue("Alice Couldn't Request Funds from Bob: " + response.toJson(),actionTraceResponse!=null && actionTraceResponse.status == "requested")
+        }
+        catch (broadcastError: TransactionBroadCastError)
+        {
+            throw AssertionError("Alice's Funds Request Failed: " + broadcastError.toJson())
         }
         catch (e: FIOError)
         {
@@ -415,6 +522,9 @@ class TestNetSdkTests {
             throw AssertionError("Pending Requests Failed: " + generalException.message)
         }
 
+
+        // this approach to testing, or getting the request id 1 will not work on test net, this test needs work
+        // it works well when run on a local 3 node test net, but will not work when run on testnet.
         println("testFundsRequest: Test recordObtData")
         try
         {
@@ -422,7 +532,8 @@ class TestNetSdkTests {
 
             if(pendingRequests.isNotEmpty())
             {
-                val firstPendingRequest = pendingRequests.firstOrNull{it.payerFioAddress == bobFioAddress }
+                val firstPendingRequest = pendingRequests.firstOrNull{( it.fioRequestId == BigInteger("1")
+                )}
 
                 if(firstPendingRequest!=null)
                 {
@@ -540,6 +651,52 @@ class TestNetSdkTests {
             throw AssertionError("Test getObtDataByTokenCode Failed: " + generalException.message)
         }
 
+        println("testFundsRequest: Test Test Cancel Funds Request")
+        try
+        {
+            var fee = aliceFioSdk.getFeeForNewFundsRequest(aliceFioAddress).fee
+
+            var response = aliceFioSdk.requestFunds(
+                bobFioAddress,
+                aliceFioAddress, alicePublicTokenAddress,2.0, alicePublicTokenCode, fee)
+
+            var actionTraceResponse = response.getActionTraceResponse()
+            val fioRequestIdToCancel = actionTraceResponse!!.fioRequestId
+
+            fee = aliceFioSdk.getFeeForCancelFundsRequest(aliceFioAddress).fee
+
+            response = aliceFioSdk.cancelFundsRequest(fioRequestIdToCancel,fee)
+
+            actionTraceResponse = response.getActionTraceResponse()
+
+            assertTrue("Alice Couldn't Cancel Funds Request: "+ response.toJson(),actionTraceResponse!=null && actionTraceResponse.status == "cancelled")
+
+            println("testFundsRequest: Test getCancelledFioRequests")
+            Thread.sleep(4000)
+            val cancelledRequests = aliceFioSdk.getCancelledFioRequests()
+
+            if(cancelledRequests.isNotEmpty())
+            {
+                assertTrue("Alice's Cancelled Requests are NOT Available",cancelledRequests.isNotEmpty())
+
+                for (req in cancelledRequests)
+                {
+                    if(req.deserializedContent!=null)
+                    {
+                        assertTrue("Alice's Cancel Funds Request is NOT Valid",req.deserializedContent != null)
+                    }
+                }
+            }
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError(e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError(generalException.message)
+        }
+
         //Set up test for rejecting funds request
         println("testFundsRequest: Test requestNewFunds")
         try
@@ -549,6 +706,30 @@ class TestNetSdkTests {
             val response = aliceFioSdk.requestFunds(
                 bobFioAddress,
                 aliceFioAddress, alicePublicTokenAddress,2.0, alicePublicTokenCode, fee)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            assertTrue("Alice Couldn't Request Funds from Bob: "+ response.toJson(),actionTraceResponse!=null && actionTraceResponse.status == "requested")
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Alice's Funds Request Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Alice's Funds Request Failed: " + generalException.message)
+        }
+
+        Thread.sleep(4000)
+
+        //Set up 2nd test for recordobt request
+        println("testFundsRequest: Test requestNewFunds")
+        try
+        {
+            val fee = this.aliceFioSdk.getFeeForNewFundsRequest(this.aliceFioAddress).fee
+
+            val response = this.aliceFioSdk.requestFunds(this.bobFioAddress,
+                this.aliceFioAddress,this.alicePublicTokenAddress,3.0,this.alicePublicTokenCode, fee)
 
             val actionTraceResponse = response.getActionTraceResponse()
 
@@ -754,6 +935,42 @@ class TestNetSdkTests {
         }
     }
 
+    @Test
+    fun testTransferFioNames()
+    {
+        println("testTransferFioNames: Begin Test of Transfer FioNames")
+
+        println("testTransferFioNames: Test Transfer FIO Domain")
+        try
+        {
+            val newFioDomain = generateTestingFioDomain()
+            val registerDomainFee = aliceFioSdk.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioDomain).fee
+
+            aliceFioSdk.registerFioDomain(newFioDomain, registerDomainFee)
+
+            Thread.sleep(4000)
+
+            val transferFee = aliceFioSdk.getFee(FIOApiEndPoints.FeeEndPoint.TransferFIODomain).fee
+
+            val response = aliceFioSdk.transferFioDomain(newFioDomain,bobPublicKey,transferFee)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            assertTrue("Alice couldn't transfer $newFioDomain to Bob: " + response.toJson(),actionTraceResponse!=null && actionTraceResponse.status == "OK")
+        }
+        catch (broadcastError: TransactionBroadCastError)
+        {
+            throw AssertionError("Alice's Domain Transfer Failed: " + broadcastError.toJson())
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Alice's Domain Transfer Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Alice's Domain Transfer Failed: " + generalException.message)
+        }
+    }
 
     //Helper Methods
     private fun generateTestingFioDomain():String

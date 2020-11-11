@@ -31,5 +31,13 @@ interface IFIONetworkProvider {
     fun recordObtData(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun getObtData(getObtDataRequest: GetObtDataRequest): GetObtDataResponse
     fun addPublicAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun removePublicAddresses(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun setFioDomainVisibility(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun cancelFundsRequest(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun getCancelledFIORequests(getCancelledFioRequests: GetCancelledFIORequestsRequest): GetCancelledFIORequestsResponse
+    fun getAccount(getAccountRequest: GetAccountRequest): GetAccountResponse
+    fun getFioDomains(getFioDomainsRequest: GetFIODomainsRequest): GetFIODomainsResponse
+    fun getFioAddresses(getFioAddressesRequest: GetFIOAddressesRequest): GetFIOAddressesResponse
+    fun transferFIODomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+
 }
