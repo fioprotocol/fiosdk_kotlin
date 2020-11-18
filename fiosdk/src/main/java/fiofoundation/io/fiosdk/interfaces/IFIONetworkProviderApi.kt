@@ -102,4 +102,7 @@ interface IFIONetworkProviderApi {
     
     @POST(FIOApiEndPoints.transfer_fio_domain)
     fun transferFIODomain(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
+
+    @POST(FIOApiEndPoints.transfer_fio_address)
+    fun transferFIOAddress(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
 }

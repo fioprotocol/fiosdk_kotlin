@@ -32,6 +32,8 @@ object FIOApiEndPoints {
     const val get_fio_domains = "get_fio_domains"
     const val get_fio_addresses = "get_fio_addresses"
     const val transfer_fio_domain = "transfer_fio_domain"
+    const val transfer_fio_address = "transfer_fio_address"
+
 
     enum class FeeEndPoint (val endpoint: String) {
         RegisterFioDomain(register_fio_domain),
@@ -45,7 +47,8 @@ object FIOApiEndPoints {
         AddPublicAddress(add_public_address),
         RemovePublicAddresses(remove_public_addresses),
         CancelFundsRequest(cancel_funds_request),
-        TransferFIODomain(transfer_fio_domain)
+        TransferFIODomain(transfer_fio_domain),
+        TransferFIOAddress(transfer_fio_address)
     }
 }
 
