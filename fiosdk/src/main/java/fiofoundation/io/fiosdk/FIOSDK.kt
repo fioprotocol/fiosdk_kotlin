@@ -834,6 +834,130 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     /**
+     * Burn a FIO Address on the FIO blockchain.
+     *
+     * @param fioAddress FIO Address to burn.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun burnFioAddress(fioAddress:String, maxFee:BigInteger,
+                        technologyPartnerId:String): PushTransactionResponse
+    {
+        val transactionProcessor = BurnFIOAddressTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
+
+            val validator = validateBurnFioAddress(fioAddress,wfa)
+
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                val burnFioAddressAction =
+                    BurnFIOAddressAction(
+                        fioAddress,
+                        maxFee,
+                        wfa,
+                        this.publicKey
+                    )
+
+                val actionList = ArrayList<BurnFIOAddressAction>()
+                actionList.add(burnFioAddressAction)
+
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Burn a FIO Address on the FIO blockchain.
+     *
+     * @param pushTransactionRequest A packed and signed burnFioAddress push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun burnFioAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = BurnFIOAddressTrxProcessor(
+            this.serializationProvider,
+            this.networkProvider,
+            this.abiProvider,
+            this.signatureProvider
+        )
+
+        try
+        {
+            return transactionProcessor.rebroadcast(pushTransactionRequest)
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Burn a FIO Address on the FIO blockchain.
+     *
+     * @param fioAddress FIO Address to burn.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by @ [getFee] for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun burnFioAddress(fioAddress:String, maxFee:BigInteger): PushTransactionResponse
+    {
+        return burnFioAddress(fioAddress,maxFee,this.technologyPartnerId)
+    }
+
+    /**
      *
      * Transfers FIO tokens from public key associated with the FIO SDK instance to
      * the payeePublicKey.
@@ -3298,6 +3422,15 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
+    private fun validateBurnFioAddress(fioAddress:String, technologyPartnerId:String): Validator
+    {
+        var isValid = fioAddress.isFioAddress()
+
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
+
+        return Validator(isValid,if(!isValid) "Invalid Burn FIO Address Request" else "")
+    }
     private fun validateSetFioDomainVisibility(fioDomain:String, technologyPartnerId:String): Validator
     {
         var isValid = fioDomain.isFioDomain()

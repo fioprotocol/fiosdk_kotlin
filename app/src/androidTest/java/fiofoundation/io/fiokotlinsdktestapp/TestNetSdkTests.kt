@@ -431,6 +431,26 @@ class TestNetSdkTests {
             throw AssertionError("Get Account Call Failed for Alice: " + generalException.message)
         }
 
+        println("Test BurnFioAddress")
+        try
+        {
+            val fee = aliceFioSdk.getFee(FIOApiEndPoints.FeeEndPoint.BurnFIOAddress).fee
+
+            val response = aliceFioSdk.burnFioAddress(newFioAddress,fee)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            assertTrue("Couldn't Burn FioAddress $newFioAddress for Alice",actionTraceResponse!=null && actionTraceResponse.status == "OK")
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Burn FioAddress for Alice Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Burn FioAddress for Alice Failed: " + generalException.message)
+        }
+
         println("testGenericActions: End Test for Generic Actions")
     }
 

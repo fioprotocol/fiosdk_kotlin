@@ -462,4 +462,18 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
 
         }
     }
+
+    @Throws(PushTransactionError::class)
+    override fun burnFioAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.burnFioAddress(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+
+        }
+    }
 }
