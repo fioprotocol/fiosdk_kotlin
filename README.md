@@ -5,6 +5,20 @@ For information on FIO, visit the [FIO website](https://fio.foundation).
 
 For information on the FIO Chain, API, and SDKs visit the [FIO Protocol Developer Hub](https://developers.fioprotocol.io).
 
+# Background
+The initial version of the kotlin SDK was a port of the EOS Java SDK from java to kotlin.  The kotlin code was
+then modified to specifically support the FIO protocol.  Included in the port was the The Android Serialization Provider, ABI Provider
+and the SoftKey Signature Provider.
+
+The C++ code was also brought over from the EOS Java SDK.  The only change to the C++ code was the Class Loader path
+information.
+
+The current relevant EOS SDK code base can be found at:
+ https://github.com/EOSIO/eosio-java
+ https://github.com/EOSIO/eosio-java-android-example-app
+ https://github.com/EOSIO/eosio-java-softkey-signature-provider
+ https://github.com/EOSIO/eosio-java-android-abieos-serialization-provider
+
 # Version 
 Visit the [FIO Protocol Developer Hub](https://developers.fioprotocol.io) to get information on FIO SDK versions. Only use an SDK that has a major version number that matches the current FIO Protocol blockchain major version number (e.g. 1.x.x).
 Make sure your project is synced.  This should happen automatically, but if it didn't, go to
