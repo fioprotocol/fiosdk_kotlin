@@ -14,10 +14,10 @@ The C++ code was also brought over from the EOS Java SDK.  The only change to th
 information.
 
 The current relevant EOS SDK code base can be found at:
- https://github.com/EOSIO/eosio-java
- https://github.com/EOSIO/eosio-java-android-example-app
- https://github.com/EOSIO/eosio-java-softkey-signature-provider
- https://github.com/EOSIO/eosio-java-android-abieos-serialization-provider
+* https://github.com/EOSIO/eosio-java
+* https://github.com/EOSIO/eosio-java-android-example-app
+* https://github.com/EOSIO/eosio-java-softkey-signature-provider
+* https://github.com/EOSIO/eosio-java-android-abieos-serialization-provider
 
 # Version 
 Visit the [FIO Protocol Developer Hub](https://developers.fioprotocol.io) to get information on FIO SDK versions. Only use an SDK that has a major version number that matches the current FIO Protocol blockchain major version number (e.g. 1.x.x).
