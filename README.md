@@ -7,7 +7,7 @@ For information on the FIO Chain, API, and SDKs visit the [FIO Protocol Develope
 
 # Background
 The initial version of the kotlin SDK was a port of the EOS Java SDK from java to kotlin.  The kotlin code was
-then modified to specifically support the FIO protocol.  Included in the port was the The Android Serialization Provider, ABI Provider
+then modified to specifically support the FIO protocol.  Included in the port was the The Android Serialization Provider
 and the SoftKey Signature Provider.
 
 The C++ code was also brought over from the EOS Java SDK.  The only change to the C++ code was the Class Loader path
