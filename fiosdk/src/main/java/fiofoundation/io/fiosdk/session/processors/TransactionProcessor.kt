@@ -54,6 +54,7 @@ import fiofoundation.io.fiosdk.errors.session.TransactionCreateSignatureRequestA
 import fiofoundation.io.fiosdk.errors.abiprovider.GetAbiError
 
 import fiofoundation.io.fiosdk.models.FIOName
+import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.Action
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.IAction
 import fiofoundation.io.fiosdk.models.serializationprovider.AbiFIOSerializationObject
 
@@ -314,7 +315,6 @@ open class TransactionProcessor(val serializationProvider: ISerializationProvide
     private fun serializeTransaction(): String
     {
         val clonedTransaction: Transaction?
-
         try
         {
             clonedTransaction = this.getDeepClone()
@@ -411,7 +411,7 @@ open class TransactionProcessor(val serializationProvider: ISerializationProvide
         val preparingTransaction = Transaction(
             "", BigInteger.ZERO, BigInteger.ZERO,
             BigInteger.ZERO, BigInteger.ZERO,
-            BigInteger.ZERO, contextFreeActions, actions, ArrayList())
+            BigInteger.ZERO, contextFreeActions as ArrayList<Action>, actions as ArrayList<Action>, ArrayList())
 
         val getInfoResponse: GetInfoResponse
 
