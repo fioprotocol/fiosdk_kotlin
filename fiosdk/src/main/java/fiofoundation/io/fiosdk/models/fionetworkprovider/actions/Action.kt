@@ -9,7 +9,7 @@ open class Action(account: String, name: String,authorization:Authorization,data
     override var account = account
     override var name = name
     override var authorization = ArrayList<Authorization>()
-   @Transient override var data = data
+    override var data = data
 
 
     init {
