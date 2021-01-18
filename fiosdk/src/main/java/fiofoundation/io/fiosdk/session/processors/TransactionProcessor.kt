@@ -411,7 +411,7 @@ open class TransactionProcessor(val serializationProvider: ISerializationProvide
         val preparingTransaction = Transaction(
             "", BigInteger.ZERO, BigInteger.ZERO,
             BigInteger.ZERO, BigInteger.ZERO,
-            BigInteger.ZERO, contextFreeActions as ArrayList<Action>, actions as ArrayList<Action>, ArrayList())
+            BigInteger.ZERO, contextFreeActions, actions, ArrayList())
 
         val getInfoResponse: GetInfoResponse
 
