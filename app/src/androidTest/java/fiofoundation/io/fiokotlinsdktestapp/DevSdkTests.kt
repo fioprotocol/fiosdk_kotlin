@@ -74,6 +74,7 @@ class DevSdkTests
     {
         this.setupTestVariables()
 
+
         println("testGenericActions: SUF Conversion Test")
         Log.i(this.logTag,"testGenericActions: SUF Conversion Test")
 
@@ -482,6 +483,34 @@ class DevSdkTests
         {
             throw AssertionError("Get Account Call Failed for Alice: " + generalException.message)
         }
+
+/*
+
+        This test was used to verify the getblock was working properly when
+        multiple tx are in a block. To test this we performed one off testing
+        on test net, and visually verified the results, This test was run in isolation.
+        all other tests were disabled (commented out)
+        This test is left here in case it is useful for any other purposes later.
+        println("testGenericActions: Test getBlock")
+        Log.i(this.logTag,"testGenericActions: Test getBlock")
+
+        try
+        {
+        //this block is on test net and has multiple tx inside it.
+            val response = this.aliceFioSdk!!.getBlock("45844121")
+           //  this gets a normal block. val response = this.aliceFioSdk!!.getBlock("2500")
+            print ("get block response " + response.toJson())
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Get Block Call Failed for Alice: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Get Block Call Failed for Alice: " + generalException.message)
+        }
+
+*/
 
         println("testGenericActions: End Test for Generic Actions")
         Log.i(this.logTag,"testGenericActions: End Test for Generic Actions")
@@ -1177,6 +1206,7 @@ class DevSdkTests
             Log.i(this.logTag, "Wait for balance to really be available.")
             Thread.sleep(60000)
         }
+
 
 
     }
