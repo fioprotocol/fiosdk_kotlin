@@ -12,6 +12,7 @@ object FIOApiEndPoints {
     const val register_fio_domain = "register_fio_domain"
     const val register_fio_address = "register_fio_address"
     const val transfer_tokens_pub_key = "transfer_tokens_pub_key"
+    const val transfer_locked_tokens = "transfer_locked_tokens"
     const val renew_fio_domain = "renew_fio_domain"
     const val renew_fio_address = "renew_fio_address"
     const val push_transaction = "push_transaction"
@@ -39,6 +40,7 @@ object FIOApiEndPoints {
         RenewFioDomain(renew_fio_domain),
         RenewFioAddress(renew_fio_address),
         TransferTokens(transfer_tokens_pub_key),
+        TransferLockedTokens(transfer_locked_tokens),
         SetDomainVisibility(set_domain_visibility),
         RecordObtData(record_obt_data),
         RejectFunds(reject_funds_request),

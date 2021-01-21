@@ -64,6 +64,9 @@ interface IFIONetworkProviderApi {
     @POST(FIOApiEndPoints.transfer_tokens_pub_key)
     fun transferTokensToPublicKey(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
 
+    @POST(FIOApiEndPoints.transfer_locked_tokens)
+    fun transferLockedTokensToPublicKey(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
+
     @POST(FIOApiEndPoints.new_funds_request)
     fun requestNewFunds(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
 

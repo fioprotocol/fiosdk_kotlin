@@ -25,6 +25,7 @@ interface IFIONetworkProvider {
     fun renewFioDomain(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun renewFioAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun transferTokensToPublicKey(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    fun transferLockedTokensToPublicKey(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun registerFioNameOnBehalfOfUser(request: RegisterFIONameForUserRequest): RegisterFIONameForUserResponse
     fun requestNewFunds(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun rejectNewFunds(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
