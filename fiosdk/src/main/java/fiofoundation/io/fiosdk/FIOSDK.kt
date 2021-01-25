@@ -1979,6 +1979,38 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
+
+    /**
+     * Get the block info for the specified block.
+     *
+     * @param blocknumorid block number, or id of specific block.
+     * @return [GetBlockResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getBlock(blocknumorid:String): GetBlockResponse
+    {
+        try
+        {
+            if(blocknumorid =="")
+                throw FIOError("Invalid Block info")
+
+            val request:GetBlockRequest =
+                GetBlockRequest(blocknumorid)
+            
+            return this.networkProvider.getBlock(request)
+        }
+        catch(getFeeError: GetFeeError)
+        {
+            throw FIOError(getFeeError.message!!,getFeeError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
     /**
      * Compute and return fee amount for New Funds Request
      *

@@ -1,7 +1,9 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider.response
 
 import com.google.gson.annotations.SerializedName
+import fiofoundation.io.fiosdk.models.fionetworkprovider.TxItem
 import java.math.BigInteger
+
 
 class GetBlockResponse: FIOResponse(){
 
@@ -9,7 +11,7 @@ class GetBlockResponse: FIOResponse(){
     val producer: String? = null
     val confirmed: BigInteger? = null
     val previous: String? = null
-    val transactions: List<String>? = null
+    val transactions: List<TxItem>? = null
     val timestamp: String? = null
 
     @SerializedName("action_mroot")
