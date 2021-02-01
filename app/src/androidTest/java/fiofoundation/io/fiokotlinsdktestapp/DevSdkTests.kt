@@ -1055,8 +1055,15 @@ class DevSdkTests
         println("testTransferLockedFioTokens: Verify Bob's New FIO Balance")
         Log.i(this.logTag,"testTransferLockedFioTokens: Verify Bob's New FIO Balance")
 
+        println("testTransferLockedFioTokens: Begin Test for getLocks")
+        val resp = this.aliceFioSdk!!.getLocks(pubk)
 
-        println("testTransferFioLockedTokens: End Test for TransferFioTokens")
+        Assert.assertTrue(
+                "Couldn't verify lock token amount",
+                resp.lockAmount == 1000000000.toBigInteger()
+        )
+
+        println("testTransferFioLockedTokens: End Test for TransferFioLockedTokens")
         Log.i(this.logTag,"testTransferFioLockedTokens: End Test for TransferFioLockedTokens")
     }
 

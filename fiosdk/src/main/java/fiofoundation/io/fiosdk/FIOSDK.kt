@@ -1154,6 +1154,47 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     /**
+     * Retrieves lock token grants using the public key of the client
+     * sending the request.
+     * @return [GetLocksResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getLocks(): GetLocksResponse
+    {
+        return this.getLocks(this.publicKey)
+    }
+
+    /**
+     * Retrieves locked tokens for the specified pub key
+     *
+     * @param fioPublicKey FIO public key.
+     * @return [GetLocksResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getLocks(fioPublicKey:String): GetLocksResponse
+    {
+        try
+        {
+            val request = GetLocksRequest(fioPublicKey)
+
+            return this.networkProvider.getLocks(request)
+        }
+        catch(locksError: GetLocksError)
+        {
+            throw FIOError(locksError.message!!,locksError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+
+    /**
      * Create a new funds request on the FIO chain.
      *
      * @param payerFioAddress FIO Address of the payer. This address will receive the request and will initiate payment.

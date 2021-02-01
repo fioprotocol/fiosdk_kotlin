@@ -126,6 +126,18 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
         }
     }
 
+    @Throws(GetLocksError::class)
+    override fun getLocks(getLocksRequest: GetLocksRequest): GetLocksResponse{
+        try
+        {
+            val syncCall = this.networkProviderApi.getLocks(getLocksRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw GetFIOBalanceError("",e,e.responseError)
+        }
+    }
+
     @Throws(GetFeeError::class)
     override fun getFee(getFeeRequest: GetFeeRequest): GetFeeResponse{
         try

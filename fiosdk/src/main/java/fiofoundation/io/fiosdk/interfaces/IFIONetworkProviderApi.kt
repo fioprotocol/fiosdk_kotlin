@@ -25,6 +25,9 @@ interface IFIONetworkProviderApi {
     @POST(FIOApiEndPoints.get_fio_balance)
     fun getFIOBalance(@Body getFioBalanceRequest: GetFIOBalanceRequest): Call<GetFIOBalanceResponse>
 
+    @POST(FIOApiEndPoints.get_locks)
+    fun getLocks(@Body getLocksRequest: GetLocksRequest): Call<GetLocksResponse>
+
     @POST(FIOApiEndPoints.get_fee)
     fun getFee(@Body getFeeRequest: GetFeeRequest): Call<GetFeeResponse>
 

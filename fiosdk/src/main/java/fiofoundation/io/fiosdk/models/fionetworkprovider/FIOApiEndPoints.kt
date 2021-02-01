@@ -5,6 +5,7 @@ object FIOApiEndPoints {
     const val get_fio_names = "get_fio_names"
     const val availability_check = "avail_check"
     const val get_fio_balance = "get_fio_balance"
+    const val get_locks = "get_locks"
     const val get_fee = "get_fee"
     const val get_info = "get_info"
     const val get_block = "get_block"
