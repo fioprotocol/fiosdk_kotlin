@@ -15,7 +15,7 @@ import fiofoundation.io.fiosdk.implementations.FIONetworkProvider
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.interfaces.ISerializationProvider
 import fiofoundation.io.fiosdk.interfaces.ISignatureProvider
-import fiofoundation.io.fiosdk.models.FIODomain
+import fiofoundation.io.fiosdk.models.LockPeriod
 import fiofoundation.io.fiosdk.models.TokenPublicAddress
 import fiofoundation.io.fiosdk.models.Validator
 import fiofoundation.io.fiosdk.models.fionetworkprovider.*
@@ -964,6 +964,193 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     {
         return transferTokens(payeeFioPublicKey, amount, maxFee,this.technologyPartnerId)
     }
+
+
+    /**
+     *
+     * Transfers FIO tokens from public key associated with the FIO SDK instance to
+     * the payeePublicKey and creates a general lock.
+     *
+     * @param payeeFioPublicKey FIO public Address of the one receiving the tokens.
+     * @param canVote true if the grant is votable, false if the grant is not votable.
+     * @param periods list of LockPeriod objects that define this grant.
+     * @param amount Amount sent in SUFs.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun transferLockedTokens(payeeFioPublicKey:String, canVote:Boolean, periods:List<LockPeriod>,
+                             amount:BigInteger, maxFee:BigInteger,
+                             technologyPartnerId:String): PushTransactionResponse
+    {
+        val transactionProcessor = TransLockedTokensPubKeyTrxProcessor(
+                this.serializationProvider,
+                this.networkProvider,
+                this.abiProvider,
+                this.signatureProvider
+        )
+
+        try
+        {
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
+
+            val validator = validateTransferLockedPublicTokens(payeeFioPublicKey,wfa,periods)
+
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                val transferLockedTokensToPublickey = TransferLockedTokensPubKeyAction(
+                        payeeFioPublicKey,
+                        canVote,
+                        periods,
+                        amount,
+                        maxFee,
+                        wfa,
+                        this.publicKey
+                )
+
+                val actionList = ArrayList<TransferLockedTokensPubKeyAction>()
+                actionList.add(transferLockedTokensToPublickey)
+
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     *
+     * Transfers FIO tokens from public key associated with the FIO SDK instance to
+     * the payeePublicKey and create a general locked token grant.
+     *
+     * @param payeeFioPublicKey FIO public Address of the one receiving the tokens.
+     * @param canVote true if the grant is votable, false if the grant is not votable.
+     * @param periods this is the list of LockPeriods that define the grant.
+     * @param amount Amount sent in SUFs.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun transferLockedTokens(payeeFioPublicKey:String,
+                             canVote: Boolean,
+                             periods: List<LockPeriod>,
+                             amount:BigInteger, maxFee:BigInteger): PushTransactionResponse
+    {
+        return transferLockedTokens(payeeFioPublicKey, canVote, periods, amount, maxFee,this.technologyPartnerId)
+    }
+
+
+
+    /**
+     *
+     * Transfers FIO tokens from public key associated with the FIO SDK instance to
+     * the payeePublicKey and creates a general locked token grant.
+     *
+     * @param pushTransactionRequest A packed and signed transferTokens push transaction request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun transferLockedTokens(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = TransLockedTokensPubKeyTrxProcessor(
+                this.serializationProvider,
+                this.networkProvider,
+                this.abiProvider,
+                this.signatureProvider
+        )
+
+        try
+        {
+            return transactionProcessor.rebroadcast(pushTransactionRequest)
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Retrieves lock token grants using the public key of the client
+     * sending the request.
+     * @return [GetLocksResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getLocks(): GetLocksResponse
+    {
+        return this.getLocks(this.publicKey)
+    }
+
+    /**
+     * Retrieves locked tokens for the specified pub key
+     *
+     * @param fioPublicKey FIO public key.
+     * @return [GetLocksResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getLocks(fioPublicKey:String): GetLocksResponse
+    {
+        try
+        {
+            val request = GetLocksRequest(fioPublicKey)
+
+            return this.networkProvider.getLocks(request)
+        }
+        catch(locksError: GetLocksError)
+        {
+            throw FIOError(locksError.message!!,locksError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+
 
     /**
      * Retrieves balance of FIO tokens using the public key of the client
@@ -3383,6 +3570,19 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
 
         return Validator(isValid,if(!isValid) "Invalid Transfer Public Tokens Request" else "")
     }
+
+    private fun validateTransferLockedPublicTokens(payeeFioPublicKey:String, technologyPartnerId:String="", periods:List<LockPeriod>): Validator
+    {
+        var isValid = payeeFioPublicKey.isFioPublicKey()
+
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
+
+        isValid = isValid && periods.size > 0
+
+        return Validator(isValid,if(!isValid) "Invalid Transfer Public Tokens Request" else "")
+    }
+
 
     private fun validateTransferFioDomain(fioDomain:String, newOwnerFioPublicKey:String, technologyPartnerId:String=""): Validator
     {

@@ -289,6 +289,33 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
         }
     }
 
+    @Throws(GetLocksError::class)
+    override fun getLocks(getLocksRequest: GetLocksRequest): GetLocksResponse{
+        try
+        {
+            val syncCall = this.networkProviderApi.getLocks(getLocksRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw GetFIOBalanceError("",e,e.responseError)
+        }
+    }
+
+    @Throws(PushTransactionError::class)
+    override fun transferLockedTokensToPublicKey(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.transferLockedTokensToPublicKey(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
+
+
     @Throws(RegisterFIONameForUserError::class)
     override fun registerFioNameOnBehalfOfUser(request: RegisterFIONameForUserRequest): RegisterFIONameForUserResponse
     {

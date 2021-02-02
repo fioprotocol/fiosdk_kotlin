@@ -11,6 +11,7 @@ import fiofoundation.io.fiosdk.errors.FIOError
 import fiofoundation.io.fiosdk.errors.session.TransactionBroadCastError
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.models.TokenPublicAddress
+import fiofoundation.io.fiosdk.models.LockPeriod
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIOAddressAction
@@ -513,6 +514,85 @@ class DevSdkTests
 
         println("testGenericActions: End Test for Generic Actions")
         Log.i(this.logTag,"testGenericActions: End Test for Generic Actions")
+    }
+
+    @Test
+    fun testTransferLockedFioTokens()
+    {
+        this.setupTestVariables()
+
+        var mn = getRandomSeedWords().joinToString(" ")
+
+        var pk = FIOSDK.createPrivateKey(mn)
+
+        var pubk  = FIOSDK.derivedPublicKey(pk)
+        var periods = ArrayList<LockPeriod>()
+
+        var p = LockPeriod(20,100.0)
+        periods.add(p)
+
+        println("testTransferLockedFioTokens: Begin Test for TransferLockedFioTokens")
+        Log.i(this.logTag,"testTransferLockedFioTokens: Begin Test for TransferLockedFioTokens")
+
+
+        val amountToTransfer = BigInteger("1000000000")   //Amount is in SUFs
+        val bobBalanceBeforeTransfer: BigInteger
+        val bobBalanceAfterTransfer: BigInteger
+
+        println("testTransferLockedFioTokens: Verify Bob's Current FIO Balance")
+        Log.i(this.logTag,"testTransferLockedFioTokens: Verify Bob's Current FIO Balance")
+
+        try
+        {
+            bobBalanceBeforeTransfer = this.bobFioSdk!!.getFioBalance().balance
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("GetFioBalance for Bob Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("GetFioBalance for Bob Failed: " + generalException.message)
+        }
+
+        println("testTransferLockedFioTokens: Test transferLockedTokens")
+        Log.i(this.logTag,"testTransferLockedFioTokens: Test transferLockedTokens")
+
+        try
+        {
+            val fee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.TransferLockedTokens).fee
+            val response = this.aliceFioSdk!!.transferLockedTokens(pubk,
+                    true,periods,amountToTransfer,fee)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            Assert.assertTrue(
+                    "Alice Failed to Transfer Locked tokens FIO to Bob",
+                    actionTraceResponse != null && actionTraceResponse.status == "OK"
+            )
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("FIO Token Locked Transfer Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("FIO Token Locked Transfer Failed: " + generalException.message)
+        }
+
+        println("testTransferLockedFioTokens: Verify Bob's New FIO Balance")
+        Log.i(this.logTag,"testTransferLockedFioTokens: Verify Bob's New FIO Balance")
+
+        println("testTransferLockedFioTokens: Begin Test for getLocks")
+        val resp = this.aliceFioSdk!!.getLocks(pubk)
+
+        Assert.assertTrue(
+                "Couldn't verify lock token amount",
+                resp.lockAmount == 1000000000.toBigInteger()
+        )
+
+        println("testTransferFioLockedTokens: End Test for TransferFioLockedTokens")
+        Log.i(this.logTag,"testTransferFioLockedTokens: End Test for TransferFioLockedTokens")
     }
 
     @Test

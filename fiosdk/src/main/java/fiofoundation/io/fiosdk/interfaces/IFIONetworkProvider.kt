@@ -12,6 +12,8 @@ interface IFIONetworkProvider {
     fun getFIONames(getFioNamesRequest: GetFIONamesRequest): GetFIONamesResponse
     fun isFIONameAvailable(fioNameAvailabilityCheckRequest: FIONameAvailabilityCheckRequest): FIONameAvailabilityCheckResponse
     fun getFIOBalance(getFioBalanceRequest: GetFIOBalanceRequest): GetFIOBalanceResponse
+    fun getLocks(getLocksRequest: GetLocksRequest): GetLocksResponse
+    fun transferLockedTokensToPublicKey(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
     fun getFee(getFeeRequest: GetFeeRequest): GetFeeResponse
     fun getInfo(): GetInfoResponse
     fun getBlock(getBlockRequest: GetBlockRequest): GetBlockResponse
