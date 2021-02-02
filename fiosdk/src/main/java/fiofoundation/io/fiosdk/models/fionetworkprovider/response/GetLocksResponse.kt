@@ -1,7 +1,7 @@
 package fiofoundation.io.fiosdk.models.fionetworkprovider.response
 
 import com.google.gson.annotations.SerializedName
-import fiofoundation.io.fiosdk.models.fionetworkprovider.LockPeriod
+import fiofoundation.io.fiosdk.models.LockPeriod
 import java.math.BigInteger
 
 /*
