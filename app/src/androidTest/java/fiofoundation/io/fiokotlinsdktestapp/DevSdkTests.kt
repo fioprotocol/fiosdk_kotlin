@@ -528,7 +528,9 @@ class DevSdkTests
         var pubk  = FIOSDK.derivedPublicKey(pk)
         var periods = ArrayList<LockPeriod>()
 
-        var p = LockPeriod(20,100.0)
+        var p = LockPeriod(10,80.0)
+        periods.add(p)
+        p = LockPeriod(20,20.0)
         periods.add(p)
 
         println("testTransferLockedFioTokens: Begin Test for TransferLockedFioTokens")
@@ -590,6 +592,32 @@ class DevSdkTests
                 "Couldn't verify lock token amount",
                 resp.lockAmount == 1000000000.toBigInteger()
         )
+
+        println("testTransferLockedFioTokens: Test transferLockedTokens fails to existing account")
+        Log.i(this.logTag,"testTransferLockedFioTokens: Test transferLockedTokens fails for existing account")
+
+        try
+        {
+            val fee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.TransferLockedTokens).fee
+            val response = this.aliceFioSdk!!.transferLockedTokens(pubk,
+                    true,periods,20000000000.toBigInteger(),fee)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            throw AssertionError("unexpected successful transfer, this should fail " )
+
+        }
+        catch (e: FIOError)
+        {
+            Assert.assertTrue(
+                    "Negative test, send to existing account failed",
+                    e.toJson().contains("Locked tokens can only be transferred to new account")
+            )
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("FIO Token Locked Transfer Failed: " + generalException.message)
+        }
 
         println("testTransferFioLockedTokens: End Test for TransferFioLockedTokens")
         Log.i(this.logTag,"testTransferFioLockedTokens: End Test for TransferFioLockedTokens")
