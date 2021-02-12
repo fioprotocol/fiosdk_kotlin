@@ -1557,6 +1557,77 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     /**
+     * Burn FIO Address.
+     *
+     * @param fioAddress the fio address to be burned
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by [getFee] for correct value.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun burnFIOAddress(fioAddress:String, maxFee: BigInteger, technologyPartnerId:String=""): PushTransactionResponse
+    {
+        val transactionProcessor = BurnFIOAddressTrxProcessor(
+                this.serializationProvider,
+                this.networkProvider,
+                this.abiProvider,
+                this.signatureProvider
+        )
+
+        try
+        {
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
+
+            val validator = validateBurnFIOAddress(fioAddress,this.publicKey,wfa)
+
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                val burnFIOAddressAction = BurnFIOAddressAction(
+                        fioAddress,
+                        maxFee,
+                        wfa,
+                        this.publicKey
+                )
+
+                val actionList = ArrayList<BurnFIOAddressAction>()
+                actionList.add(burnFIOAddressAction)
+
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
+        }
+        catch(fioError:FIOError)
+        {
+            throw fioError
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+
+    /**
      *
      * Records information on the FIO blockchain about a transaction that occurred on other blockchain, i.e. 1 BTC was sent on Bitcoin Blockchain, and both
      * sender and receiver have FIO Addresses. OBT stands for Other Blockchain Transaction
@@ -2243,6 +2314,36 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         {
             if(payeeFioAddress.isFioAddress()) {
                 val request = GetFeeRequest(FIOApiEndPoints.new_funds_request, payeeFioAddress.toLowerCase())
+
+                return this.networkProvider.getFee(request)
+            }
+            else
+                throw Exception("Invalid FIO Address")
+        }
+        catch(getFeeError: GetFeeError)
+        {
+            throw FIOError(getFeeError.message!!,getFeeError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     * Compute and return fee amount for burn FIO Address
+     * @param fioAddress The FIO Address to burn
+     * @return [GetFeeResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFeeForBurnFIOAddress(fioAddress:String): GetFeeResponse
+    {
+        try
+        {
+            if(fioAddress.isFioAddress()) {
+                val request = GetFeeRequest(FIOApiEndPoints.burn_fio_address, fioAddress.toLowerCase())
 
                 return this.networkProvider.getFee(request)
             }
@@ -3467,6 +3568,20 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     private fun validateRegisterFioAddress(fioAddress:String ,ownerPublicKey:String,
+                                           technologyPartnerId:String): Validator
+    {
+        var isValid = fioAddress.isFioAddress()
+
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
+
+        if(ownerPublicKey.isNotEmpty())
+            isValid = isValid && ownerPublicKey.isFioPublicKey()
+
+        return Validator(isValid,if(!isValid) "Invalid Register FIO Address Request" else "")
+    }
+
+    private fun validateBurnFIOAddress(fioAddress:String ,ownerPublicKey:String,
                                            technologyPartnerId:String): Validator
     {
         var isValid = fioAddress.isFioAddress()

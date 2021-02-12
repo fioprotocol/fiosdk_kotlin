@@ -15,6 +15,7 @@ object FIOApiEndPoints {
     const val register_fio_address = "register_fio_address"
     const val transfer_tokens_pub_key = "transfer_tokens_pub_key"
     const val renew_fio_domain = "renew_fio_domain"
+    const val burn_fio_address = "burn_fio_address"
     const val renew_fio_address = "renew_fio_address"
     const val push_transaction = "push_transaction"
     const val get_required_keys = "get_required_keys"
