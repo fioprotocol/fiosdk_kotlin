@@ -289,6 +289,19 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
         }
     }
 
+    @Throws(PushTransactionError::class)
+    override fun burnFIOAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.burnFIOAddress(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+        }
+    }
+
     @Throws(GetLocksError::class)
     override fun getLocks(getLocksRequest: GetLocksRequest): GetLocksResponse{
         try

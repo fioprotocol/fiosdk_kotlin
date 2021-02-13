@@ -124,6 +124,10 @@ class DevSdkTests
         val newFioDomain = this.generateTestingFioDomain()
         val newFioAddress = this.generateTestingFioAddress(newFioDomain)
 
+        Thread.sleep(4000)
+        val newFioDomainBurn = this.generateTestingFioDomain()
+        val newFioAddressBurn = this.generateTestingFioAddress(newFioDomainBurn)
+
         val registerAddressFee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioAddress).fee
         val registerDomainFee = this.aliceFioSdk!!.getFee(FIOApiEndPoints.FeeEndPoint.RegisterFioDomain).fee
 
@@ -483,6 +487,93 @@ class DevSdkTests
         {
             throw AssertionError("Get Account Call Failed for Alice: " + generalException.message)
         }
+
+        println("testGenericActions: Test registerFioDomain")
+        Log.i(this.logTag,"testGenericActions: Test registerFioDomain")
+
+        try
+        {
+            val response = this.aliceFioSdk!!.registerFioDomain(newFioDomainBurn, registerDomainFee)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            Assert.assertTrue(
+                    "Couldn't register $newFioDomainBurn for Alice",
+                    actionTraceResponse != null && actionTraceResponse.status == "OK"
+            )
+
+            Log.i(this.logTag, "Registered Fio Domain: ${actionTraceResponse != null && actionTraceResponse.status == "OK"}")
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Register Fio Domain for Alice Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Register Fio Domain for Alice Failed: " + generalException.message)
+        }
+
+
+        println("testGenericActions: Test registerFioAddress")
+        Log.i(this.logTag,"testGenericActions: Test registerFioAddress")
+
+        try
+        {
+            val response = this.aliceFioSdk!!.registerFioAddress(newFioAddressBurn,registerAddressFee)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            Assert.assertTrue(
+                    "Couldn't Register FioAddress $newFioAddressBurn for Alice",
+                    actionTraceResponse != null && actionTraceResponse.status == "OK"
+            )
+
+            Log.i(this.logTag, "Registered FioAddress: ${actionTraceResponse != null && actionTraceResponse.status == "OK"}")
+
+        }
+        catch (broadcastError: TransactionBroadCastError)
+        {
+            throw AssertionError("Alice's Funds Request Failed: " + broadcastError.toJson())
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Register FioAddress for Alice Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Register FioAddress for Alice Failed: " + generalException.message)
+        }
+
+
+
+
+        println("testGenericActions: Test burnFIOAddress")
+        Log.i(this.logTag,"testGenericActions: Test burnFIOAddress")
+
+        try
+        {
+            val burnAddressFee = this.aliceFioSdk!!.getFeeForBurnFIOAddress(newFioAddressBurn).fee
+
+            val response = this.aliceFioSdk!!.burnFIOAddress(newFioAddressBurn,burnAddressFee,"")
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            Assert.assertTrue(
+                    "Couldn't Burn Address for Alice",
+                    actionTraceResponse != null && actionTraceResponse.status == "OK"
+            )
+
+            Log.i(this.logTag, "Burned FIO address: ${actionTraceResponse != null && actionTraceResponse.status == "OK"}")
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Burn FIO Address  for Alice Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Burn FIO Address for Alice Failed: " + generalException.message)
+        }
+
 
 /*
 
