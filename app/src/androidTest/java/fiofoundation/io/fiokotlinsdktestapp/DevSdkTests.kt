@@ -55,6 +55,10 @@ class DevSdkTests
     private val bobPublicTokenAddress = "1AkZGXsnyDfp4faMmVfTWsN1nNRRvEZJk8"
     private var otherBlockChainId = "123456789"
 
+    private val alicePublicMultiTokenAddress = "0xab5801a7d398351b8be11c439e05c5b3259aec9b"
+    private val alicePublicMultiTokenCode = "*"
+    private val alicePublicMultiTokenChainCode = "ETH"
+
     private var aliceFioSdk:FIOSDK? = null
     private var bobFioSdk:FIOSDK? = null
     private var whaleFioSdk:FIOSDK? = null
@@ -363,6 +367,89 @@ class DevSdkTests
         {
             throw AssertionError("remove Public Address for Alice Failed: " + generalException.message)
         }
+
+        //multi token public addressing tests
+        println("testGenericActions: Test multi token addPublicAddress")
+        Log.i(this.logTag,"testGenericActions: Test addPublicAddress")
+
+        try
+        {
+            val addPublicAddressFee = this.aliceFioSdk!!.getFeeForAddPublicAddress(newFioAddress).fee
+
+            val response = this.aliceFioSdk!!.addPublicAddress(newFioAddress,this.alicePublicMultiTokenChainCode,this.alicePublicMultiTokenCode,
+                    this.alicePublicMultiTokenAddress,addPublicAddressFee)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            Assert.assertTrue(
+                    "Couldn't Add multi token Public Address for Alice",
+                    actionTraceResponse != null && actionTraceResponse.status == "OK"
+            )
+
+            Log.i(this.logTag, "Added multi token public address: ${actionTraceResponse != null && actionTraceResponse.status == "OK"}")
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Add multi token Public Address  for Alice Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Add multi token Public Address for Alice Failed: " + generalException.message)
+        }
+
+        Thread.sleep(4000)
+
+        println("testGenericActions: Test multi token getPublicAddress")
+        Log.i(this.logTag,"testGenericActions: Test multi token getPublicAddress")
+
+        try
+        {
+            val response = this.aliceFioSdk!!.getPublicAddress(newFioAddress,this.alicePublicMultiTokenChainCode,this.alicePublicMultiTokenCode)
+
+            Assert.assertTrue(
+                    "Couldn't Find multi token Public Address for Alice",
+                    !response.publicAddress.isEmpty()
+            )
+
+            Log.i(this.logTag, "Retrieved multi token public address: ${!response.publicAddress.isEmpty()}")
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("getPublicAddress multi token Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("getPublicAddress multi token Failed: " + generalException.message)
+        }
+
+
+        println("testGenericActions: Test multi token removePublicAddresses")
+        try
+        {
+            val removePublicAddressesFee = this.aliceFioSdk!!.getFeeForRemovePublicAddresses(newFioAddress).fee
+
+            val response = this.aliceFioSdk!!.removePublicAddresses(newFioAddress,
+                    listOf(TokenPublicAddress(this.alicePublicMultiTokenAddress,this.alicePublicMultiTokenChainCode,this.alicePublicMultiTokenCode)),
+                    removePublicAddressesFee)
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            Assert.assertTrue(
+                    "Couldn't remove multi token Public Address for Alice",
+                    actionTraceResponse != null && actionTraceResponse.status == "OK"
+            )
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("remove multi token Public Address  for Alice Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("remove multi token Public Address for Alice Failed: " + generalException.message)
+        }
+
+
+        //end multi token public addressing tests
 
         println("testGenericActions: Test isFioAddressAvailable True")
         Log.i(this.logTag,"testGenericActions: Test isFioAddressAvailable True")

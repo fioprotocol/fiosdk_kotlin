@@ -75,6 +75,10 @@ fun String.isTokenCode(): Boolean
 {
     if(this.isNotEmpty())
     {
+        if (this.equals("*"))
+        {
+            return true;
+        }
         if(this.length in 1..10)
         {
             val fioRegEx = Regex("^[a-zA-Z0-9]+$")
