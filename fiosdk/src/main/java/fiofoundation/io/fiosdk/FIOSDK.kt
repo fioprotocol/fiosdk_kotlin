@@ -2301,6 +2301,37 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     /**
+     * Compute and return fee amount for New Funds Request
+     *
+     * @param payeeFioAddress The payee's FIO Address
+     * @return [GetFeeResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFeeForTransferFioAddress(payeeFioAddress:String): GetFeeResponse
+    {
+        try
+        {
+            if(payeeFioAddress.isFioAddress()) {
+                val request = GetFeeRequest(FIOApiEndPoints.transfer_fio_address, payeeFioAddress.toLowerCase())
+
+                return this.networkProvider.getFee(request)
+            }
+            else
+                throw Exception("Invalid FIO Address")
+        }
+        catch(getFeeError: GetFeeError)
+        {
+            throw FIOError(getFeeError.message!!,getFeeError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
      * Compute and return fee amount for Cancel Funds Request
      * @param payeeFioAddress The payee's FIO Address
      * @return [GetFeeResponse]
@@ -2892,6 +2923,138 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
             throw FIOError(e.message!!,e)
         }
     }
+
+    //begin transfer fio address
+    /**
+     *
+     * Transfers a FIO Address to a new owner.
+     *
+     * @param fioAddress FIO Address.
+     * @param newOwnerFioPublicKey FIO Public Key.  FIO Public Key of the new owner. If account for that key does not exist, it will be created as part of this call.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun transferFioAddress(fioAddress:String, newOwnerFioPublicKey:String, maxFee:BigInteger,
+                          technologyPartnerId:String): PushTransactionResponse
+    {
+        val transactionProcessor = TransferFIOAddressTrxProcessor(
+                this.serializationProvider,
+                this.networkProvider,
+                this.abiProvider,
+                this.signatureProvider
+        )
+
+        try
+        {
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
+
+            val validator = validateTransferFioAddress(fioAddress,newOwnerFioPublicKey,wfa)
+
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                val transferFioAddress = TransferFIOAddressAction(
+                        fioAddress,
+                        newOwnerFioPublicKey,
+                        maxFee,
+                        wfa,
+                        this.publicKey
+                )
+
+                val actionList = ArrayList<TransferFIOAddressAction>()
+                actionList.add(transferFioAddress)
+
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     *
+     * Transfers a FIO Address to a new owner.
+     *
+     * @param pushTransactionRequest A packed and signed transfer fio domain request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun transferFioAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = TransferFIODomainTrxProcessor(
+                this.serializationProvider,
+                this.networkProvider,
+                this.abiProvider,
+                this.signatureProvider
+        )
+
+        try
+        {
+            return transactionProcessor.rebroadcast(pushTransactionRequest)
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     *
+     * Transfers a FIO address to a new owner.
+     *
+     * @param fioAddress FIO Address.
+     * @param newOwnerFioPublicKey FIO Public Key.  FIO Public Key of the new owner. If account for that key does not exist, it will be created as part of this call.
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun transferFioAddress(fioAddress:String, newOwnerFioPublicKey:String, maxFee:BigInteger): PushTransactionResponse
+    {
+        return transferFioAddress(fioAddress,newOwnerFioPublicKey, maxFee,this.technologyPartnerId)
+    }
+
+    //end transfer fio address
 
     /**
      *
@@ -3709,5 +3872,17 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
             isValid = isValid && technologyPartnerId.isFioAddress()
 
         return Validator(isValid,if(!isValid) "Invalid Transfer Fio Domain Request" else "")
+    }
+
+    private fun validateTransferFioAddress(fioAddress:String, newOwnerFioPublicKey:String, technologyPartnerId:String=""): Validator
+    {
+        var isValid = newOwnerFioPublicKey.isFioPublicKey()
+
+        isValid = isValid && fioAddress.isFioAddress()
+
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
+
+        return Validator(isValid,if(!isValid) "Invalid Transfer Fio Address Request" else "")
     }
 }

@@ -502,4 +502,18 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
 
         }
     }
+
+    @Throws(PushTransactionError::class)
+    override fun transferFIOAddress(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        try
+        {
+            val syncCall = this.networkProviderApi.transferFIOAddress(pushTransactionRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw PushTransactionError("",e,e.responseError)
+
+        }
+    }
 }
