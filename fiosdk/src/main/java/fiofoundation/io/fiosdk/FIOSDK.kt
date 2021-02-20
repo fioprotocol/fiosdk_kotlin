@@ -2301,7 +2301,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     /**
-     * Compute and return fee amount for New Funds Request
+     * Compute and return fee amount for transfer fio address
      *
      * @param payeeFioAddress The payee's FIO Address
      * @return [GetFeeResponse]
