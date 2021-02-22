@@ -2332,6 +2332,37 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     /**
+     * Compute and return fee amount for add bundled transactions
+     *
+     * @param payeeFioAddress The payee's FIO Address
+     * @return [GetFeeResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getFeeForAddBundledTransactions(payeeFioAddress:String): GetFeeResponse
+    {
+        try
+        {
+            if(payeeFioAddress.isFioAddress()) {
+                val request = GetFeeRequest(FIOApiEndPoints.add_bundled_transactions, payeeFioAddress.toLowerCase())
+
+                return this.networkProvider.getFee(request)
+            }
+            else
+                throw Exception("Invalid FIO Address")
+        }
+        catch(getFeeError: GetFeeError)
+        {
+            throw FIOError(getFeeError.message!!,getFeeError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
      * Compute and return fee amount for Cancel Funds Request
      * @param payeeFioAddress The payee's FIO Address
      * @return [GetFeeResponse]
@@ -2924,7 +2955,6 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         }
     }
 
-    //begin transfer fio address
     /**
      *
      * Transfers a FIO Address to a new owner.
@@ -3054,7 +3084,134 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
         return transferFioAddress(fioAddress,newOwnerFioPublicKey, maxFee,this.technologyPartnerId)
     }
 
-    //end transfer fio address
+    /**
+     *
+     * Add specified number of bundle sets to the bundle count
+     *
+     * @param fioAddress FIO Address.
+     * @param bundleSets this number will be multiplied by the number of tx per bundle voted by the BPs
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @param technologyPartnerId FIO Address of the wallet which generates this transaction.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun addBundledTransactions(fioAddress:String, bundleSets:Int, maxFee:BigInteger,
+                           technologyPartnerId:String): PushTransactionResponse
+    {
+        val transactionProcessor = AddBundledTransactionsTrxProcessor(
+                this.serializationProvider,
+                this.networkProvider,
+                this.abiProvider,
+                this.signatureProvider
+        )
+
+        try
+        {
+            val wfa = if(technologyPartnerId.isEmpty()) this.technologyPartnerId else technologyPartnerId
+
+            val validator = validateAddBundledTransactions(fioAddress,bundleSets,wfa)
+
+            if(!validator.isValid)
+                throw FIOError(validator.errorMessage!!)
+            else
+            {
+                val transferFioAddress = AddBundledTransactionsAction(
+                        fioAddress,
+                        bundleSets,
+                        maxFee,
+                        wfa,
+                        this.publicKey
+                )
+
+                val actionList = ArrayList<AddBundledTransactionsAction>()
+                actionList.add(transferFioAddress)
+
+                @Suppress("UNCHECKED_CAST")
+                transactionProcessor.prepare(actionList as ArrayList<IAction>)
+
+                transactionProcessor.sign()
+
+                return transactionProcessor.broadcast()
+            }
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     *
+     * Add specified number of bundle sets to the bundled transactions count.
+     *
+     * @param pushTransactionRequest A packed and signed transfer fio domain request.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    @ExperimentalUnsignedTypes
+    fun addBundledTransactions(pushTransactionRequest: PushTransactionRequest): PushTransactionResponse
+    {
+        val transactionProcessor = AddBundledTransactionsTrxProcessor(
+                this.serializationProvider,
+                this.networkProvider,
+                this.abiProvider,
+                this.signatureProvider
+        )
+
+        try
+        {
+            return transactionProcessor.rebroadcast(pushTransactionRequest)
+        }
+        catch(prepError: TransactionPrepareError)
+        {
+            throw FIOError(prepError.message!!,prepError)
+        }
+        catch(signError: TransactionSignError)
+        {
+            throw FIOError(signError.message!!,signError)
+        }
+        catch(broadcastError: TransactionBroadCastError)
+        {
+            throw FIOError(broadcastError.message!!,broadcastError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
+     *
+     * Transfers a FIO address to a new owner.
+     *
+     * @param fioAddress FIO Address.
+     * @param bundleSets the number of bundle sets to add to the bundle count, this number is multiplied by the number of tx to provide voted by the BPs
+     * @param maxFee Maximum amount of SUFs the user is willing to pay for fee. Should be preceded by /get_fee for correct value.
+     * @return [PushTransactionResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun addBundledTransactions(fioAddress:String, bundleSets:Int, maxFee:BigInteger): PushTransactionResponse
+    {
+        return addBundledTransactions(fioAddress,bundleSets, maxFee,this.technologyPartnerId)
+    }
 
     /**
      *
@@ -3884,5 +4041,17 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
             isValid = isValid && technologyPartnerId.isFioAddress()
 
         return Validator(isValid,if(!isValid) "Invalid Transfer Fio Address Request" else "")
+    }
+
+    private fun validateAddBundledTransactions(fioAddress:String, bundleSets:Int, technologyPartnerId:String=""): Validator
+    {
+        var isValid = bundleSets > 0
+
+        isValid = isValid && fioAddress.isFioAddress()
+
+        if(technologyPartnerId.isNotEmpty())
+            isValid = isValid && technologyPartnerId.isFioAddress()
+
+        return Validator(isValid,if(!isValid) "Invalid Add Bundled Transactions Request" else "")
     }
 }

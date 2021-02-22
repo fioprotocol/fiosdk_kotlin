@@ -7,6 +7,7 @@ object FIOApiEndPoints {
     const val get_fio_balance = "get_fio_balance"
     const val get_locks = "get_locks"
     const val transfer_locked_tokens = "transfer_locked_tokens"
+    const val add_bundled_transactions = "add_bundled_transactions"
     const val transfer_fio_address = "transfer_fio_address"
     const val get_fee = "get_fee"
     const val get_info = "get_info"
