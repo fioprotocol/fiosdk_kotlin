@@ -3117,7 +3117,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 throw FIOError(validator.errorMessage!!)
             else
             {
-                val transferFioAddress = AddBundledTransactionsAction(
+                val addBundledTransactionsAction = AddBundledTransactionsAction(
                         fioAddress,
                         bundleSets,
                         maxFee,
@@ -3126,7 +3126,7 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
                 )
 
                 val actionList = ArrayList<AddBundledTransactionsAction>()
-                actionList.add(transferFioAddress)
+                actionList.add(addBundledTransactionsAction)
 
                 @Suppress("UNCHECKED_CAST")
                 transactionProcessor.prepare(actionList as ArrayList<IAction>)
