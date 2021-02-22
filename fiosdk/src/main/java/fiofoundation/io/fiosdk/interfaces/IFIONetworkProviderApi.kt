@@ -114,4 +114,8 @@ interface IFIONetworkProviderApi {
 
     @POST(FIOApiEndPoints.transfer_fio_address)
     fun transferFIOAddress(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
+
+    @POST(FIOApiEndPoints.add_bundled_transactions)
+    fun addBundledTransactions(@Body pushTransactionRequest: PushTransactionRequest): Call<PushTransactionResponse>
+
 }
