@@ -13,7 +13,7 @@ class AddBundledTransactionsAction(fioAddress: String,
                                    actorPublicKey: String) : IAction
 {
     override var account = "fio.address"
-    override var name = "burnaddress"
+    override var name = "addbundles"
     override var authorization = ArrayList<Authorization>()
     override var data = ""
 

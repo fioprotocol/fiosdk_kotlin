@@ -755,6 +755,36 @@ class DevSdkTests
 
         //end transfer fio address
 
+        println("testGenericActions: Test addBundledTransactions")
+        Log.i(this.logTag,"testGenericActions: Test addBundledTransactions")
+
+        try
+        {
+            val addBundleFee = this.bobFioSdk!!.getFeeForAddBundledTransactions(newFioAddressTransfer).fee
+
+            val response = this.bobFioSdk!!.addBundledTransactions( newFioAddressTransfer, 1.toInt(),
+                    addBundleFee,"")
+
+            val actionTraceResponse = response.getActionTraceResponse()
+
+            Assert.assertTrue(
+                    "Couldn't Add Bundled Transactions for Bob",
+                    actionTraceResponse != null && actionTraceResponse.status == "OK"
+            )
+
+            Log.i(this.logTag, "Added Bundled Transactions: ${actionTraceResponse != null && actionTraceResponse.status == "OK"}")
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Add Bundled Transactions for Bob Failed: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Add Bundled Transactions for Bob  Failed: " + generalException.message)
+        }
+
+
+
 
 
 /*
