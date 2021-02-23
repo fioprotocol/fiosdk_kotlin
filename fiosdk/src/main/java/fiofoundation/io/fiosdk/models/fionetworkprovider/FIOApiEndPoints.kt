@@ -33,6 +33,7 @@ object FIOApiEndPoints {
     const val set_domain_visibility = "set_fio_domain_public"
     const val cancel_funds_request = "cancel_funds_request"
     const val get_cancelled_fio_requests = "get_cancelled_fio_requests"
+    const val get_received_fio_requests = "get_received_fio_requests"
     const val get_account = "get_account"
     const val get_fio_domains = "get_fio_domains"
     const val get_fio_addresses = "get_fio_addresses"

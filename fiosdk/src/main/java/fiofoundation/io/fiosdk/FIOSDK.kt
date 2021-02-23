@@ -1977,6 +1977,22 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     /**
+     * Polls for any received requests sent by public key associated with the FIO SDK instance.
+     *
+     * @param limit Number of request to return. If omitted, all requests will be returned.
+     * @param offset First request from list to return. If omitted, 0 is assumed.
+     *
+     * @return [List<FIORequestContent>]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getReceivedFioRequests(limit:Int?=null,offset:Int?=null): List<FIORequestContent>
+    {
+        return this.getReceivedFioRequests(this.publicKey,limit,offset)
+    }
+
+    /**
      * Polls for any cancelled requests sent by public key associated with the FIO SDK instance.
      *
      * @param limit Number of request to return. If omitted, all requests will be returned.
@@ -3800,6 +3816,39 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
             throw FIOError(e.message!!,e)
         }
     }
+
+    @Throws(FIOError::class)
+    private fun getReceivedFioRequests(senderFioPublicKey:String,limit:Int?=null,offset:Int?=null): List<FIORequestContent>
+    {
+        try
+        {
+            val request = GetReceivedFIORequestsRequest(senderFioPublicKey,limit,offset)
+            val response = this.networkProvider.getReceivedFIORequests(request)
+
+            for (item in response.requests)
+            {
+                try
+                {
+                    item.deserializedContent = FundsRequestContent.deserialize(this.privateKey,item.payerFioPublicKey,this.serializationProvider,item.content)
+                }
+                catch(deserializationError: DeserializeTransactionError)
+                {
+                    //eat this error.  We do not want this error to stop the process.
+                }
+            }
+
+            return response.requests
+        }
+        catch(getReceivedFIORequestsError: GetReceivedFIORequestsError)
+        {
+            throw FIOError(getReceivedFIORequestsError.message!!,getReceivedFIORequestsError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
 
     @Throws(FIOError::class)
     private fun getCancelledFioRequests(senderFioPublicKey:String,limit:Int?=null,offset:Int?=null): List<FIORequestContent>

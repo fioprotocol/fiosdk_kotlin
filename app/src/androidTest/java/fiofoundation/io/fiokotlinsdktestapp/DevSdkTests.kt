@@ -1013,6 +1013,55 @@ class DevSdkTests
             throw AssertionError("Cannot Get List of Requests Sent by Alice: " + generalException.message)
         }
 
+        println("testFundsRequest: Test getReceivedFioRequests")
+        Log.i(this.logTag,"testFundsRequest: Test getReceivedFioRequests")
+
+        try
+        {
+            var receivedRequests = this.bobFioSdk!!.getReceivedFioRequests()
+
+            if(receivedRequests.isNotEmpty())
+            {
+                Assert.assertTrue(
+                    "Requests Received by Bob are NOT Available",
+                    receivedRequests.isNotEmpty()
+                )
+
+                Log.i(this.logTag, "Retrieved received Fio Requests: ${receivedRequests.isNotEmpty()}")
+
+                for (req in receivedRequests)
+                {
+                    if(req.deserializedContent!=null)
+                    {
+                        Assert.assertTrue(
+                            "Funds Request Sent by Alice is NOT Valid",
+                            req.deserializedContent != null
+                        )
+                    }
+                }
+            }
+
+            receivedRequests = this.bobFioSdk!!.getReceivedFioRequests(2,0)
+            if(receivedRequests.isNotEmpty())
+            {
+                Assert.assertTrue(
+                    "Requests received by bob are NOT Available",
+                    receivedRequests.isNotEmpty()
+                )
+            }
+
+
+
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("Cannot Get List of Requests received by bob: " + e.toJson())
+        }
+        catch (generalException: Exception)
+        {
+            throw AssertionError("Cannot Get List of Requests received by bob: " + generalException.message)
+        }
+
         println("testFundsRequest: Test getPendingFioRequests")
         Log.i(this.logTag,"testFundsRequest: Test getPendingFioRequests")
 
@@ -1275,6 +1324,7 @@ class DevSdkTests
         {
             throw AssertionError("Pending Requests Failed: " + generalException.message)
         }
+
 
         println("testFundsRequest: Test rejectFundsRequest")
         Log.i(this.logTag,"testFundsRequest: Test rejectFundsRequest")
