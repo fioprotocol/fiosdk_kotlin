@@ -451,7 +451,17 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
             val syncCall = this.networkProviderApi.getCancelledFIORequests(getCancelledFioRequests)
             return processCall(syncCall)
         } catch (e: FIONetworkProviderCallError) {
-            throw GetSentFIORequestsError("", e, e.responseError)
+            throw GetCancelledFIORequestsError("", e, e.responseError)
+        }
+    }
+
+    @Throws(GetReceivedFIORequestsError::class)
+    override fun getReceivedFIORequests(getReceivedFioRequests: GetReceivedFIORequestsRequest): GetReceivedFIORequestsResponse {
+        try {
+            val syncCall = this.networkProviderApi.getReceivedFIORequests(getReceivedFioRequests)
+            return processCall(syncCall)
+        } catch (e: FIONetworkProviderCallError) {
+            throw GetReceivedFIORequestsError("", e, e.responseError)
         }
     }
 
