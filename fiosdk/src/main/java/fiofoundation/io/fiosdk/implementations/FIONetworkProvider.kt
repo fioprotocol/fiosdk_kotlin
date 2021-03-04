@@ -90,6 +90,18 @@ class FIONetworkProvider(private val baseURL: String): IFIONetworkProvider
         }
     }
 
+    @Throws(GetPublicAddressesError::class)
+    override fun getPublicAddresses(getPublicAddressesRequest: GetPublicAddressesRequest): GetPublicAddressesResponse{
+        try {
+            val syncCall = this.networkProviderApi.getPublicAddresses(getPublicAddressesRequest)
+            return processCall(syncCall)
+        }
+        catch(e: FIONetworkProviderCallError){
+            throw GetPublicAddressError("",e,e.responseError)
+        }
+    }
+
+
     @Throws(GetFIONamesError::class)
     override fun getFIONames(getFioNamesRequest: GetFIONamesRequest): GetFIONamesResponse{
         try

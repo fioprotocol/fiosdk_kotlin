@@ -9,6 +9,7 @@ import fiofoundation.io.fiosdk.models.fionetworkprovider.response.GetRequiredKey
 interface IFIONetworkProvider {
 
     fun getPublicAddress(getPublicAddressRequest: GetPublicAddressRequest): GetPublicAddressResponse
+    fun getPublicAddresses(getPublicAddressesRequest: GetPublicAddressesRequest): GetPublicAddressesResponse
     fun getFIONames(getFioNamesRequest: GetFIONamesRequest): GetFIONamesResponse
     fun isFIONameAvailable(fioNameAvailabilityCheckRequest: FIONameAvailabilityCheckRequest): FIONameAvailabilityCheckResponse
     fun getFIOBalance(getFioBalanceRequest: GetFIOBalanceRequest): GetFIOBalanceResponse

@@ -322,6 +322,29 @@ class DevSdkTests
             throw AssertionError("getPublicAddress Failed: " + generalException.message)
         }
 
+        println("testGenericActions: Test getPublicAddresses")
+        Log.i(this.logTag,"testGenericActions: Test getPublicAddresses")
+
+        try
+        {
+            val response = this.aliceFioSdk!!.getPublicAddresses(newFioAddress,0,0)
+
+            Assert.assertTrue(
+                    "Couldn't Find Public Address for Alice",
+                    !response.publicAddresses.isEmpty()
+            )
+
+            Log.i(this.logTag, "Retrieved public addresses: ${!response.publicAddresses.isEmpty()}")
+        }
+        catch (e: FIOError)
+        {
+            throw AssertionError("getPublicAddresses Failed: " + e.toJson())
+        }
+        catch(generalException:Exception)
+        {
+            throw AssertionError("getPublicAddresses Failed: " + generalException.message)
+        }
+
         println("testGenericActions: Test addPublicAddress to alice for removal")
         try
         {
