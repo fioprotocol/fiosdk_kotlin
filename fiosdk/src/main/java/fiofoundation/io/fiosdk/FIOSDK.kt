@@ -2193,17 +2193,17 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     /**
-     * Returns a token public address for specified token code and FIO Address.
+     * Returns a token public addresses FIO Address.
      *
      * @param fioAddress FIO Address for which the token public address is to be returned.
-     * @param chainCode Blockchain code for blockchain hosting this token.
-     * @param tokenCode Token code for which public address is to be returned.
-     * @return [GetPublicAddressResponse]
+     * @param limit number of records to return.
+     * @param offset starting index of returned items.
+     * @return [GetPublicAddressesResponse]
      *
      * @throws [FIOError]
      */
     @Throws(FIOError::class)
-    fun getPublicAddresses(fioAddress:String, limit:Int, offset:Int): GetPublicAddressesResponse
+    fun getPublicAddresses(fioAddress:String, limit:Int?=null, offset:Int?=null): GetPublicAddressesResponse
     {
         try
         {
