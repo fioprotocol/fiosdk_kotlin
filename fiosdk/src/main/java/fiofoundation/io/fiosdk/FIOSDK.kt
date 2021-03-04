@@ -2193,6 +2193,35 @@ class FIOSDK(private var privateKey: String, var publicKey: String,var technolog
     }
 
     /**
+     * Returns a token public addresses FIO Address.
+     *
+     * @param fioAddress FIO Address for which the token public address is to be returned.
+     * @param limit number of records to return.
+     * @param offset starting index of returned items.
+     * @return [GetPublicAddressesResponse]
+     *
+     * @throws [FIOError]
+     */
+    @Throws(FIOError::class)
+    fun getPublicAddresses(fioAddress:String, limit:Int?=null, offset:Int?=null): GetPublicAddressesResponse
+    {
+        try
+        {
+            val request = GetPublicAddressesRequest(fioAddress.toLowerCase(),limit,offset)
+
+            return this.networkProvider.getPublicAddresses(request)
+        }
+        catch(getPublicAddressesError: GetPublicAddressesError)
+        {
+            throw FIOError(getPublicAddressesError.message!!,getPublicAddressesError)
+        }
+        catch(e:Exception)
+        {
+            throw FIOError(e.message!!,e)
+        }
+    }
+
+    /**
      * Checks if a FIO Address or FIO Domain is available for registration.
      *
      * @param fioName FIO Address or FIO Domain to check.

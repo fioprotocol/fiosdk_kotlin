@@ -16,6 +16,9 @@ interface IFIONetworkProviderApi {
     @POST(FIOApiEndPoints.get_public_address)
     fun getPublicAddress(@Body getPublicAddressRequest: GetPublicAddressRequest): Call<GetPublicAddressResponse>
 
+    @POST(FIOApiEndPoints.get_public_addresses)
+    fun getPublicAddresses(@Body getPublicAddressesRequest: GetPublicAddressesRequest): Call<GetPublicAddressesResponse>
+
     @POST(FIOApiEndPoints.get_fio_names)
     fun getFIONames(@Body getFioNamesRequest: GetFIONamesRequest): Call<GetFIONamesResponse>
 
