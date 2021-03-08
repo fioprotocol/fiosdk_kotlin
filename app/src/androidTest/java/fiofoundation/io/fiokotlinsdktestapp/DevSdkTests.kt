@@ -12,6 +12,7 @@ import fiofoundation.io.fiosdk.errors.session.TransactionBroadCastError
 import fiofoundation.io.fiosdk.implementations.SoftKeySignatureProvider
 import fiofoundation.io.fiosdk.models.TokenPublicAddress
 import fiofoundation.io.fiosdk.models.LockPeriod
+import fiofoundation.io.fiosdk.models.FIOAddress
 import fiofoundation.io.fiosdk.models.fionetworkprovider.FIOApiEndPoints
 import fiofoundation.io.fiosdk.models.fionetworkprovider.RecordObtDataContent
 import fiofoundation.io.fiosdk.models.fionetworkprovider.actions.RegisterFIOAddressAction
@@ -533,7 +534,7 @@ class DevSdkTests
 
             Assert.assertTrue(
                 "Couldn't Get FioNames for Alice",
-                response.fioAddresses!!.isNotEmpty()
+                response.fioAddresses!!.isNotEmpty() && (response.fioAddresses!![0].remainingBundledTx >= 0)
             )
 
             Log.i(this.logTag, "Retrieved FioNames: ${response.fioAddresses!!.isNotEmpty()}")
