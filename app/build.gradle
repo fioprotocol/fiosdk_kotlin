@@ -8,11 +8,11 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    compileSdkVersion 28
+    compileSdkVersion 31
     defaultConfig {
         applicationId "fiofoundation.io.fiokotlinsdktestapp"
         minSdkVersion 19
-        targetSdkVersion 28
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
