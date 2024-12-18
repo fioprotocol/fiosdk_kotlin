@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> This repo is no longer maintained, use [fiosdk_typescript](https://github.com/fioprotocol/fiosdk_typescript) or [fio.sdk-lite](https://github.com/fioprotocol/fio.sdk-lite)
+
 # FIO Kotlin SDK
 The Foundation for Interwallet Operability (FIO) is a consortium of leading blockchain wallets, exchanges and payments providers that seeks to accelerate blockchain adoption by reducing the risk, complexity, and inconvenience of sending and receiving cryptoassets.
 
@@ -89,6 +92,8 @@ Use the following steps to determine the fee and pass it to the signed call.
 	2. Call the API Signed call with the fee
 
 # Creating your own FIO Private/Public Keys?
+> [!IMPORTANT]
+> Private key generation in the SDK is available only for testing purposes only. Do not generate private keys for production application using these methods. Instead pass securely generated private keys or seed phrase to the SDK constructor.
 The SDK provides FIO Key generation.  Here are the key details, if the SDK is not used for Key Generation.
 
 FIO Keys use SLIP-235 for BIP-0044.
@@ -127,6 +132,3 @@ Documentation folder added to the project
 ## Version 0.9.2
 Updated and cleaned up SDK code base.
 Finalization of method names and parameter names and order
-
-
-
